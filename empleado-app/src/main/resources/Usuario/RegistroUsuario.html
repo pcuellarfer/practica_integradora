@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Iniciar Sesión</title>
+    <script src="/js/RegistroUsuario.js" defer></script>
+</head>
+<body>
+
+<h2>Introduce tu nombre de usuario</h2>
+<form action="/usuario" method="post">
+
+    <label>Nombre de usuario:</label>
+    <input type="text" name="nombreUsuario" required>
+
+    <label>Contraseña:</label>
+    <input type="password" name="contrasena" id="contrasena" required>
+
+    <!--checkbox para mostrar la contraseña-->
+    <label>
+        <input type="checkbox" id="mostrarcontrasena" onclick="mostrarContrasena()"> Mostrar contraseña
+    </label>
+
+    <button type="submit">Iniciar Sesión</button>
+
+    <!--Enlace vacio para recuperar la contraseña-->
+    <p><a href="#" onclick="recuperarContrasena()">Recuperar contraseña</a></p>
+</form>
+<!--Mostrar errores-->
+<p th:if="${error}" th:text="${error}" style="color: red;"></p>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
