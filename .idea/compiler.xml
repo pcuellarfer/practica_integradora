@@ -10,5 +10,9 @@
         <module name="empleado-app.main" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="empleado.main" target="21" />
+      <module name="empleado.test" target="21" />
+    </bytecodeTargetLevel>
   </component>
 </project>
