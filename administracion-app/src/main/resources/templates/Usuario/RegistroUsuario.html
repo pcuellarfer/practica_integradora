@@ -11,11 +11,11 @@
 <form th:action="@{/usuario}" th:object="${usuario}" method="post">
     <div>
         <label>Nombre de usuario:</label>
-        <input type="text" th:field="*{nombre}" required>
+        <input type="text" th:field="*{nombre}">
     </div>
     <div>
         <label>Email:</label>
-        <input type="email" th:field="*{email}" required>
+        <input type="text" th:field="*{email}">
     </div>
     <div>
         <label>Contraseña:</label>
