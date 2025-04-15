@@ -2,8 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Iniciar Sesión</title>
-    <script src="/js/RegistroUsuario.js" defer></script>
+    <title>Registro de usuario</title>
+    <script src="/JS/RegistroUsuario.js"></script>
 </head>
 <body>
 
@@ -11,10 +11,13 @@
 <form action="/usuario" method="post">
 
     <label>Nombre de usuario:</label>
-    <input type="text" name="nombreUsuario" required>
+    <input type="text" th:field="*{nombre}" required>
+
+    <label>Email:</label>
+    <input type="email" th:field="*{email}" required>
 
     <label>Contraseña:</label>
-    <input type="password" name="contrasena" id="contrasena" required>
+    <input type="password" th:field="*{contrasena}" required>
 
     <!--checkbox para mostrar la contraseña-->
     <label>
