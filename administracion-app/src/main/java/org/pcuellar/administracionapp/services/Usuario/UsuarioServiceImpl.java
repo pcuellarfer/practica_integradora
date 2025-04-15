@@ -1,8 +1,8 @@
 package org.pcuellar.administracionapp.services.Usuario;
 
 import org.modelmapper.ModelMapper;
-import org.pcuellar.administracionapp.dto.RegistroUsuarioDTO;
-import org.pcuellar.administracionapp.dto.UsuarioDTO;
+import org.pcuellar.administracionapp.dto.Usuario.RegistroUsuarioDTO;
+import org.pcuellar.administracionapp.dto.Usuario.UsuarioDTO;
 import org.pcuellar.administracionapp.entity.Usuario;
 import org.pcuellar.administracionapp.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;

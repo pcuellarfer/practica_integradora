@@ -8,15 +8,7 @@
 <body>
 <h2>Registro de usuario</h2>
 <!-- Vincula el formulario al objeto "usuario" del modelo -->
-<form th:action="@{/usuario/registrar}" method="post" th:object="${usuario}">
-    <div>
-        <label>Nombre de usuario:</label>
-        <input type="text" th:field="*{nombre}">
-    </div>
-    <div>
-        <label>Email:</label>
-        <input type="text" th:field="*{email}">
-    </div>
+<form th:action="@{/empleado/contrasena}" th:object="${empleado}" method="post">
     <div>
         <label>Contraseña:</label>
         <input type="password" th:field="*{contrasena}" required>

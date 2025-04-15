@@ -1,4 +1,4 @@
-package org.pcuellar.administracionapp.dto;
+package org.pcuellar.administracionapp.dto.Usuario;
 
 import java.util.UUID;
 import java.time.LocalDateTime;

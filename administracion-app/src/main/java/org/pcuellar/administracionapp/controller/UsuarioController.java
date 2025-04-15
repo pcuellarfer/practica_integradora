@@ -1,8 +1,7 @@
 package org.pcuellar.administracionapp.controller;
 
 
-import org.pcuellar.administracionapp.dto.RegistroUsuarioDTO;
-import org.pcuellar.administracionapp.dto.UsuarioDTO;
+import org.pcuellar.administracionapp.dto.Usuario.RegistroUsuarioDTO;
 import org.pcuellar.administracionapp.services.Usuario.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,7 +25,7 @@ public class UsuarioController {
         return "Usuario/RegistroUsuario";
     }
 
-    @PostMapping
+    @PostMapping("/registrar")
     public String registrarUsuario(@ModelAttribute("usuario") RegistroUsuarioDTO registroUsuarioDTO, Model model) {
         usuarioService.registrarUsuario(registroUsuarioDTO);
         return "prueba";
