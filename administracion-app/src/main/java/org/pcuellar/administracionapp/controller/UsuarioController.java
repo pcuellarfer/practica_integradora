@@ -31,12 +31,5 @@ public class UsuarioController {
         return "prueba";
 
     }
-
-    @GetMapping("/login")
-    public String login(Model modelo) {
-        return "auth/RegistroUsuario";
-    }
-
-
 }
 
