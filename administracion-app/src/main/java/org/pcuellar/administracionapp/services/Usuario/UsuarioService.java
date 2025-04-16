@@ -1,13 +1,12 @@
 package org.pcuellar.administracionapp.services.Usuario;
 
-import org.pcuellar.administracionapp.dto.RegistroUsuarioDTO;
-import org.pcuellar.administracionapp.dto.UsuarioDTO;
+import org.pcuellar.administracionapp.dto.Usuario.RegistroUsuarioDTO;
+import org.pcuellar.administracionapp.dto.Usuario.UsuarioDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
-@Service
 public interface UsuarioService {
     UsuarioDTO registrarUsuario(RegistroUsuarioDTO registroUsuarioDTO);
     UsuarioDTO editarUsuarioEmail(UUID id, String email);

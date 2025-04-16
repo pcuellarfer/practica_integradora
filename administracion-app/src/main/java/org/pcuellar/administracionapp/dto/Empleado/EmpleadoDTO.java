@@ -1,4 +1,6 @@
-package org.pcuellar.administracionapp.dto;
+package org.pcuellar.administracionapp.dto.Empleado;
+
+import org.pcuellar.administracionapp.dto.NominaDTO;
 
 import java.math.BigDecimal;
 import java.util.UUID;

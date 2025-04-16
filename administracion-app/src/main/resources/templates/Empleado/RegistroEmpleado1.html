@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de empleado</title>
+</head>
+<body>
+<h2>Registro de empleado</h2>
+<!-- Vincula el formulario al objeto "usuario" del modelo -->
+<form th:action="@{/empleado/registro}" th:object="${empleado}" method="post">
+    <div>
+        <label>Nombre de usuario:</label>
+        <input type="text" th:field="*{nombre}">
+    </div>
+    <div>
+        <label>Email:</label>
+        <input type="text" th:field="*{email}">
+    </div>
+
+    <button type="submit">Pasar a ingresar contraseña</button>
+</form>
+<!-- Mensaje de error (si existe) -->
+<p th:if="${error}" th:text="${error}" style="color: red;"></p>
+</body>
+</html>

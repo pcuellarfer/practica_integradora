@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de usuario</title>
+    <script th:src="@{/JS/RegistroUsuario.js}"></script>
+</head>
+<body>
+<h2>Registro de usuario</h2>
+<!-- Vincula el formulario al objeto "usuario" del modelo -->
+<form th:action="@{/empleado/contrasena}" th:object="${empleado}" method="post">
+    <div>
+        <label>Contraseña:</label>
+        <input type="password" th:field="*{contrasena}" required>
+    </div>
+    <div>
+        <label>
+            <input type="checkbox" id="mostrarcontrasena" onclick="mostrarContrasena()"> Mostrar contraseña
+        </label>
+    </div>
+    <button type="submit">Registrarse</button>
+</form>
+<!-- Mensaje de error (si existe) -->
+<p th:if="${error}" th:text="${error}" style="color: red;"></p>
+</body>
+</html>
