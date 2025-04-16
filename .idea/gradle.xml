@@ -9,19 +9,10 @@
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/administracion-app" />
-        <option name="gradleJvm" value="openjdk-23" />
+        <option name="gradleJvm" value="23" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/administracion-app" />
-          </set>
-        </option>
-      </GradleProjectSettings>
-      <GradleProjectSettings>
-        <option name="externalProjectPath" value="$PROJECT_DIR$/empleado" />
-        <option name="gradleJvm" value="openjdk-23" />
-        <option name="modules">
-          <set>
-            <option value="$PROJECT_DIR$/empleado" />
           </set>
         </option>
       </GradleProjectSettings>

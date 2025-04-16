@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="absoluto mt-5">
+    <div class="container">
+        <!-- Título -->
+        <div class="row align-items-center">
+            <div class="col-2"></div>
+            <div class="col">
+                <h1 class="text-center mb-2">Lista de usuarios bloqueados</h1>
+            </div>
+            <div class="col-2"></div>
+        </div>
+
+        <!-- Introducir contraseña -->
+        <div class="container">
+            <h2>Lista de Empleados</h2>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="empleado : ${empleados}">
+                        <td th:text="${empleado.id}"></td>
+                        <td th:text="${empleado.nombre}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,4 +1,4 @@
-package org.pcuellar.administracionapp.dto;
+package org.pcuellar.administracionapp.dto.Usuario;
 
 import java.util.UUID;
 import java.time.LocalDateTime;
@@ -6,7 +6,8 @@ import java.time.LocalDateTime;
 public class UsuarioDTO {
     private UUID id;
     private String nombre;
-    private String contrasena;
+    //nunca se deveria devolver la contraseña
+    //private String contrasena;
     private String email;
     private boolean estadoBloqueado = false;
     private int intentosFallidos = 0;
