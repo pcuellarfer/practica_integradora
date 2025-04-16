@@ -36,7 +36,12 @@ public class EmpleadoController {
     @PostMapping("/contrasena")
     public String guardarcontrasena(@ModelAttribute("empleado") RegistroEmpleadoDTO registroEmpleadoDTO, Model model) {
         empleadoService.registrarEmpleado(registroEmpleadoDTO);
-        return "prueba";
+        return "redirect:/empleado/dashboard";
+    }
+
+    @GetMapping("/dashboard")
+    public String dashboard(Model modelo) {
+        return "Usuario/empleados/empleado-dashboard";
     }
 
 }
