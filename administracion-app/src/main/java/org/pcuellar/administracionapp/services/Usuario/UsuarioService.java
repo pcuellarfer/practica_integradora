@@ -13,6 +13,7 @@ public interface UsuarioService {
     UsuarioDTO editarUsuarioNombre(UUID id, String nombre);
     boolean eliminarUsuario(UUID id);
     UsuarioDTO buscarUsuario(UUID id);
+    boolean existeNombre(String nombre);
     List<UsuarioDTO> listarUsuarios();
     void reiniciarIntentos(UUID id);
 }

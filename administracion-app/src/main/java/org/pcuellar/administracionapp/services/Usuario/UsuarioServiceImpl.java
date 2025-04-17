@@ -52,6 +52,11 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
+    public boolean existeNombre(String nombre) {
+        return usuarioRepository.findByNombre(nombre).isPresent();
+    }
+
+    @Override
     public List<UsuarioDTO> listarUsuarios() {
         return List.of();
     }
