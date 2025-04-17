@@ -1,10 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Inicio sesion Usuario - contraseña</title>
 </head>
 <body>
-<h1>formulario contrasena</h1>
+<form th:action="@{/iniciosesion/procesarContrasena}" method="post">
+
+    <label for="contrasena">Contraseña:</label>
+    <input type="password" id="contrasena" name="contrasena" th:value="${contrasena}"/>
+
+    <button type="submit">Iniciar sesión</button>
+    <p th:if="${error}" th:text="${error}" style="color: red;"></p>
+</form>
+
 </body>
 </html>

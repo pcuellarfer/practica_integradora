@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -54,6 +55,15 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public boolean existeNombre(String nombre) {
         return usuarioRepository.findByNombre(nombre).isPresent();
+    }
+
+    @Override
+    public boolean validarNombreContrasena(String nombre, String contrasena) {
+        Optional<Usuario> usuarioOpt = usuarioRepository.findByNombre(nombre);
+
+        return usuarioOpt
+                .map(usuario -> usuario.getContrasena().equals(contrasena)) // comparación directa
+                .orElse(false);
     }
 
     @Override
