@@ -3,7 +3,6 @@ package org.pcuellar.administracionapp.services.Empleado;
 import org.modelmapper.ModelMapper;
 import org.pcuellar.administracionapp.dto.Empleado.EmpleadoDTO;
 import org.pcuellar.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
-import org.pcuellar.administracionapp.dto.Usuario.UsuarioDTO;
 import org.pcuellar.administracionapp.entity.Empleado;
 import org.pcuellar.administracionapp.repository.EmpleadoRepository;
 import org.springframework.beans.factory.annotation.Autowired;

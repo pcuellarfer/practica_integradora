@@ -22,13 +22,13 @@ public class UsuarioController {
     @GetMapping("/registro")
     public String registro(Model modelo) {
         modelo.addAttribute("usuario", new RegistroUsuarioDTO());
-        return "Usuario/RegistroUsuario";
+        return "Usuario/auth/RegistroUsuario";
     }
 
     @PostMapping("/registrar")
     public String registrarUsuario(@ModelAttribute("usuario") RegistroUsuarioDTO registroUsuarioDTO, Model model) {
         usuarioService.registrarUsuario(registroUsuarioDTO);
-        return "prueba";
+        return "Usuario/empleados/empleado-dashboard";
 
     }
 
