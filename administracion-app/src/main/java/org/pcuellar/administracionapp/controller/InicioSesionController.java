@@ -17,7 +17,7 @@ public class InicioSesionController {
 
     @GetMapping("/nombre")
     public String mostrarFormularioNombre(Model model) {
-        return "Usuario/auth/InicioSesionNombre";
+        return "Usuario/auth/login-nombre";
     }
 
     @PostMapping("/procesarNombre")
@@ -27,7 +27,7 @@ public class InicioSesionController {
             return "redirect:/iniciosesion/contrasena";
         }else{
          model.addAttribute("error", "No existe usuario con ese nombre");
-         return "Usuario/auth/InicioSesionNombre";
+         return "Usuario/auth/login-nombre";
         }
     }
 
@@ -36,7 +36,7 @@ public class InicioSesionController {
         if(susuario == null || susuario.isBlank()) {
             return "redirect:/iniciosesion/nombre";
         }
-        return "Usuario/auth/InicioSesionContrasena";
+        return "Usuario/auth/login-contrasena";
     }
 
     @PostMapping("/procesarContrasena")
@@ -54,7 +54,7 @@ public class InicioSesionController {
         }else{
             sessionStatus.setComplete();
             model.addAttribute("error", "Contraseña incorrecta.");
-            return "redirect:/iniciosesion/nombre";
+            return "Usuario/auth/login-contrasena";
         }
     }
 
