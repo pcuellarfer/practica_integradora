@@ -19,7 +19,7 @@
             <div class="col-2"></div>
         </div>
         <!-- Vincula el formulario al objeto "usuario" del modelo -->
-        <form th:action="@{/empleado/registro}" th:object="${empleado}" method="post">
+        <form th:action="@{/empleado/login}" th:object="${empleado}" method="post">
             <div class="mb-3">
                 <label for="nombre" class="form-label">Usuario:</label>
                 <input type="text" id="nombre" name="nombre" class="form-control" th:field="*{nombre}">

@@ -1,53 +1,73 @@
 package org.pcuellar.administracionapp.services.Empleado;
 
-import org.modelmapper.ModelMapper;
+import org.pcuellar.administracionapp.Model.Empleado;
 import org.pcuellar.administracionapp.dto.Empleado.EmpleadoDTO;
-import org.pcuellar.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
-import org.pcuellar.administracionapp.entity.Empleado;
 import org.pcuellar.administracionapp.repository.EmpleadoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
-public class EmpleadoServiceImpl implements EmpleadoService{
+public class EmpleadoServiceImpl implements EmpleadoService {
 
-    @Autowired
-    private EmpleadoRepository empleadoRepository;
+    private final EmpleadoRepository empleadoRepository;
 
-    private final ModelMapper modelMapper = new ModelMapper();
+    public EmpleadoServiceImpl(EmpleadoRepository empleadoRepository) {
+        this.empleadoRepository = empleadoRepository;
+    }
 
     @Override
-    public EmpleadoDTO registrarEmpleado(RegistroEmpleadoDTO registroEmpleadoDTO) {
+    public EmpleadoDTO registrarEmpleado(Empleado empleado) {
+        org.pcuellar.administracionapp.entity.Empleado nuevoEmpleado = new org.pcuellar.administracionapp.entity.Empleado();
+        BeanUtils.copyProperties(empleado, nuevoEmpleado);
+        org.pcuellar.administracionapp.entity.Empleado guardado = empleadoRepository.save(nuevoEmpleado);
 
-        //devuelve empleado DTO con mucho NULL
-        Empleado empleado = modelMapper.map(registroEmpleadoDTO, Empleado.class);
-        //Empleado empleado = convertToEntity(registroEmpleadoDTO);
-        empleado = empleadoRepository.save(empleado);
-
-        return modelMapper.map(empleado, EmpleadoDTO.class);
+        EmpleadoDTO resultado = new EmpleadoDTO();
+        BeanUtils.copyProperties(guardado, resultado);
+        return resultado;
     }
 
     @Override
     public EmpleadoDTO editarEmpleado(UUID id, EmpleadoDTO dto) {
-        return null;
+        Optional<org.pcuellar.administracionapp.entity.Empleado> opt = empleadoRepository.findById(id);
+        if (opt.isEmpty()) return null;
+
+        org.pcuellar.administracionapp.entity.Empleado empleado = opt.get();
+        BeanUtils.copyProperties(dto, empleado);
+        org.pcuellar.administracionapp.entity.Empleado actualizado = empleadoRepository.save(empleado);
+
+        EmpleadoDTO resultado = new EmpleadoDTO();
+        BeanUtils.copyProperties(actualizado, resultado);
+        return resultado;
     }
 
     @Override
     public boolean eliminarEmpleado(UUID id) {
-        return false;
+        if (!empleadoRepository.existsById(id)) return false;
+        empleadoRepository.deleteById(id);
+        return true;
     }
 
     @Override
     public EmpleadoDTO buscarEmpleado(UUID id) {
-        return null;
+        return empleadoRepository.findById(id)
+                .map(emp -> {
+                    EmpleadoDTO dto = new EmpleadoDTO();
+                    BeanUtils.copyProperties(emp, dto);
+                    return dto;
+                }).orElse(null);
     }
 
     @Override
     public List<EmpleadoDTO> listarEmpleados() {
-        return List.of();
+        return empleadoRepository.findAll().stream().map(emp -> {
+            EmpleadoDTO dto = new EmpleadoDTO();
+            BeanUtils.copyProperties(emp, dto);
+            return dto;
+        }).collect(Collectors.toList());
     }
 }
