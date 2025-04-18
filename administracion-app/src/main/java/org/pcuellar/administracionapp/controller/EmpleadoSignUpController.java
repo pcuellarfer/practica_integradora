@@ -1,7 +1,7 @@
 package org.pcuellar.administracionapp.controller;
 
 import jakarta.servlet.http.HttpSession;
-import org.pcuellar.administracionapp.Model.Empleado;
+import org.pcuellar.administracionapp.dto.Empleado.EmpleadoDTO;
 import org.pcuellar.administracionapp.services.Empleado.EmpleadoService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,12 +37,12 @@ public class EmpleadoSignUpController {
      * @return El objeto Empleado de la sesión.
      */
     @ModelAttribute("empleado")
-    public Empleado getEmpleado(HttpSession session) {
-        Empleado empleado = (Empleado) session.getAttribute("empleado");
-        if (empleado == null) {
-            empleado = new Empleado();
+    public EmpleadoDTO getEmpleado(HttpSession session) {
+        EmpleadoDTO empleadoDTO = (EmpleadoDTO) session.getAttribute("empleado");
+        if (empleadoDTO == null) {
+            empleadoDTO = new EmpleadoDTO();
         }
-        return empleado;
+        return empleadoDTO;
     }
 
     /**
@@ -71,7 +71,7 @@ public class EmpleadoSignUpController {
      * Método que guarda los datos básicos del empleado (nombre, email) después de la validación.
      * Si hay errores en los datos, redirige al formulario de registro.
      *
-     * @param empleado Los datos del empleado a guardar.
+     * @param empleadoDTO Los datos del empleado a guardar.
      * @param nombre El nombre del empleado.
      * @param email El email del empleado.
      * @param result Resultado de la validación de los datos del empleado.
@@ -80,7 +80,7 @@ public class EmpleadoSignUpController {
      * @return La URL de redirección según el resultado de la validación.
      */
     @PostMapping("/signup")
-    public String guardarDatosEmpleado(@ModelAttribute("empleado") Empleado empleado,
+    public String guardarDatosEmpleado(@ModelAttribute("empleado") EmpleadoDTO empleadoDTO,
                                        @RequestParam String nombre,
                                        @RequestParam String email,
                                        @Validated BindingResult result,
@@ -103,7 +103,7 @@ public class EmpleadoSignUpController {
 
         // En lugar de agregar el empleado directamente a la sesión,
         // creamos un nuevo objeto cada vez
-        session.setAttribute("empleado", new Empleado());
+        session.setAttribute("empleado", new EmpleadoDTO());
 
         return "redirect:/empleado/signup-password";
     }
@@ -112,13 +112,13 @@ public class EmpleadoSignUpController {
      * Método que muestra la vista para ingresar la contraseña del empleado.
      * Si el empleado no está registrado o tiene campos vacíos, redirige al formulario de registro.
      *
-     * @param empleado El objeto empleado que contiene los datos ingresados.
+     * @param empleadoDTO El objeto empleado que contiene los datos ingresados.
      * @param model El modelo para pasar datos a la vista.
      * @return La vista para ingresar la contraseña o redirección al registro si hay problemas.
      */
     @GetMapping("/signup-password")
-    public String mostrarLoginContrasena(@ModelAttribute("empleado") Empleado empleado, Model model) {
-        if (empleado == null || empleado.getNombre().isBlank()) {
+    public String mostrarLoginContrasena(@ModelAttribute("empleado") EmpleadoDTO empleadoDTO, Model model) {
+        if (empleadoDTO == null || empleadoDTO.getNombre().isBlank()) {
             return "redirect:/empleado/signup";
         }
         return "empleado/auth/signUp-empleado-passwd";
@@ -129,19 +129,19 @@ public class EmpleadoSignUpController {
      * Si la contraseña es válida, guarda al empleado en la base de datos y redirige al dashboard del empleado.
      * Si hay errores, muestra un mensaje de error.
      *
-     * @param empleado El objeto empleado con los datos registrados.
+     * @param empleadoDTO El objeto empleado con los datos registrados.
      * @param contrasena La contraseña introducida por el usuario.
      * @param model El modelo para pasar mensajes de error a la vista.
      * @param sessionStatus El estado de la sesión que se completa si todo es exitoso.
      * @return La URL de redirección al dashboard o al formulario de contraseña con error.
      */
     @PostMapping("/signup-password")
-    public String procesarLoginContrasena(@ModelAttribute("empleado") Empleado empleado,
+    public String procesarLoginContrasena(@ModelAttribute("empleado") EmpleadoDTO empleadoDTO,
                                           @RequestParam String contrasena,
                                           Model model,
                                           SessionStatus sessionStatus) {
 
-        if (empleado == null || empleado.getNombre().isBlank()) {
+        if (empleadoDTO == null || empleadoDTO.getNombre().isBlank()) {
             return "redirect:/empleado/login";
         }
 
@@ -151,10 +151,10 @@ public class EmpleadoSignUpController {
         }
 
         // Asignamos la contraseña al empleado
-        empleado.setContrasena(contrasena);
+        empleadoDTO.setContrasena(contrasena);
 
         // Guardamos el empleado en la base de datos a través del servicio
-        empleadoService.registrarEmpleado(empleado);
+        empleadoService.registrarEmpleado(empleadoDTO);
 
         // Limpia la sesión una vez el empleado esté registrado
         sessionStatus.setComplete();

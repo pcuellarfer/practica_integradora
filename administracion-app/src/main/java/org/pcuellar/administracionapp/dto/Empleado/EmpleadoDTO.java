@@ -1,14 +1,18 @@
 package org.pcuellar.administracionapp.dto.Empleado;
 
-import org.pcuellar.administracionapp.dto.NominaDTO;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
-import java.math.BigDecimal;
-import java.util.UUID;
-
+@Getter
+@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class EmpleadoDTO {
-    private UUID id;
-    private String departamento;
-    private String puesto;
-    private BigDecimal salario;
-    private NominaDTO nomina;
+    @NotNull(message = "El nombre no puede estar vacio")
+    private String nombre = " ";
+    @NotNull
+    private String email;
+    @NotNull
+    private String contrasena;
 }
