@@ -20,6 +20,6 @@ public class DashboardController {
         }
 
         model.addAttribute("usuario", susuario);
-        return "empleadoDetalle";
+        return "empleado/main/empleadoDetalle";
     }
 }

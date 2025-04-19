@@ -7,7 +7,7 @@
 <body>
 <p>Sesión iniciada como: <span th:text="${susuario.nombre}">Nombre del Empleado</span></p>
 
-<a href="/usuario/detalle">Ver mis detalles</a>
+<a href="/dashboard/detalle">Ver mis detalles</a>
 
 <form th:action="@{/login/logout}" method="get">
     <button type="submit">Cerrar sesión</button>
