@@ -1,18 +1,13 @@
 package org.pcuellar.administracionapp.dto.Empleado;
 
-import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
+import org.pcuellar.administracionapp.dto.Usuario.UsuarioDTO;
 
 @Getter
 @Setter
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class EmpleadoDTO {
-    @NotNull(message = "El nombre no puede estar vacio")
-    private String nombre = " ";
-    @NotNull
-    private String email;
-    @NotNull
-    private String contrasena;
+public class EmpleadoDTO extends UsuarioDTO {
+
+
 }

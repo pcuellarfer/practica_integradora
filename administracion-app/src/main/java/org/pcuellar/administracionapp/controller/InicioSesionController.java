@@ -1,66 +1,104 @@
 package org.pcuellar.administracionapp.controller;
 
+import jakarta.servlet.http.HttpSession;
+import org.pcuellar.administracionapp.auxiliar.TipoUsuario;
+import org.pcuellar.administracionapp.dto.Empleado.EmpleadoDTO;
+import org.pcuellar.administracionapp.dto.Usuario.UsuarioDTO;
 import org.pcuellar.administracionapp.services.Usuario.UsuarioService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.support.SessionStatus;
 
 @Controller
-@RequestMapping("/iniciosesion")
+@RequestMapping("/login")
 @SessionAttributes("susuario")
 public class InicioSesionController {
 
-    @Autowired
-    private UsuarioService usuarioService;
+    private final UsuarioService usuarioService;
 
-    @GetMapping("/nombre")
-    public String mostrarFormularioNombre(Model model) {
-        return "Usuario/auth/login-nombre";
+    public InicioSesionController(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
     }
 
-    @PostMapping("/procesarNombre")
-    public String procesarFormularioNombre(@RequestParam("nombre") String nombre, Model model) {
-        if(usuarioService.existeNombre(nombre)) {
-            model.addAttribute("susuario", nombre);
-            return "redirect:/iniciosesion/contrasena";
-        }else{
-         model.addAttribute("error", "No existe usuario con ese nombre");
-         return "Usuario/auth/login-nombre";
+    @ModelAttribute("susuario")
+    public UsuarioDTO getUsuario(HttpSession session) {
+        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("susuario");
+        if (usuarioDTO == null) {
+            usuarioDTO = new EmpleadoDTO();
         }
+        return usuarioDTO;
     }
 
-    @GetMapping("/contrasena")
-    public String mostrarFormularioContrasena(@ModelAttribute("susuario") String susuario, Model model) {
-        if(susuario == null || susuario.isBlank()) {
-            return "redirect:/iniciosesion/nombre";
-        }
-        return "Usuario/auth/login-contrasena";
+    @GetMapping("/logout")
+    public String cerrarSesion(HttpSession session) {
+        session.invalidate(); // Esto cierra la sesión
+        return "redirect:/login/username"; // Redirige a la página de login
     }
 
-    @PostMapping("/procesarContrasena")
-    public String procesarFormularioContrasena(@RequestParam String contrasena,
-                                               Model model,
-                                               @ModelAttribute("susuario") String susuario,
-                                               SessionStatus sessionStatus) {
-        if(susuario == null || susuario.isBlank()) {
-            return "redirect:/iniciosesion/nombre";
+    @GetMapping("/username")
+    public String mostrarFormularioNombre(@ModelAttribute("susuario") UsuarioDTO susuario) {
+        return "usuario/auth/login-nombre";
+    }
+
+    @PostMapping("/username")
+    public String procesarFormularioNombre(@ModelAttribute("susuario") UsuarioDTO usuarioDTO,
+                                           @RequestParam String nombre,
+                                           @Validated BindingResult result,
+                                           HttpSession session, Model model) {
+
+        if (result.hasErrors()) {
+            model.addAttribute("error", "Por favor, complete todos los campos requeridos.");
+            return "usuario/auth/login-nombre";
         }
 
-        if(usuarioService.validarNombreContrasena(susuario, contrasena)) {
-            sessionStatus.setComplete();
-            return "redirect:/empleado/dashboard";
-        }else{
-            sessionStatus.setComplete();
-            model.addAttribute("error", "Contraseña incorrecta.");
-            return "Usuario/auth/login-contrasena";
+        if (nombre == null || nombre.isBlank()) {
+            model.addAttribute("error", "El nombre no puede estar vacío.");
+            return "usuario/auth/login-nombre";
         }
+
+        usuarioDTO.setNombre(nombre);
+        session.setAttribute("susuario", usuarioDTO);
+
+        return "usuario/auth/login-contrasena";
+    }
+
+    @GetMapping("/password")
+    public String mostrarFormularioContrasena(@ModelAttribute("susuario") UsuarioDTO usuarioDTO) {
+        if (usuarioDTO == null || usuarioDTO.getNombre().isBlank()) {
+            return "redirect:/login/username";
+        }
+        return "usuario/auth/login-contrasena";
+    }
+
+    @PostMapping("/password")
+    public String procesarFormularioContrasena(@ModelAttribute("susuario") UsuarioDTO usuarioDTO,
+                                               @RequestParam String contrasena,
+                                               Model model) {
+        if (usuarioDTO == null || usuarioDTO.getNombre().isBlank()) {
+            return "redirect:/login/username";
+        }
+
+        if (contrasena == null || contrasena.isBlank()) {
+            model.addAttribute("error", "La contraseña no puede estar vacía.");
+            return "usuario/auth/login-contrasena";
+        }
+
+        usuarioDTO.setContrasena(contrasena);
+        usuarioService.iniciarSesion(usuarioDTO);
+
+        if (usuarioDTO.getTipoUsuario() == TipoUsuario.EMPLEADO) {
+            return "empleado/main/empleado-dashboard";
+        }
+        //TODO: Esto debe ser manejado por la clase UsuarioSignUPController
+        return "redirect:/login/dashboard";
     }
 
     @GetMapping("/dashboard")
-    public String dashboard(Model modelo) {
-        return "Usuario/empleados/empleado-dashboard";
+    public String dashboard(HttpSession session, Model model) {
+        UsuarioDTO susuario = (UsuarioDTO) session.getAttribute("susuario");
+        model.addAttribute("nombre", susuario.getNombre());
+        return "usuario/main/usuario-dashboard";
     }
-
 }
