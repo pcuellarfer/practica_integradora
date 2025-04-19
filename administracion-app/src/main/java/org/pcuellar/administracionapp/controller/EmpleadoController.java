@@ -2,7 +2,6 @@ package org.pcuellar.administracionapp.controller;
 
 
 import org.pcuellar.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
-import org.pcuellar.administracionapp.dto.Usuario.RegistroUsuarioDTO;
 import org.pcuellar.administracionapp.services.Empleado.EmpleadoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
