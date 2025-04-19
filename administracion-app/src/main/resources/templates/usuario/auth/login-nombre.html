@@ -2,8 +2,8 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8" />
-    <title>Login - Contraseña</title>
+    <meta charset="UTF-8"/>
+    <title>Login - Nombre</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" th:href="@{/css/styles.css}"/>
     <script th:src="@{/js/mostrarContrasena.js}"></script>
@@ -16,20 +16,20 @@
         <div class="row align-items-center">
             <div class="col-2"></div>
             <div class="col">
-                <h1 class="text-center mb-2">Login - Contraseña</h1>
+                <h1 class="text-center mb-2">Incio de sesion - Nombre</h1>
             </div>
             <div class="col-2"></div>
         </div>
 
         <!-- Formulario de Registro -->
-        <form th:action="@{/iniciosesion/procesarContrasena}" method="post">
+        <form th:action="@{/login/username}" method="post" th:object="${susuario}">
             <div class="mb-3">
-                <label for="contrasena" class="form-label">Contraseña</label>
-                <input type="password" id="contrasena" name="contrasena" class="form-control" th:value="${contrasena}">
+                <label for="nombre" class="form-label">Usuario:</label>
+                <input type="text" id="nombre" name="nombre" class="form-control">
             </div>
-            <input type="checkbox" id="mostrarcontrasena" onclick="mostrarContrasena()"> Mostrar contraseña
-            <button type="submit" class="btn btn-primary w-100">Inciar Sesión</button>
+            <button type="submit" class="btn btn-primary w-100">Introducir contraseña</button>
         </form>
+        <p th:if="${error}" th:text="${error}"></p>
     </div>
 </div>
 </body>

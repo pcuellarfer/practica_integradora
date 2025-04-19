@@ -76,6 +76,21 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     }
 
+    @Override
+    public UsuarioDTO getUsuario() {
+        return null;
+    }
+
+    @Override
+    public UsuarioDTO getUsuarioPorNombre(String susuario) {
+        return null;
+    }
+
+    @Override
+    public void iniciarSesion(UsuarioDTO usuarioDTO) {
+
+    }
+
     private Usuario convertToEntity (RegistroUsuarioDTO registroUsuarioDTO) {
         return modelMapper.map(registroUsuarioDTO, Usuario.class);
     }

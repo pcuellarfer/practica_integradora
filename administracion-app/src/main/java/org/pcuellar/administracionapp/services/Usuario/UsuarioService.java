@@ -17,4 +17,10 @@ public interface UsuarioService {
     boolean validarNombreContrasena(String nombre, String contrasena);
     List<UsuarioDTO> listarUsuarios();
     void reiniciarIntentos(UUID id);
+
+    UsuarioDTO getUsuario();
+
+    UsuarioDTO getUsuarioPorNombre(String susuario);
+
+    void iniciarSesion(UsuarioDTO usuarioDTO);
 }
