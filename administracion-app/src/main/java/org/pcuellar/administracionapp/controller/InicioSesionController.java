@@ -11,6 +11,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Controlador que gestiona el flujo de inicio de sesión de usuarios.
+ */
 @Controller
 @RequestMapping("/login")
 @SessionAttributes("susuario")
@@ -18,10 +21,21 @@ public class InicioSesionController {
 
     private final UsuarioService usuarioService;
 
+    /**
+     * Constructor que inyecta el servicio de usuarios.
+     *
+     * @param usuarioService servicio encargado de la lógica relacionada con usuarios.
+     */
     public InicioSesionController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
     }
 
+    /**
+     * Proporciona un objeto UsuarioDTO para almacenar en sesión si no existe ya uno.
+     *
+     * @param session la sesión HTTP actual.
+     * @return un nuevo EmpleadoDTO si no existe usuario en sesión.
+     */
     @ModelAttribute("susuario")
     public UsuarioDTO getUsuario(HttpSession session) {
         UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("susuario");
@@ -31,17 +45,39 @@ public class InicioSesionController {
         return usuarioDTO;
     }
 
+    /**
+     * Cierra la sesión actual e invalida la sesión HTTP.
+     *
+     * @param session la sesión HTTP actual.
+     * @return redirige al formulario de nombre de usuario.
+     */
     @GetMapping("/logout")
     public String cerrarSesion(HttpSession session) {
-        session.invalidate(); // Esto cierra la sesión
-        return "redirect:/login/username"; // Redirige a la página de login
+        session.invalidate();
+        return "redirect:/login/username";
     }
 
+    /**
+     * Muestra el formulario para introducir el nombre de usuario.
+     *
+     * @param susuario el usuario actual almacenado en sesión.
+     * @return vista del formulario de nombre de usuario.
+     */
     @GetMapping("/username")
     public String mostrarFormularioNombre(@ModelAttribute("susuario") UsuarioDTO susuario) {
         return "usuario/auth/login-nombre";
     }
 
+    /**
+     * Procesa el formulario de nombre de usuario.
+     *
+     * @param usuarioDTO el usuario actual de sesión.
+     * @param nombre     el nombre ingresado por el usuario.
+     * @param result     resultado de la validación.
+     * @param session    la sesión HTTP.
+     * @param model      el modelo para pasar atributos a la vista.
+     * @return la vista de contraseña si el nombre es válido, o vuelve al formulario si no lo es.
+     */
     @PostMapping("/username")
     public String procesarFormularioNombre(@ModelAttribute("susuario") UsuarioDTO usuarioDTO,
                                            @RequestParam String nombre,
@@ -64,6 +100,12 @@ public class InicioSesionController {
         return "usuario/auth/login-contrasena";
     }
 
+    /**
+     * Muestra el formulario para introducir la contraseña.
+     *
+     * @param usuarioDTO el usuario actual almacenado en sesión.
+     * @return la vista del formulario de contraseña, o redirige al formulario de nombre si el nombre no está definido.
+     */
     @GetMapping("/password")
     public String mostrarFormularioContrasena(@ModelAttribute("susuario") UsuarioDTO usuarioDTO) {
         if (usuarioDTO == null || usuarioDTO.getNombre().isBlank()) {
@@ -72,6 +114,14 @@ public class InicioSesionController {
         return "usuario/auth/login-contrasena";
     }
 
+    /**
+     * Procesa el formulario de contraseña e intenta autenticar al usuario.
+     *
+     * @param usuarioDTO el usuario actual almacenado en sesión.
+     * @param contrasena la contraseña ingresada.
+     * @param model      el modelo para pasar atributos a la vista.
+     * @return redirige al dashboard correspondiente según el tipo de usuario, o vuelve al formulario si hay error.
+     */
     @PostMapping("/password")
     public String procesarFormularioContrasena(@ModelAttribute("susuario") UsuarioDTO usuarioDTO,
                                                @RequestParam String contrasena,
@@ -91,10 +141,18 @@ public class InicioSesionController {
         if (usuarioDTO.getTipoUsuario() == TipoUsuario.EMPLEADO) {
             return "empleado/main/empleado-dashboard";
         }
-        //TODO: Esto debe ser manejado por la clase UsuarioSignUPController
+
+        // Otros tipos de usuario redirigen aquí por defecto.
         return "redirect:/login/dashboard";
     }
 
+    /**
+     * Muestra el dashboard genérico del usuario autenticado.
+     *
+     * @param session la sesión HTTP actual.
+     * @param model   el modelo para pasar atributos a la vista.
+     * @return vista del dashboard del usuario.
+     */
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
         UsuarioDTO susuario = (UsuarioDTO) session.getAttribute("susuario");
