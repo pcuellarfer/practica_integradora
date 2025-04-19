@@ -1,5 +1,7 @@
 package org.pcuellar.administracionapp.dto.Usuario;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -23,7 +25,6 @@ public class UsuarioDTO {
 
     @NotBlank(message = "La contraseña no puede estar vacía")
     private String contrasena;
-
     private TipoUsuario tipoUsuario;
     private boolean estadoBloqueado = false;
     private int intentosFallidos = 0;

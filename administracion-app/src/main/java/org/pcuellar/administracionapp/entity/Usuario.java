@@ -25,7 +25,10 @@ public class Usuario {
     private String nombre;
     private String contrasena;
     private String email;
+
+    @Enumerated(EnumType.ORDINAL)
     private TipoUsuario tipoUsuario;
+
     private boolean estadoBloqueado = false;
     private int intentosFallidos = 0;
     private LocalDateTime bloqueoFechaHora;

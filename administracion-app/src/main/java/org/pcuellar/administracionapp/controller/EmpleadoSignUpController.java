@@ -63,9 +63,13 @@ public class EmpleadoSignUpController {
      * @return El nombre de la vista de registro de empleado.
      */
     @GetMapping("/signup")
-    public String mostrarLogin() {
+    public String mostrarLogin(@ModelAttribute("empleado") EmpleadoDTO empleadoDTO) {
+        if (empleadoDTO != null && empleadoDTO.getTipoUsuario() != null) {
+            return "redirect:/empleado/dashboard";
+        }
         return "empleado/auth/signUp-empleado-user";
     }
+
 
     /**
      * Método que guarda los datos básicos del empleado (nombre, email) después de la validación.

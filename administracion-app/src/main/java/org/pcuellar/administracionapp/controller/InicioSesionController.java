@@ -65,6 +65,16 @@ public class InicioSesionController {
      */
     @GetMapping("/username")
     public String mostrarFormularioNombre(@ModelAttribute("susuario") UsuarioDTO susuario) {
+        if (susuario != null && susuario.getTipoUsuario() != null) {
+            // Redirigimos según el tipo de usuario
+            if (susuario.getTipoUsuario() == TipoUsuario.EMPLEADO) {
+                return "redirect:/empleado/dashboard";
+            } else if (susuario.getTipoUsuario() == TipoUsuario.ADMINISTRADOR) {
+                return "redirect:/admin/dashboard";
+            }
+            return "redirect:/login/dashboard";
+        }
+
         return "usuario/auth/login-nombre";
     }
 
