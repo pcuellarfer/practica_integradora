@@ -21,4 +21,6 @@ public interface UsuarioService {
     UsuarioDTO getUsuarioPorNombre(String susuario);
 
     void iniciarSesion(UsuarioDTO usuarioDTO);
+
+    UsuarioDTO buscarPorNombre(String nombre);
 }

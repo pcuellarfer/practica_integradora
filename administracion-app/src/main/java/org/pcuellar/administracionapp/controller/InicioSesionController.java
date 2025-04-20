@@ -79,14 +79,20 @@ public class InicioSesionController {
     }
 
     /**
-     * Procesa el nombre de usuario ingresado en el formulario.
+     * Procesa el formulario de ingreso del nombre de usuario durante el login.
+     * <p>
+     * Este método valida que el nombre no esté vacío y que exista un usuario con ese nombre
+     * en la base de datos. Si el usuario ya está autenticado (según su tipo), redirige directamente
+     * al dashboard correspondiente. Si el nombre es válido y existe, guarda el objeto
+     * {@link UsuarioDTO} en la sesión y redirige al formulario de ingreso de contraseña.
+     * </p>
      *
-     * @param usuarioDTO usuario actual de la sesión.
-     * @param nombre     nombre ingresado por el usuario.
-     * @param result     resultado de validaciones.
-     * @param session    sesión HTTP actual.
-     * @param model      modelo para pasar atributos a la vista.
-     * @return vista del formulario de contraseña o redirección según el estado del usuario.
+     * @param usuarioDTO el usuario actual en sesión (si existe).
+     * @param nombre el nombre ingresado por el usuario.
+     * @param result resultado de la validación.
+     * @param session la sesión HTTP actual donde se guarda el usuario autenticado.
+     * @param model el modelo para pasar atributos a la vista en caso de error.
+     * @return la vista siguiente en el proceso de login o redirección al dashboard si ya está autenticado.
      */
     @PostMapping("/username")
     public String procesarFormularioNombre(@ModelAttribute("usuario") UsuarioDTO usuarioDTO,
@@ -108,12 +114,19 @@ public class InicioSesionController {
             return "usuario/auth/login-nombre";
         }
 
-        assert usuarioDTO != null;
-        usuarioDTO.setNombre(nombre);
-        session.setAttribute("usuario", usuarioDTO);
+        // Buscar usuario por nombre en la base de datos
+        UsuarioDTO usuarioExistente = usuarioService.buscarPorNombre(nombre);
 
+        if (usuarioExistente == null) {
+            model.addAttribute("error", "No existe un usuario con ese nombre.");
+            return "usuario/auth/login-nombre";
+        }
+
+        // Guardar en sesión y avanzar
+        session.setAttribute("usuario", usuarioExistente);
         return "usuario/auth/login-contrasena";
     }
+
 
     /**
      * Muestra el formulario para introducir la contraseña del usuario.

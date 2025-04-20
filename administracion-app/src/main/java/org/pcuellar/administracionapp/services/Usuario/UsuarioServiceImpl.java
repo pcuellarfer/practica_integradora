@@ -91,6 +91,23 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     }
 
+    @Override
+    public UsuarioDTO buscarPorNombre(String nombre) {
+        return usuarioRepository.findByNombre(nombre)
+                .map(usuario -> {
+                    UsuarioDTO dto = new UsuarioDTO();
+                    dto.setId(usuario.getId());
+                    dto.setNombre(usuario.getNombre());
+                    dto.setEmail(usuario.getEmail());
+                    dto.setContrasena(usuario.getContrasena());
+                    dto.setTipoUsuario(usuario.getTipoUsuario());
+                    // Agrega aquí cualquier otro campo necesario
+                    return dto;
+                })
+                .orElse(null);
+    }
+
+
     private Usuario convertToEntity (RegistroUsuarioDTO registroUsuarioDTO) {
         return modelMapper.map(registroUsuarioDTO, Usuario.class);
     }
