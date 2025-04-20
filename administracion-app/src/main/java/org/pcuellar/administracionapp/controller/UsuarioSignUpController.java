@@ -87,6 +87,7 @@ public class UsuarioSignUpController {
                                    @RequestParam String email,
                                    @RequestParam String contrasena,
                                    @Validated BindingResult result,
+                                   HttpSession session,
                                    Model model) {
 
         if (usuarioDTO != null && usuarioDTO.getTipoUsuario() == TipoUsuario.USUARIO) {
@@ -118,6 +119,7 @@ public class UsuarioSignUpController {
         usuarioDTO.setEmail(email);
         usuarioDTO.setContrasena(contrasena);
         usuarioDTO.setTipoUsuario(TipoUsuario.USUARIO);
+        session.setAttribute("usuario", usuarioDTO);
         usuarioService.registrarUsuario(usuarioDTO);
 
         return "redirect:/usuario/dashboard";

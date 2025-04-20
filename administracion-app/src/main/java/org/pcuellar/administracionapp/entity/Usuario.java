@@ -26,7 +26,7 @@ public class Usuario {
     private String contrasena;
     private String email;
 
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private TipoUsuario tipoUsuario;
 
     private boolean estadoBloqueado = false;
