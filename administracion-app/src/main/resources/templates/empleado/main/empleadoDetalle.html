@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Mis detalles</title>
+</head>
+<body>
+
+<p><strong>nombre:</strong> <span th:text="${usuario.nombre}"></span></p>
+<p><strong>Email:</strong> <span th:text="${usuario.email}"></span></p>
+<p><strong>contraseña:</strong> <span th:text="${usuario.contrasena}"></span></p>
+<!--faltan mas campos-->
+
+<a href="/dashboard">Volver al dashboard</a>
+
+</body>
+</html>

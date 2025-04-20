@@ -16,8 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 public class UsuarioController {
 
-    @Autowired
-    private UsuarioService usuarioService;
+    private final UsuarioService usuarioService;
+
+    public UsuarioController(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
+    }
 
     @GetMapping("/registro")
     public String registro(Model modelo) {
