@@ -12,44 +12,45 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * Controlador que gestiona el flujo de inicio de sesión de usuarios.
+ * Controlador que gestiona el flujo de inicio de sesión de los usuarios,
+ * incluyendo la introducción del nombre de usuario y la contraseña, y la redirección
+ * a sus respectivos paneles según su rol.
  */
 @Controller
 @RequestMapping("/login")
-@SessionAttributes("susuario")
 public class InicioSesionController {
 
     private final UsuarioService usuarioService;
 
     /**
-     * Constructor que inyecta el servicio de usuarios.
+     * Constructor que inyecta el servicio encargado de la lógica relacionada con usuarios.
      *
-     * @param usuarioService servicio encargado de la lógica relacionada con usuarios.
+     * @param usuarioService servicio de gestión de usuarios.
      */
     public InicioSesionController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
     }
 
     /**
-     * Proporciona un objeto UsuarioDTO para almacenar en sesión si no existe ya uno.
+     * Obtiene o crea un objeto UsuarioDTO para la sesión.
      *
-     * @param session la sesión HTTP actual.
-     * @return un nuevo EmpleadoDTO si no existe usuario en sesión.
+     * @param session sesión HTTP actual.
+     * @return objeto UsuarioDTO existente en sesión o uno nuevo si no existe.
      */
-    @ModelAttribute("susuario")
+    @ModelAttribute("usuario")
     public UsuarioDTO getUsuario(HttpSession session) {
-        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("susuario");
+        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
         if (usuarioDTO == null) {
-            usuarioDTO = new EmpleadoDTO();
+            usuarioDTO = new EmpleadoDTO(); // Se instancia como Empleado por defecto
         }
         return usuarioDTO;
     }
 
     /**
-     * Cierra la sesión actual e invalida la sesión HTTP.
+     * Cierra la sesión actual e invalida los datos de sesión.
      *
-     * @param session la sesión HTTP actual.
-     * @return redirige al formulario de nombre de usuario.
+     * @param session sesión HTTP actual.
+     * @return redirección al formulario de nombre de usuario.
      */
     @GetMapping("/logout")
     public String cerrarSesion(HttpSession session) {
@@ -59,83 +60,97 @@ public class InicioSesionController {
 
     /**
      * Muestra el formulario para introducir el nombre de usuario.
+     * Si ya hay un usuario autenticado en sesión, redirige al dashboard correspondiente.
      *
-     * @param susuario el usuario actual almacenado en sesión.
-     * @return vista del formulario de nombre de usuario.
+     * @param usuario usuario almacenado en sesión.
+     * @return vista del formulario de nombre de usuario o redirección al dashboard.
      */
     @GetMapping("/username")
-    public String mostrarFormularioNombre(@ModelAttribute("susuario") UsuarioDTO susuario) {
-        if (susuario != null && susuario.getTipoUsuario() != null) {
-            // Redirigimos según el tipo de usuario
-            if (susuario.getTipoUsuario() == TipoUsuario.EMPLEADO) {
+    public String mostrarFormularioNombre(@ModelAttribute("usuario") UsuarioDTO usuario) {
+        if (usuario != null && usuario.getTipoUsuario() != null) {
+            if (usuario.getTipoUsuario() == TipoUsuario.EMPLEADO) {
                 return "redirect:/empleado/dashboard";
-            } else if (susuario.getTipoUsuario() == TipoUsuario.ADMINISTRADOR) {
+            } else if (usuario.getTipoUsuario() == TipoUsuario.ADMINISTRADOR) {
+                return "redirect:/admin/dashboard";
+            }
+            return "redirect:/login/dashboard";
+        }
+        return "usuario/auth/login-nombre";
+    }
+
+    /**
+     * Procesa el nombre de usuario ingresado en el formulario.
+     *
+     * @param usuarioDTO usuario actual de la sesión.
+     * @param nombre     nombre ingresado por el usuario.
+     * @param result     resultado de validaciones.
+     * @param session    sesión HTTP actual.
+     * @param model      modelo para pasar atributos a la vista.
+     * @return vista del formulario de contraseña o redirección según el estado del usuario.
+     */
+    @PostMapping("/username")
+    public String procesarFormularioNombre(@ModelAttribute("usuario") UsuarioDTO usuarioDTO,
+                                           @RequestParam String nombre,
+                                           @Validated BindingResult result,
+                                           HttpSession session, Model model) {
+
+        if (usuarioDTO != null && usuarioDTO.getTipoUsuario() != null) {
+            if (usuarioDTO.getTipoUsuario() == TipoUsuario.EMPLEADO) {
+                return "redirect:/empleado/dashboard";
+            } else if (usuarioDTO.getTipoUsuario() == TipoUsuario.ADMINISTRADOR) {
                 return "redirect:/admin/dashboard";
             }
             return "redirect:/login/dashboard";
         }
 
-        return "usuario/auth/login-nombre";
-    }
-
-    /**
-     * Procesa el formulario de nombre de usuario.
-     *
-     * @param usuarioDTO el usuario actual de sesión.
-     * @param nombre     el nombre ingresado por el usuario.
-     * @param result     resultado de la validación.
-     * @param session    la sesión HTTP.
-     * @param model      el modelo para pasar atributos a la vista.
-     * @return la vista de contraseña si el nombre es válido, o vuelve al formulario si no lo es.
-     */
-    @PostMapping("/username")
-    public String procesarFormularioNombre(@ModelAttribute("susuario") UsuarioDTO usuarioDTO,
-                                           @RequestParam String nombre,
-                                           @Validated BindingResult result,
-                                           HttpSession session, Model model) {
-
-        if (result.hasErrors()) {
-            model.addAttribute("error", "Por favor, complete todos los campos requeridos.");
-            return "usuario/auth/login-nombre";
-        }
-
-        if (nombre == null || nombre.isBlank()) {
+        if (result.hasErrors() || nombre == null || nombre.isBlank()) {
             model.addAttribute("error", "El nombre no puede estar vacío.");
             return "usuario/auth/login-nombre";
         }
 
+        assert usuarioDTO != null;
         usuarioDTO.setNombre(nombre);
-        session.setAttribute("susuario", usuarioDTO);
+        session.setAttribute("usuario", usuarioDTO);
 
         return "usuario/auth/login-contrasena";
     }
 
     /**
-     * Muestra el formulario para introducir la contraseña.
+     * Muestra el formulario para introducir la contraseña del usuario.
      *
-     * @param usuarioDTO el usuario actual almacenado en sesión.
-     * @return la vista del formulario de contraseña, o redirige al formulario de nombre si el nombre no está definido.
+     * @param usuarioDTO usuario actual almacenado en sesión.
+     * @return vista del formulario de contraseña o redirección al formulario de nombre si el nombre no está definido.
      */
     @GetMapping("/password")
-    public String mostrarFormularioContrasena(@ModelAttribute("susuario") UsuarioDTO usuarioDTO) {
+    public String mostrarFormularioContrasena(@ModelAttribute("usuario") UsuarioDTO usuarioDTO) {
         if (usuarioDTO == null || usuarioDTO.getNombre().isBlank()) {
             return "redirect:/login/username";
         }
+
         return "usuario/auth/login-contrasena";
     }
 
     /**
-     * Procesa el formulario de contraseña e intenta autenticar al usuario.
+     * Procesa la contraseña ingresada por el usuario e intenta autenticarlo.
      *
-     * @param usuarioDTO el usuario actual almacenado en sesión.
-     * @param contrasena la contraseña ingresada.
-     * @param model      el modelo para pasar atributos a la vista.
-     * @return redirige al dashboard correspondiente según el tipo de usuario, o vuelve al formulario si hay error.
+     * @param usuarioDTO usuario actual almacenado en sesión.
+     * @param contrasena contraseña ingresada.
+     * @param model      modelo para pasar atributos a la vista.
+     * @return redirección al dashboard según el tipo de usuario, o vista con error si la autenticación falla.
      */
     @PostMapping("/password")
-    public String procesarFormularioContrasena(@ModelAttribute("susuario") UsuarioDTO usuarioDTO,
+    public String procesarFormularioContrasena(@ModelAttribute("usuario") UsuarioDTO usuarioDTO,
                                                @RequestParam String contrasena,
                                                Model model) {
+        if (usuarioDTO != null && usuarioDTO.getTipoUsuario() != null) {
+            if (usuarioDTO.getTipoUsuario() == TipoUsuario.EMPLEADO) {
+                return "redirect:/empleado/dashboard";
+            } else if (usuarioDTO.getTipoUsuario() == TipoUsuario.ADMINISTRADOR) {
+                return "redirect:/admin/dashboard";
+            }
+            return "redirect:/login/dashboard";
+        }
+
         if (usuarioDTO == null || usuarioDTO.getNombre().isBlank()) {
             return "redirect:/login/username";
         }
@@ -152,21 +167,24 @@ public class InicioSesionController {
             return "empleado/main/empleado-dashboard";
         }
 
-        // Otros tipos de usuario redirigen aquí por defecto.
+        if (usuarioDTO.getTipoUsuario() == TipoUsuario.ADMINISTRADOR) {
+            return "admin/main/admin-dashboard";
+        }
+
         return "redirect:/login/dashboard";
     }
 
     /**
-     * Muestra el dashboard genérico del usuario autenticado.
+     * Muestra un dashboard genérico si el tipo de usuario no es específico o si se accede por defecto.
      *
-     * @param session la sesión HTTP actual.
-     * @param model   el modelo para pasar atributos a la vista.
-     * @return vista del dashboard del usuario.
+     * @param session sesión HTTP actual.
+     * @param model   modelo para pasar atributos a la vista.
+     * @return vista del dashboard genérico del usuario.
      */
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
-        UsuarioDTO susuario = (UsuarioDTO) session.getAttribute("susuario");
-        model.addAttribute("nombre", susuario.getNombre());
+        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
+        model.addAttribute("nombre", usuario.getNombre());
         return "usuario/main/usuario-dashboard";
     }
 }

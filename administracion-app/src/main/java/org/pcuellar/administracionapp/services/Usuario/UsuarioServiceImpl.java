@@ -22,7 +22,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     private final ModelMapper modelMapper = new ModelMapper();
 
     @Override
-    public UsuarioDTO registrarUsuario(RegistroUsuarioDTO registroUsuarioDTO) {
+    public UsuarioDTO registrarUsuario(UsuarioDTO registroUsuarioDTO) {
 
         //devuelve usuario DTO con mucho NULL
         Usuario usuario = modelMapper.map(registroUsuarioDTO, Usuario.class);

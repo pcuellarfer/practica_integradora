@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
  */
 @Controller
 @RequestMapping("/empleado")
-@SessionAttributes("empleado")
 public class EmpleadoSignUpController {
 
     private final EmpleadoService empleadoService;
@@ -58,14 +57,19 @@ public class EmpleadoSignUpController {
     }
 
     /**
-     * Método que muestra la vista de registro del empleado.
+     * Muestra el formulario de registro para empleados.
+     * <p>
+     * Si ya existe una sesión activa con un {@link EmpleadoDTO} válido y su tipo de usuario está definido,
+     * redirige automáticamente al dashboard del empleado, evitando que el usuario acceda nuevamente al
+     * formulario de registro.
      *
-     * @return El nombre de la vista de registro de empleado.
+     * @param empleadoDTO el objeto del empleado almacenado en la sesión, inyectado mediante {@code @ModelAttribute}.
+     * @return la vista del formulario de registro de empleado si no hay sesión activa, o redirección al dashboard en caso contrario.
      */
     @GetMapping("/signup")
     public String mostrarLogin(@ModelAttribute("empleado") EmpleadoDTO empleadoDTO) {
         if (empleadoDTO != null && empleadoDTO.getTipoUsuario() != null) {
-            return "redirect:/empleado/dashboard";
+            return "redirect:/empleado/main/empleado-dashboard";
         }
         return "empleado/auth/signUp-empleado-user";
     }
