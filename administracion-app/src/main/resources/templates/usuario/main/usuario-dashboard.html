@@ -5,9 +5,9 @@
     <title>Usuario dashboard</title>
 </head>
 <body>
-<p>Sesión iniciada como: <span th:text="${usuario.nombre}">Nombre del Empleado</span></p>
+<p>Sesión iniciada como: <span th:text="${email}"></span></p>
 
-<a href="/dashboard/detalle">Ver mis detalles</a>
+<p>parece que aun no eres empleado, <a href="/empleado/signup">REGISTRATE.</a></p>
 
 <form th:action="@{/login/logout}" method="get">
     <button type="submit">Cerrar sesión</button>

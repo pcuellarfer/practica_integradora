@@ -58,6 +58,13 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
+    public boolean existePorEmail(String email) {
+        return usuarioRepository.findByEmail(email).isPresent();
+    }
+
+
+
+    @Override
     public boolean validarNombreContrasena(String nombre, String contrasena) {
         Optional<Usuario> usuarioOpt = usuarioRepository.findByNombre(nombre);
 

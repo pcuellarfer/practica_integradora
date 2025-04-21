@@ -12,6 +12,7 @@ public interface UsuarioService {
     boolean eliminarUsuario(UUID id);
     UsuarioDTO buscarUsuario(UUID id);
     boolean existeNombre(String nombre);
+    boolean existePorEmail(String email);
     boolean validarNombreContrasena(String nombre, String contrasena);
     List<UsuarioDTO> listarUsuarios();
     void reiniciarIntentos(UUID id);
