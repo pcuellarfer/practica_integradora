@@ -24,17 +24,12 @@
         <!-- Formulario de Registro -->
         <form th:action="@{/usuario/signup}" th:object="${usuario}" method="post">
             <div class="mb-3">
-                <label for="nombre" class="form-label">Usuario:</label>
-                <input type="text" id="nombre" name="nombre" class="form-control" th:field="*{nombre}">
-                <span class="error-message" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></span>
-            </div>
-            <div class="mb-3">
-                <label for="nombre" class="form-label">Correo electrónico:</label>
+                <label for="email" class="form-label">Correo electrónico:</label>
                 <input type="text" id="email" name="email" class="form-control" th:field="*{email}">
                 <span class="error-message" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
             </div>
             <div class="mb-3">
-                <label for="nombre" class="form-label">Contraseña</label>
+                <label for="contrasena" class="form-label">Contraseña</label>
                 <input type="password" id="contrasena" name="email" class="form-control" th:field="*{contrasena}">
                 <span class="error-message" th:if="${#fields.hasErrors('contrasena')}" th:errors="*{contrasena}"></span>
             </div>
