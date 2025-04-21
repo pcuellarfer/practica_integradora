@@ -14,7 +14,7 @@ public class RegistroEmpleadoDTO {
     //parte personal
     private String nombre;
     private String apellido;
-    private Date fechaNacimiento;
+    private String fechaNacimiento;
     private String genero;
 
 
