@@ -1,6 +1,7 @@
 package org.pcuellar.administracionapp.services.Usuario;
 
 import org.pcuellar.administracionapp.dto.Usuario.UsuarioDTO;
+import org.pcuellar.administracionapp.entity.Usuario;
 
 import java.util.List;
 import java.util.UUID;

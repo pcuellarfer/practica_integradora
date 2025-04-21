@@ -3,6 +3,7 @@ package org.pcuellar.administracionapp.services.Empleado;
 import java.util.UUID;
 
 import org.pcuellar.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
+import org.pcuellar.administracionapp.dto.Usuario.UsuarioDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,7 +21,8 @@ public interface EmpleadoService {
      *
      * @param registroEmpleadoDTO Objeto con los datos del empleado a registrar.
      */
-    void registrarEmpleado(RegistroEmpleadoDTO registroEmpleadoDTO);
+    void registrarEmpleado(RegistroEmpleadoDTO registroEmpleadoDTO, UsuarioDTO usuarioDTO);
+
 
     /**
      * Edita los datos de un empleado existente.

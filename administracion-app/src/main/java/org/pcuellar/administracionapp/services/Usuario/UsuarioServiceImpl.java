@@ -33,6 +33,12 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
+    public Usuario buscarPorId(UUID id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    }
+
+    @Override
     public UsuarioDTO editarUsuarioEmail(UUID id, String email) {
         return null;
     }

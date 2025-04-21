@@ -1,10 +1,18 @@
 package org.pcuellar.administracionapp.services.Empleado;
 
+import org.modelmapper.ModelMapper;
 import org.pcuellar.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
+import org.pcuellar.administracionapp.dto.Usuario.UsuarioDTO;
+import org.pcuellar.administracionapp.entity.Empleado;
+import org.pcuellar.administracionapp.entity.Usuario;
 import org.pcuellar.administracionapp.repository.EmpleadoRepository;
+import org.pcuellar.administracionapp.repository.UsuarioRepository;
+import org.pcuellar.administracionapp.services.Usuario.UsuarioService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -18,32 +26,33 @@ import java.util.stream.Collectors;
 @Service
 public class EmpleadoServiceImpl implements EmpleadoService {
 
-    private final EmpleadoRepository empleadoRepository;
 
-    /**
-     * Constructor que inyecta el repositorio de empleados.
-     *
-     * @param empleadoRepository repositorio para acceso a datos de empleados.
-     */
-    public EmpleadoServiceImpl(EmpleadoRepository empleadoRepository) {
+    private final EmpleadoRepository empleadoRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final ModelMapper modelMapper;
+
+    @Autowired
+    public EmpleadoServiceImpl(EmpleadoRepository empleadoRepository, UsuarioService usuarioService, ModelMapper modelMapper) {
         this.empleadoRepository = empleadoRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.modelMapper = modelMapper;
     }
 
-    /**
-     * Registra un nuevo empleado en la base de datos.
-     * No retorna el objeto persistido ya que es un método void.
-     *
-     * @param registroEmpleadoDTO datos del empleado a registrar.
-     */
     @Override
-    public void registrarEmpleado(RegistroEmpleadoDTO registroEmpleadoDTO) {
-        org.pcuellar.administracionapp.entity.Empleado nuevoEmpleado = new org.pcuellar.administracionapp.entity.Empleado();
-        BeanUtils.copyProperties(registroEmpleadoDTO, nuevoEmpleado);
-        org.pcuellar.administracionapp.entity.Empleado guardado = empleadoRepository.save(nuevoEmpleado);
+    public void registrarEmpleado(RegistroEmpleadoDTO registroEmpleadoDTO, UsuarioDTO usuarioDTO) {
+        // Obtener el usuario de la base de datos
+        Usuario usuario = usuarioRepository.findById(usuarioDTO.getId())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        // Copia de datos al DTO (no se utiliza el resultado en este método)
-        RegistroEmpleadoDTO resultado = new RegistroEmpleadoDTO();
-        BeanUtils.copyProperties(guardado, resultado);
+        // Mapear DTO a entidad
+        Empleado empleado = modelMapper.map(registroEmpleadoDTO, Empleado.class);
+
+        // Campos que no están en el DTO
+        empleado.setFechaContratacion(LocalDateTime.now());
+        empleado.setUsuario(usuario);
+
+        // Guardar empleado
+        empleadoRepository.save(empleado);
     }
 
     /**
