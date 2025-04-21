@@ -41,7 +41,7 @@ public class InicioSesionController {
     public UsuarioDTO getUsuario(HttpSession session) {
         UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
         if (usuarioDTO == null) {
-            usuarioDTO = new RegistroEmpleadoDTO(); // Se instancia como Empleado por defecto
+            //usuarioDTO = new RegistroEmpleadoDTO(); // Se instancia como Empleado por defecto
         }
         return usuarioDTO;
     }

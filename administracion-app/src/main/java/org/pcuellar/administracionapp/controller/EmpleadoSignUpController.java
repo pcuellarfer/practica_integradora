@@ -17,9 +17,19 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequestMapping("/empleado")
 public class EmpleadoSignUpController {
+
     @GetMapping("/registro")
-    public String mostrarFormularioPersonal(Model model) {
-        model.addAttribute("registroEmpleadoDTO", new RegistroEmpleadoDTO());
+    public String mostrarFormularioPersonal(Model modelo) {
+        modelo.addAttribute("registroEmpleadoDTO", new RegistroEmpleadoDTO());
         return "empleado/auth/FormDatosPersonales";
+    }
+
+    @PostMapping("/registro")
+    public String guardarDatosPersonales(
+            @ModelAttribute("registroEmpleadoDTO") RegistroEmpleadoDTO registroEmpleadoDTO,
+            HttpSession sesion)
+    {
+        sesion.setAttribute("empleado_personal", registroEmpleadoDTO);
+        return "redirect:/empleado/registro/empresarial";
     }
 }
