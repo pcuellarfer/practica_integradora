@@ -31,6 +31,7 @@ public class Empleado{
 
     private String departamento;
     private String puesto;
+
     private BigDecimal salario;
 
     @Column(name = "fecha_contratacion")
