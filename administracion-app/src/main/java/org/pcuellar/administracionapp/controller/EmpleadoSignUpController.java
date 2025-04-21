@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpSession;
 import org.pcuellar.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
 import org.pcuellar.administracionapp.dto.Usuario.UsuarioDTO;
 import org.pcuellar.administracionapp.services.Empleado.EmpleadoService;
-import org.pcuellar.administracionapp.auxiliar.TipoUsuario;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,7 +21,7 @@ public class EmpleadoSignUpController {
 
     private final EmpleadoService empleadoService;
 
-    public EmpleadoSignUpController(@Qualifier("empleadoService") EmpleadoService empleadoService) {
+    public EmpleadoSignUpController(EmpleadoService empleadoService) {
         this.empleadoService = empleadoService;
     }
 
@@ -88,6 +87,25 @@ public class EmpleadoSignUpController {
 
         sesion.removeAttribute("empleado_personal");
 
-        return "redirect:/usuario/dashboard";
+        return "redirect:/empleado/dashboard";
     }
+
+    @GetMapping("/dashboard")
+    public String dashboard(
+            HttpSession sesion,
+            Model modelo) {
+        UsuarioDTO usuarioDTO = (UsuarioDTO) sesion.getAttribute("usuario");
+
+        if (usuarioDTO == null) {
+            return "redirect:/usuario/signup";
+        }
+
+        RegistroEmpleadoDTO empleadoDTO = empleadoService.buscarEmpleadoPorUsuarioId(usuarioDTO.getId());
+
+        modelo.addAttribute("usuario", usuarioDTO);
+        modelo.addAttribute("empleado", empleadoDTO);
+
+        return "empleado/main/empleado-dashboard";
+    }
+
 }

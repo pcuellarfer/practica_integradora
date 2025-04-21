@@ -8,6 +8,9 @@ import java.util.UUID;
 
 public interface UsuarioService {
     UsuarioDTO registrarUsuario(UsuarioDTO registroUsuarioDTO);
+
+    Usuario buscarPorId(UUID id);
+
     UsuarioDTO editarUsuarioEmail(UUID id, String email);
     UsuarioDTO editarUsuarioNombre(UUID id, String nombre);
     boolean eliminarUsuario(UUID id);

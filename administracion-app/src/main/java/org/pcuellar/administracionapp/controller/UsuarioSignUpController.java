@@ -57,10 +57,8 @@ public class UsuarioSignUpController {
         usuarioDTO.setEmail(registroUsuarioDTO.getEmail());
         usuarioDTO.setContrasena(registroUsuarioDTO.getContrasena());
 
-        usuarioService.registrarUsuario(usuarioDTO);
-
-        //guarda el usuario creado en la sesion para luego
-        sesion.setAttribute("usuario", usuarioDTO);
+        UsuarioDTO registrado = usuarioService.registrarUsuario(usuarioDTO);
+        sesion.setAttribute("usuario", registrado);
 
         return "redirect:/usuario/dashboard";
     }

@@ -55,4 +55,6 @@ public interface EmpleadoService {
      * @return Una lista con todos los empleados.
      */
     List<RegistroEmpleadoDTO> listarEmpleados();
+
+    public RegistroEmpleadoDTO buscarEmpleadoPorUsuarioId(UUID usuarioId);
 }

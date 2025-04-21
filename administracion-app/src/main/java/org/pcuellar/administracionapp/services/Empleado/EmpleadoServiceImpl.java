@@ -27,15 +27,28 @@ import java.util.stream.Collectors;
 public class EmpleadoServiceImpl implements EmpleadoService {
 
 
+    private final ModelMapper modelMapper = new ModelMapper();
+
     private final EmpleadoRepository empleadoRepository;
     private final UsuarioRepository usuarioRepository;
-    private final ModelMapper modelMapper;
+
 
     @Autowired
-    public EmpleadoServiceImpl(EmpleadoRepository empleadoRepository, UsuarioService usuarioService, ModelMapper modelMapper) {
+    public EmpleadoServiceImpl(EmpleadoRepository empleadoRepository, UsuarioRepository usuarioRepository) {
         this.empleadoRepository = empleadoRepository;
         this.usuarioRepository = usuarioRepository;
-        this.modelMapper = modelMapper;
+    }
+
+    public RegistroEmpleadoDTO buscarEmpleadoPorUsuarioId(UUID usuarioId) {
+        Optional<Empleado> empleadoOpt = empleadoRepository.findByUsuarioId(usuarioId);
+
+        if (empleadoOpt.isPresent()) {
+            RegistroEmpleadoDTO dto = new RegistroEmpleadoDTO();
+            BeanUtils.copyProperties(empleadoOpt.get(), dto);
+            return dto;
+        }
+
+        return null;
     }
 
     @Override
