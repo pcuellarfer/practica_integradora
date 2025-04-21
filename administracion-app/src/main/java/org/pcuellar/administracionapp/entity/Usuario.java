@@ -13,10 +13,13 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter @Setter
+
 @Entity
 @Table(name = "usuario")
 @Inheritance(strategy = InheritanceType.JOINED)
+
 public class Usuario {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "PK_usuario")
@@ -30,7 +33,11 @@ public class Usuario {
     private TipoUsuario tipoUsuario;
 
     private boolean estadoBloqueado = false;
-    private int intentosFallidos = 0;
     private LocalDateTime bloqueoFechaHora;
     private String motivoBloqueo;
+
+    //no lo pide José Ramon pero se podria usar  "cascade = CascadeType.ALL"
+    //para que cuando borre un usuario se borre su empleado
+    @OneToOne(mappedBy = "usuario")
+    private Empleado empleado;
 }
