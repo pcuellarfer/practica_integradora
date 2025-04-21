@@ -32,4 +32,19 @@ public class EmpleadoSignUpController {
         sesion.setAttribute("empleado_personal", registroEmpleadoDTO);
         return "redirect:/empleado/registro/empresarial";
     }
+
+    @GetMapping("/registro/empresarial")
+    public String mostrarFormularioEmpresarial(
+            Model modelo,
+            HttpSession sesion) {
+
+        RegistroEmpleadoDTO registroEmpleadoDTO = (RegistroEmpleadoDTO) sesion.getAttribute("empleado_personal");
+
+        if (registroEmpleadoDTO == null) {
+            return "redirect:/empleado/registro";
+        }
+
+        modelo.addAttribute("registroEmpleadoDTO", registroEmpleadoDTO);
+        return "empleado/auth/FormDatosEmpresariales";
+    }
 }
