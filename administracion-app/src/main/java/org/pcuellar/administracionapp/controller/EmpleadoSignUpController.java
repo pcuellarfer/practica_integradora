@@ -1,7 +1,7 @@
 package org.pcuellar.administracionapp.controller;
 
 import jakarta.servlet.http.HttpSession;
-import org.pcuellar.administracionapp.dto.Empleado.EmpleadoDTO;
+import org.pcuellar.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
 import org.pcuellar.administracionapp.services.Empleado.EmpleadoService;
 import org.pcuellar.administracionapp.auxiliar.TipoUsuario;
 import org.springframework.stereotype.Controller;
@@ -36,12 +36,12 @@ public class EmpleadoSignUpController {
      * @return El objeto Empleado de la sesión.
      */
     @ModelAttribute("empleado")
-    public EmpleadoDTO getEmpleado(HttpSession session) {
-        EmpleadoDTO empleadoDTO = (EmpleadoDTO) session.getAttribute("empleado");
-        if (empleadoDTO == null) {
-            empleadoDTO = new EmpleadoDTO();
+    public RegistroEmpleadoDTO getEmpleado(HttpSession session) {
+        RegistroEmpleadoDTO registroEmpleadoDTO = (RegistroEmpleadoDTO) session.getAttribute("empleado");
+        if (registroEmpleadoDTO == null) {
+            registroEmpleadoDTO = new RegistroEmpleadoDTO();
         }
-        return empleadoDTO;
+        return registroEmpleadoDTO;
     }
 
     /**
@@ -59,16 +59,16 @@ public class EmpleadoSignUpController {
     /**
      * Muestra el formulario de registro para empleados.
      * <p>
-     * Si ya existe una sesión activa con un {@link EmpleadoDTO} válido y su tipo de usuario está definido,
+     * Si ya existe una sesión activa con un {@link RegistroEmpleadoDTO} válido y su tipo de usuario está definido,
      * redirige automáticamente al dashboard del empleado, evitando que el usuario acceda nuevamente al
      * formulario de registro.
      *
-     * @param empleadoDTO el objeto del empleado almacenado en la sesión, inyectado mediante {@code @ModelAttribute}.
+     * @param registroEmpleadoDTO el objeto del empleado almacenado en la sesión, inyectado mediante {@code @ModelAttribute}.
      * @return la vista del formulario de registro de empleado si no hay sesión activa, o redirección al dashboard en caso contrario.
      */
     @GetMapping("/signup")
-    public String mostrarLogin(@ModelAttribute("empleado") EmpleadoDTO empleadoDTO) {
-        if (empleadoDTO != null && empleadoDTO.getTipoUsuario() != null) {
+    public String mostrarLogin(@ModelAttribute("empleado") RegistroEmpleadoDTO registroEmpleadoDTO) {
+        if (registroEmpleadoDTO != null && registroEmpleadoDTO.getTipoUsuario() != null) {
             return "redirect:/empleado/main/empleado-dashboard";
         }
         return "empleado/auth/signUp-empleado-user";
@@ -79,7 +79,7 @@ public class EmpleadoSignUpController {
      * Método que guarda los datos básicos del empleado (nombre, email) después de la validación.
      * Si hay errores en los datos, redirige al formulario de registro.
      *
-     * @param empleadoDTO Los datos del empleado a guardar.
+     * @param registroEmpleadoDTO Los datos del empleado a guardar.
      * @param nombre      El nombre del empleado.
      * @param email       El email del empleado.
      * @param result      Resultado de la validación de los datos del empleado.
@@ -88,7 +88,7 @@ public class EmpleadoSignUpController {
      * @return La URL de redirección según el resultado de la validación.
      */
     @PostMapping("/signup")
-    public String guardarDatosEmpleado(@ModelAttribute("empleado") EmpleadoDTO empleadoDTO,
+    public String guardarDatosEmpleado(@ModelAttribute("empleado") RegistroEmpleadoDTO registroEmpleadoDTO,
                                        @RequestParam String nombre,
                                        @RequestParam String email,
                                        @Validated BindingResult result,
@@ -109,9 +109,9 @@ public class EmpleadoSignUpController {
             return "empleado/auth/signUp-empleado-user";
         }
 
-        empleadoDTO.setNombre(nombre);
-        empleadoDTO.setEmail(email);
-        session.setAttribute("empleado", empleadoDTO);
+        registroEmpleadoDTO.setNombre(nombre);
+        registroEmpleadoDTO.setEmail(email);
+        session.setAttribute("empleado", registroEmpleadoDTO);
 
         return "redirect:/empleado/signup-password";
     }
@@ -120,12 +120,12 @@ public class EmpleadoSignUpController {
      * Método que muestra la vista para ingresar la contraseña del empleado.
      * Si el empleado no está registrado o tiene campos vacíos, redirige al formulario de registro.
      *
-     * @param empleadoDTO El objeto empleado que contiene los datos ingresados.
+     * @param registroEmpleadoDTO El objeto empleado que contiene los datos ingresados.
      * @return La vista para ingresar la contraseña o redirección al registro si hay problemas.
      */
     @GetMapping("/signup-password")
-    public String mostrarLoginContrasena(@ModelAttribute("empleado") EmpleadoDTO empleadoDTO) {
-        if (empleadoDTO == null || empleadoDTO.getNombre().isBlank()) {
+    public String mostrarLoginContrasena(@ModelAttribute("empleado") RegistroEmpleadoDTO registroEmpleadoDTO) {
+        if (registroEmpleadoDTO == null || registroEmpleadoDTO.getNombre().isBlank()) {
             return "redirect:/empleado/signup";
         }
         return "empleado/auth/signUp-empleado-passwd";
@@ -136,17 +136,17 @@ public class EmpleadoSignUpController {
      * Si la contraseña es válida, guarda al empleado en la base de datos y redirige al dashboard del empleado.
      * Si hay errores, muestra un mensaje de error.
      *
-     * @param empleadoDTO   El objeto empleado con los datos registrados.
+     * @param registroEmpleadoDTO   El objeto empleado con los datos registrados.
      * @param contrasena    La contraseña introducida por el usuario.
      * @param model         El modelo para pasar mensajes de error a la vista.
      * @return La URL de redirección al dashboard o al formulario de contraseña con error.
      */
     @PostMapping("/signup-password")
-    public String procesarLoginContrasena(@ModelAttribute("empleado") EmpleadoDTO empleadoDTO,
+    public String procesarLoginContrasena(@ModelAttribute("empleado") RegistroEmpleadoDTO registroEmpleadoDTO,
                                           @RequestParam String contrasena,
                                           Model model) {
 
-        if (empleadoDTO == null || empleadoDTO.getNombre().isBlank()) {
+        if (registroEmpleadoDTO == null || registroEmpleadoDTO.getNombre().isBlank()) {
             return "redirect:/empleado/login";
         }
 
@@ -156,11 +156,11 @@ public class EmpleadoSignUpController {
         }
 
         // Asignamos la contraseña al empleado
-        empleadoDTO.setContrasena(contrasena);
+        registroEmpleadoDTO.setContrasena(contrasena);
         // Asignamos el tipo de usuario al empleado
-        empleadoDTO.setTipoUsuario(TipoUsuario.EMPLEADO);
+        registroEmpleadoDTO.setTipoUsuario(TipoUsuario.EMPLEADO);
         // Guardamos el empleado en la base de datos a través del servicio
-        empleadoService.registrarEmpleado(empleadoDTO);
+        empleadoService.registrarEmpleado(registroEmpleadoDTO);
 
         // Redirige al dashboard del empleado
         return "redirect:/empleado/dashboard";
@@ -174,7 +174,7 @@ public class EmpleadoSignUpController {
      */
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
-        EmpleadoDTO empleado = (EmpleadoDTO) session.getAttribute("empleado");
+        RegistroEmpleadoDTO empleado = (RegistroEmpleadoDTO) session.getAttribute("empleado");
         model.addAttribute("nombre", empleado.getNombre());
         return "empleado/main/empleado-dashboard";
     }

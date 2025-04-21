@@ -1,8 +1,6 @@
 package org.pcuellar.administracionapp.controller;
 
 import jakarta.servlet.http.HttpSession;
-import org.pcuellar.administracionapp.auxiliar.TipoUsuario;
-import org.pcuellar.administracionapp.dto.Empleado.EmpleadoDTO;
 import org.pcuellar.administracionapp.dto.Usuario.RegistroUsuarioDTO;
 import org.pcuellar.administracionapp.dto.Usuario.UsuarioDTO;
 import org.pcuellar.administracionapp.services.Usuario.UsuarioService;

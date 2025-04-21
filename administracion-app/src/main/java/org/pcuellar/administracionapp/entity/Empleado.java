@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -22,6 +23,11 @@ public class Empleado{
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "PK_empleado")
     private UUID id;
+
+    private String nombre;
+    private String apellido;
+    private Date fechaNacimiento;
+    private String genero;
 
     private String departamento;
     private String puesto;
