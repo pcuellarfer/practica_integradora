@@ -1,6 +1,7 @@
 package org.pcuellar.administracionapp.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,6 +28,8 @@ public class Usuario {
 
     private String nombre;
     private String contrasena;
+
+    @Email(message = "El email no es válido.")
     private String email;
 
     @Enumerated(EnumType.STRING)
