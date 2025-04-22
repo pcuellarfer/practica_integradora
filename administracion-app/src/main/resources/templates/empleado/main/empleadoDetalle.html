@@ -5,9 +5,22 @@
 </head>
 <body>
 
-<p><strong>nombre:</strong> <span th:text="${usuario.nombre}"></span></p>
+<h1>Usuario</h1>
 <p><strong>Email:</strong> <span th:text="${usuario.email}"></span></p>
 <p><strong>contraseña:</strong> <span th:text="${usuario.contrasena}"></span></p>
+
+<h1>Empleado</h1>
+<h2>Personal</h2>
+<p><strong>Nombre:</strong> <span th:text="${empleado.nombre}"></span></p>
+<p><strong>Apellido:</strong> <span th:text="${empleado.apellido}"></span></p>
+<p><strong>Fecha de nacimiento:</strong> <span th:text="${empleado.fechaNacimiento}"></span></p>
+<p><strong>Genero:</strong> <span th:text="${empleado.genero}"></span></p>
+
+<h2>Empresarial</h2>
+<p><strong>Nombre:</strong> <span th:text="${empleado.departamento}"></span></p>
+<p><strong>Nombre:</strong> <span th:text="${empleado.puesto}"></span></p>
+
+
 <!--faltan mas campos-->
 
 <a href="/dashboard">Volver al dashboard</a>
