@@ -1,10 +1,18 @@
 package org.pcuellar.administracionapp.services.Empleado;
 
-import org.pcuellar.administracionapp.dto.Empleado.EmpleadoDTO;
+import org.modelmapper.ModelMapper;
+import org.pcuellar.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
+import org.pcuellar.administracionapp.dto.Usuario.UsuarioDTO;
+import org.pcuellar.administracionapp.entity.Empleado;
+import org.pcuellar.administracionapp.entity.Usuario;
 import org.pcuellar.administracionapp.repository.EmpleadoRepository;
+import org.pcuellar.administracionapp.repository.UsuarioRepository;
+import org.pcuellar.administracionapp.services.Usuario.UsuarioService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -18,32 +26,46 @@ import java.util.stream.Collectors;
 @Service
 public class EmpleadoServiceImpl implements EmpleadoService {
 
-    private final EmpleadoRepository empleadoRepository;
 
-    /**
-     * Constructor que inyecta el repositorio de empleados.
-     *
-     * @param empleadoRepository repositorio para acceso a datos de empleados.
-     */
-    public EmpleadoServiceImpl(EmpleadoRepository empleadoRepository) {
+    private final ModelMapper modelMapper = new ModelMapper();
+
+    private final EmpleadoRepository empleadoRepository;
+    private final UsuarioRepository usuarioRepository;
+
+
+    @Autowired
+    public EmpleadoServiceImpl(EmpleadoRepository empleadoRepository, UsuarioRepository usuarioRepository) {
         this.empleadoRepository = empleadoRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
-    /**
-     * Registra un nuevo empleado en la base de datos.
-     * No retorna el objeto persistido ya que es un método void.
-     *
-     * @param empleadoDTO datos del empleado a registrar.
-     */
-    @Override
-    public void registrarEmpleado(EmpleadoDTO empleadoDTO) {
-        org.pcuellar.administracionapp.entity.Empleado nuevoEmpleado = new org.pcuellar.administracionapp.entity.Empleado();
-        BeanUtils.copyProperties(empleadoDTO, nuevoEmpleado);
-        org.pcuellar.administracionapp.entity.Empleado guardado = empleadoRepository.save(nuevoEmpleado);
+    public RegistroEmpleadoDTO buscarEmpleadoPorUsuarioId(UUID usuarioId) {
+        Optional<Empleado> empleadoOpt = empleadoRepository.findByUsuarioId(usuarioId);
 
-        // Copia de datos al DTO (no se utiliza el resultado en este método)
-        EmpleadoDTO resultado = new EmpleadoDTO();
-        BeanUtils.copyProperties(guardado, resultado);
+        if (empleadoOpt.isPresent()) {
+            RegistroEmpleadoDTO dto = new RegistroEmpleadoDTO();
+            BeanUtils.copyProperties(empleadoOpt.get(), dto);
+            return dto;
+        }
+
+        return null;
+    }
+
+    @Override
+    public void registrarEmpleado(RegistroEmpleadoDTO registroEmpleadoDTO, UsuarioDTO usuarioDTO) {
+        // Obtener el usuario de la base de datos
+        Usuario usuario = usuarioRepository.findById(usuarioDTO.getId())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        // Mapear DTO a entidad
+        Empleado empleado = modelMapper.map(registroEmpleadoDTO, Empleado.class);
+
+        // Campos que no están en el DTO
+        empleado.setFechaContratacion(LocalDateTime.now());
+        empleado.setUsuario(usuario);
+
+        // Guardar empleado
+        empleadoRepository.save(empleado);
     }
 
     /**
@@ -54,7 +76,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
      * @return DTO con los datos actualizados, o null si no se encontró el empleado.
      */
     @Override
-    public EmpleadoDTO editarEmpleado(UUID id, EmpleadoDTO dto) {
+    public RegistroEmpleadoDTO editarEmpleado(UUID id, RegistroEmpleadoDTO dto) {
         Optional<org.pcuellar.administracionapp.entity.Empleado> opt = empleadoRepository.findById(id);
         if (opt.isEmpty()) return null;
 
@@ -62,7 +84,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         BeanUtils.copyProperties(dto, empleado);
         org.pcuellar.administracionapp.entity.Empleado actualizado = empleadoRepository.save(empleado);
 
-        EmpleadoDTO resultado = new EmpleadoDTO();
+        RegistroEmpleadoDTO resultado = new RegistroEmpleadoDTO();
         BeanUtils.copyProperties(actualizado, resultado);
         return resultado;
     }
@@ -87,10 +109,10 @@ public class EmpleadoServiceImpl implements EmpleadoService {
      * @return DTO del empleado encontrado o null si no existe.
      */
     @Override
-    public EmpleadoDTO buscarEmpleado(UUID id) {
+    public RegistroEmpleadoDTO buscarEmpleado(UUID id) {
         return empleadoRepository.findById(id)
                 .map(emp -> {
-                    EmpleadoDTO dto = new EmpleadoDTO();
+                    RegistroEmpleadoDTO dto = new RegistroEmpleadoDTO();
                     BeanUtils.copyProperties(emp, dto);
                     return dto;
                 }).orElse(null);
@@ -102,9 +124,9 @@ public class EmpleadoServiceImpl implements EmpleadoService {
      * @return lista de DTOs de empleados.
      */
     @Override
-    public List<EmpleadoDTO> listarEmpleados() {
+    public List<RegistroEmpleadoDTO> listarEmpleados() {
         return empleadoRepository.findAll().stream().map(emp -> {
-            EmpleadoDTO dto = new EmpleadoDTO();
+            RegistroEmpleadoDTO dto = new RegistroEmpleadoDTO();
             BeanUtils.copyProperties(emp, dto);
             return dto;
         }).collect(Collectors.toList());

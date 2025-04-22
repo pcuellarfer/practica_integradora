@@ -27,7 +27,6 @@ public class UsuarioDTO {
     private String contrasena;
     private TipoUsuario tipoUsuario;
     private boolean estadoBloqueado = false;
-    private int intentosFallidos = 0;
     private LocalDateTime bloqueoFechaHora;
     private String motivoBloqueo;
 }

@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Registro de empleado</title>
+    <title>Registro de usuario</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" th:href="@{/css/styles.css}"/>
     <script th:src="@{/js/mostrarContrasena.js}"></script>
@@ -14,24 +14,25 @@
         <div class="row align-items-center">
             <div class="col-2"></div>
             <div class="col">
-                <h1 class="text-center mb-2">Introduce los datos</h1>
+                <h1 class="text-center mb-2">Introduce la contraseña</h1>
             </div>
             <div class="col-2"></div>
         </div>
         <!-- Vincula el formulario al objeto "usuario" del modelo -->
-        <form th:action="@{/empleado/signup}" th:object="${empleado}" method="post">
+        <form th:action="@{/empleado/registro/empresarial}" th:object="${registroEmpleadoDTO}" method="post">
+
             <div class="mb-3">
-                <label for="nombre" class="form-label">Usuario:</label>
-                <input type="text" id="nombre" name="nombre" class="form-control" th:field="*{nombre}">
-                <span class="error-message" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></span>
-            </div>
-            <div class="mb-3">
-                <label for="nombre" class="form-label">Correo electrónico:</label>
-                <input type="text" id="email" name="email" class="form-control" th:field="*{email}">
-                <span class="error-message" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+                <label for="departamento" class="form-label">departamento:</label>
+                <input type="text" id="departamento" name="departamento" class="form-control" th:field="*{departamento}">
+                <span class="error-message" th:if="${#fields.hasErrors('departamento')}" th:errors="*{departamento}"></span>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100">Enviar</button>
+            <div class="mb-3">
+                <label for="puesto" class="form-label">puesto:</label>
+                <input type="text" id="puesto" name="puesto" class="form-control" th:field="*{puesto}">
+                <span class="error-message" th:if="${#fields.hasErrors('puesto')}" th:errors="*{puesto}"></span>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Registrarse</button>
         </form>
         <!-- Mensaje de error (si existe) -->
         <p th:if="${error}" th:text="${error}" style="color: red;"></p>

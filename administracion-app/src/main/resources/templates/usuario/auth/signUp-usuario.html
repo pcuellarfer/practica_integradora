@@ -22,23 +22,28 @@
         </div>
 
         <!-- Formulario de Registro -->
-        <form th:action="@{/usuario/signup}" th:object="${usuario}" method="post">
+        <form th:action="@{/usuario/signup}" th:object="${registroUsuarioDTO}" method="post">
             <div class="mb-3">
-                <label for="nombre" class="form-label">Usuario:</label>
-                <input type="text" id="nombre" name="nombre" class="form-control" th:field="*{nombre}">
-                <span class="error-message" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></span>
-            </div>
-            <div class="mb-3">
-                <label for="nombre" class="form-label">Correo electrónico:</label>
+                <label for="email" class="form-label">Correo electrónico:</label>
                 <input type="text" id="email" name="email" class="form-control" th:field="*{email}">
                 <span class="error-message" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
             </div>
+
             <div class="mb-3">
-                <label for="nombre" class="form-label">Contraseña</label>
-                <input type="password" id="contrasena" name="email" class="form-control" th:field="*{contrasena}">
+                <label for="contrasena" class="form-label">Contraseña</label>
+                <input type="password" id="contrasena" name="contrasena" class="form-control" th:field="*{contrasena}">
                 <span class="error-message" th:if="${#fields.hasErrors('contrasena')}" th:errors="*{contrasena}"></span>
             </div>
+
             <input type="checkbox" id="mostrarcontrasena" onclick="mostrarContrasena()"> Mostrar contraseña
+
+            <!--no se si Jose Ramon quiere que la confirmacion sea en el backend o frontend
+            <div class="mb-3">
+                <label for="confirmarContrasena" class="form-label">Confirmar Contraseña</label>
+                <input type="password" id="confirmarContrasena" name="confirmarContrasena" class="form-control">
+                <div id="errorContrasena" class="text-danger" style="display: none;">Las contraseñas no coinciden.</div>
+            </div>-->
+
             <button type="submit" class="btn btn-primary w-100">Enviar</button>
         </form>
     </div>

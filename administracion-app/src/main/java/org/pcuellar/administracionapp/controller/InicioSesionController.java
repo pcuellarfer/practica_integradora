@@ -2,7 +2,7 @@ package org.pcuellar.administracionapp.controller;
 
 import jakarta.servlet.http.HttpSession;
 import org.pcuellar.administracionapp.auxiliar.TipoUsuario;
-import org.pcuellar.administracionapp.dto.Empleado.EmpleadoDTO;
+import org.pcuellar.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
 import org.pcuellar.administracionapp.dto.Usuario.UsuarioDTO;
 import org.pcuellar.administracionapp.services.Usuario.UsuarioService;
 import org.springframework.stereotype.Controller;
@@ -41,7 +41,7 @@ public class InicioSesionController {
     public UsuarioDTO getUsuario(HttpSession session) {
         UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
         if (usuarioDTO == null) {
-            usuarioDTO = new EmpleadoDTO(); // Se instancia como Empleado por defecto
+            //usuarioDTO = new RegistroEmpleadoDTO(); // Se instancia como Empleado por defecto
         }
         return usuarioDTO;
     }

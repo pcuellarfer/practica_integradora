@@ -33,6 +33,12 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
+    public Usuario buscarPorId(UUID id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    }
+
+    @Override
     public UsuarioDTO editarUsuarioEmail(UUID id, String email) {
         return null;
     }
@@ -56,6 +62,13 @@ public class UsuarioServiceImpl implements UsuarioService {
     public boolean existeNombre(String nombre) {
         return usuarioRepository.findByNombre(nombre).isPresent();
     }
+
+    @Override
+    public boolean existePorEmail(String email) {
+        return usuarioRepository.findByEmail(email).isPresent();
+    }
+
+
 
     @Override
     public boolean validarNombreContrasena(String nombre, String contrasena) {

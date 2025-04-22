@@ -2,7 +2,8 @@ package org.pcuellar.administracionapp.services.Empleado;
 
 import java.util.UUID;
 
-import org.pcuellar.administracionapp.dto.Empleado.EmpleadoDTO;
+import org.pcuellar.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
+import org.pcuellar.administracionapp.dto.Usuario.UsuarioDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,9 +19,10 @@ public interface EmpleadoService {
     /**
      * Registra un nuevo empleado en el sistema.
      *
-     * @param empleadoDTO Objeto con los datos del empleado a registrar.
+     * @param registroEmpleadoDTO Objeto con los datos del empleado a registrar.
      */
-    void registrarEmpleado(EmpleadoDTO empleadoDTO);
+    void registrarEmpleado(RegistroEmpleadoDTO registroEmpleadoDTO, UsuarioDTO usuarioDTO);
+
 
     /**
      * Edita los datos de un empleado existente.
@@ -29,7 +31,7 @@ public interface EmpleadoService {
      * @param dto Objeto con los nuevos datos del empleado.
      * @return El empleado actualizado.
      */
-    EmpleadoDTO editarEmpleado(UUID id, EmpleadoDTO dto);
+    RegistroEmpleadoDTO editarEmpleado(UUID id, RegistroEmpleadoDTO dto);
 
     /**
      * Elimina lógicamente un empleado del sistema.
@@ -45,12 +47,14 @@ public interface EmpleadoService {
      * @param id Identificador único del empleado.
      * @return El empleado encontrado, o null si no existe.
      */
-    EmpleadoDTO buscarEmpleado(UUID id);
+    RegistroEmpleadoDTO buscarEmpleado(UUID id);
 
     /**
      * Lista todos los empleados registrados en el sistema.
      *
      * @return Una lista con todos los empleados.
      */
-    List<EmpleadoDTO> listarEmpleados();
+    List<RegistroEmpleadoDTO> listarEmpleados();
+
+    public RegistroEmpleadoDTO buscarEmpleadoPorUsuarioId(UUID usuarioId);
 }
