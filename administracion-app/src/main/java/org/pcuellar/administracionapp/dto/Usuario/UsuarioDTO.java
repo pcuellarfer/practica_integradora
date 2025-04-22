@@ -1,9 +1,8 @@
 package org.pcuellar.administracionapp.dto.Usuario;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 import org.pcuellar.administracionapp.auxiliar.TipoUsuario;
@@ -24,7 +23,12 @@ public class UsuarioDTO {
     private String email;
 
     @NotBlank(message = "La contraseña no puede estar vacía")
+    @Pattern(
+            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*\\p{Punct}).{8,12}$",
+            message = "La contraseña debe tener entre 8 y 12 caracteres, incluyendo una mayúscula, una minúscula, un número y un signo de puntuación."
+    )
     private String contrasena;
+
     private TipoUsuario tipoUsuario;
     private boolean estadoBloqueado = false;
     private LocalDateTime bloqueoFechaHora;
