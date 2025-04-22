@@ -1,14 +1,13 @@
 package org.pcuellar.administracionapp.controller;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.pcuellar.administracionapp.auxiliar.TipoUsuario;
-import org.pcuellar.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
 import org.pcuellar.administracionapp.dto.Usuario.UsuarioDTO;
 import org.pcuellar.administracionapp.services.Usuario.UsuarioService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -80,7 +79,6 @@ public class InicioSesionController {
      * </p>
      *
      * @param usuarioDTO el usuario actual en sesión (si existe).
-     * @param nombre el nombre ingresado por el usuario.
      * @param result resultado de la validación.
      * @param session la sesión HTTP actual donde se guarda el usuario autenticado.
      * @param model el modelo para pasar atributos a la vista en caso de error.
@@ -88,26 +86,24 @@ public class InicioSesionController {
      */
     @PostMapping("/username")
     public String procesarFormularioNombre(@ModelAttribute("usuario") UsuarioDTO usuarioDTO,
-                                           @RequestParam String email,
-                                           @Validated BindingResult result,
+                                           BindingResult result,
                                            HttpSession session, Model model) {
-        if (result.hasErrors() || email == null || email.isBlank()) {
-            model.addAttribute("error", "El nombre no puede estar vacío.");
+        if (result.hasErrors()) {
+            model.addAttribute("error", "Corrige los errores del formulario.");
             return "usuario/auth/login-nombre";
         }
 
-        // Buscar usuario por nombre en la base de datos
-        UsuarioDTO usuarioExistente = usuarioService.buscarPorEmail(email);
+        UsuarioDTO usuarioExistente = usuarioService.buscarPorEmail(usuarioDTO.getEmail());
 
         if (usuarioExistente == null) {
-            model.addAttribute("error", "No existe un usuario con ese nombre.");
+            model.addAttribute("error", "No existe ese email.");
             return "usuario/auth/login-nombre";
         }
 
-        // Guardar en sesión y avanzar
         session.setAttribute("usuario", usuarioExistente);
         return "usuario/auth/login-contrasena";
     }
+
 
 
     /**

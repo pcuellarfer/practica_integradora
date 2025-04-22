@@ -1,13 +1,13 @@
 package org.pcuellar.administracionapp.controller;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.pcuellar.administracionapp.dto.Usuario.RegistroUsuarioDTO;
 import org.pcuellar.administracionapp.dto.Usuario.UsuarioDTO;
 import org.pcuellar.administracionapp.services.Usuario.UsuarioService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -24,6 +24,18 @@ public class UsuarioSignUpController {
         this.usuarioService = usuarioService;
     }
 
+    /**
+     * Cierra la sesión del usuario actual.
+     *
+     * @param session la sesión HTTP.
+     * @return redirige a la vista de login.
+     */
+    @GetMapping("/logout")
+    public String cerrarSesion(HttpSession session) {
+        session.invalidate();
+        return "redirect:/login/username";
+    }
+
     //muestra la vista del formulario de registro de usuario y le pasa un DTO vacio
     @GetMapping("/signup")
     public String mostrarFormularioRegistro(Model modelo) {
@@ -31,13 +43,11 @@ public class UsuarioSignUpController {
         return "usuario/auth/signUp-usuario";
     }
 
-
     @PostMapping("/signup")
     public String registrarUsuario(
-            @ModelAttribute("registroUsuarioDTO") @Validated RegistroUsuarioDTO registroUsuarioDTO,
-           //guarda los errores si alguna validacion del DTO falla
+            @ModelAttribute("registroUsuarioDTO") @Valid RegistroUsuarioDTO registroUsuarioDTO,
             BindingResult errores,
-            HttpSession sesion,
+            HttpSession session,
             Model modelo) {
 
         if (errores.hasErrors()) {
@@ -45,20 +55,17 @@ public class UsuarioSignUpController {
             return "usuario/auth/signUp-usuario";
         }
 
-        //usa el metodo del servicio para comprobar si existe alguien con ese email
-        //si existe devuelve la vista de registro con un error
         if (usuarioService.existePorEmail(registroUsuarioDTO.getEmail())) {
             modelo.addAttribute("error", "Ya existe un usuario con ese email.");
             return "usuario/auth/signUp-usuario";
         }
 
-        //se crea un usuarioDTO nuevo por si se necesitan añadir camapos del dto
         UsuarioDTO usuarioDTO = new UsuarioDTO();
         usuarioDTO.setEmail(registroUsuarioDTO.getEmail());
         usuarioDTO.setContrasena(registroUsuarioDTO.getContrasena());
 
         UsuarioDTO registrado = usuarioService.registrarUsuario(usuarioDTO);
-        sesion.setAttribute("usuario", registrado);
+        session.setAttribute("usuario", registrado);
 
         return "redirect:/usuario/dashboard";
     }
