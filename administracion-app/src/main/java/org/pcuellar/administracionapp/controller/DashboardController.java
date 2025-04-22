@@ -21,14 +21,14 @@ public class DashboardController {
     }
 
     @GetMapping("/detalle")
-    public String verMisDetalles(HttpSession session, Model model) {
+    public String verDetalles(HttpSession session, Model model) {
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
 
         if (usuario == null) {
             return "redirect:/login";
         }
 
-        RegistroEmpleadoDTO empleado = empleadoService.buscarEmpleado(usuario.getId());
+        RegistroEmpleadoDTO empleado = empleadoService.buscarEmpleadoPorUsuarioId(usuario.getId());
 
         model.addAttribute("usuario", usuario);
         model.addAttribute("empleado", empleado);
