@@ -11,24 +11,32 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * Controlador que gestiona el registro de nuevos usuarios del tipo USUARIO.
+ * Controlador que gestiona el registro de nuevos usuarios de tipo USUARIO,
+ * así como el acceso a su panel principal y el cierre de sesión.
  */
 @Controller
 @RequestMapping("/usuario")
 public class UsuarioSignUpController {
 
-    //inyeccion del servicio de usuario
+    /**
+     * Servicio que gestiona la lógica de negocio relacionada con usuarios.
+     */
     private final UsuarioService usuarioService;
 
+    /**
+     * Constructor con inyección de dependencias del servicio de usuario.
+     *
+     * @param usuarioService servicio para gestión de usuarios.
+     */
     public UsuarioSignUpController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
     }
 
     /**
-     * Cierra la sesión del usuario actual.
+     * Cierra la sesión actual del usuario invalidando la sesión HTTP.
      *
-     * @param session la sesión HTTP.
-     * @return redirige a la vista de login.
+     * @param session sesión HTTP actual.
+     * @return redirección al formulario de inicio de sesión.
      */
     @GetMapping("/logout")
     public String cerrarSesion(HttpSession session) {
@@ -36,13 +44,28 @@ public class UsuarioSignUpController {
         return "redirect:/login/username";
     }
 
-    //muestra la vista del formulario de registro de usuario y le pasa un DTO vacio
+    /**
+     * Muestra el formulario de registro para un nuevo usuario.
+     *
+     * @param modelo modelo de datos para la vista.
+     * @return nombre de la vista del formulario de registro.
+     */
     @GetMapping("/signup")
     public String mostrarFormularioRegistro(Model modelo) {
         modelo.addAttribute("registroUsuarioDTO", new RegistroUsuarioDTO());
         return "usuario/auth/signUp-usuario";
     }
 
+    /**
+     * Procesa el formulario de registro de un nuevo usuario.
+     * Valida los datos introducidos y registra al usuario si todo es correcto.
+     *
+     * @param registroUsuarioDTO DTO con los datos introducidos por el usuario.
+     * @param errores objeto que contiene los errores de validación.
+     * @param session sesión HTTP actual para almacenar el usuario autenticado.
+     * @param modelo modelo de datos para la vista.
+     * @return redirección al dashboard del usuario registrado o recarga del formulario con errores.
+     */
     @PostMapping("/signup")
     public String registrarUsuario(
             @ModelAttribute("registroUsuarioDTO") @Valid RegistroUsuarioDTO registroUsuarioDTO,
@@ -70,7 +93,14 @@ public class UsuarioSignUpController {
         return "redirect:/usuario/dashboard";
     }
 
-    //mete el usuario en una sesion para poder usarla luego y te manda al dashboard
+    /**
+     * Muestra el panel principal del usuario después del registro o login.
+     * Si no hay usuario en sesión, redirige al inicio de sesión.
+     *
+     * @param session sesión HTTP actual.
+     * @param model modelo para enviar datos a la vista.
+     * @return vista del dashboard del usuario o redirección si no hay sesión activa.
+     */
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
         UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
@@ -82,4 +112,5 @@ public class UsuarioSignUpController {
         return "usuario/main/usuario-dashboard";
     }
 }
+
 
