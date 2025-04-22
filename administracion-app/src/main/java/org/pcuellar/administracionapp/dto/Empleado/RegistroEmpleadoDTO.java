@@ -8,6 +8,8 @@ import java.util.Date;
 
 @Getter
 @Setter
+
+
 public class RegistroEmpleadoDTO {
     //faltan mas validaciones o tipos de campo que no se especifican por cambio de enunciado
 

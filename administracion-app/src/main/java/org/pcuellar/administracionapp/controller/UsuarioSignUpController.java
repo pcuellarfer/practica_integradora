@@ -24,10 +24,10 @@ public class UsuarioSignUpController {
         this.usuarioService = usuarioService;
     }
 
-    //muestra la vista del formulario de registro de usuario
+    //muestra la vista del formulario de registro de usuario y le pasa un DTO vacio
     @GetMapping("/signup")
-    public String mostrarFormularioRegistro(Model model) {
-        model.addAttribute("registroUsuarioDTO", new RegistroUsuarioDTO());
+    public String mostrarFormularioRegistro(Model modelo) {
+        modelo.addAttribute("registroUsuarioDTO", new RegistroUsuarioDTO());
         return "usuario/auth/signUp-usuario";
     }
 
@@ -46,7 +46,7 @@ public class UsuarioSignUpController {
         }
 
         //usa el metodo del servicio para comprobar si existe alguien con ese email
-        //si existe devuelve la vista de registro
+        //si existe devuelve la vista de registro con un error
         if (usuarioService.existePorEmail(registroUsuarioDTO.getEmail())) {
             modelo.addAttribute("error", "Ya existe un usuario con ese email.");
             return "usuario/auth/signUp-usuario";
@@ -63,6 +63,7 @@ public class UsuarioSignUpController {
         return "redirect:/usuario/dashboard";
     }
 
+    //mete el usuario en una sesion para poder usarla luego y te manda al dashboard
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
         UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");

@@ -1,7 +1,10 @@
 package org.pcuellar.administracionapp.controller;
 
 import jakarta.servlet.http.HttpSession;
+import org.pcuellar.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
 import org.pcuellar.administracionapp.dto.Usuario.UsuarioDTO;
+import org.pcuellar.administracionapp.services.Empleado.EmpleadoService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,15 +14,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/dashboard")
 public class DashboardController {
 
-    @GetMapping("/detalle")
-    public String verMisDetalles(HttpSession session, Model model) {
-        UsuarioDTO susuario = (UsuarioDTO) session.getAttribute("susuario");
+    private final EmpleadoService empleadoService;
 
-        if (susuario == null) {
+    public DashboardController(EmpleadoService empleadoService) {
+        this.empleadoService = empleadoService;
+    }
+
+    @GetMapping("/detalle")
+    public String verDetalles(HttpSession session, Model model) {
+        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
+
+        if (usuario == null) {
             return "redirect:/login";
         }
 
-        model.addAttribute("usuario", susuario);
+        RegistroEmpleadoDTO empleado = empleadoService.buscarEmpleadoPorUsuarioId(usuario.getId());
+
+        model.addAttribute("usuario", usuario);
+        model.addAttribute("empleado", empleado);
         return "empleado/main/empleadoDetalle";
     }
 }
