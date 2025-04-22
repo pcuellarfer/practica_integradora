@@ -68,7 +68,7 @@ public class UsuarioSignUpController {
      */
     @PostMapping("/signup")
     public String registrarUsuario(
-            @ModelAttribute("registroUsuarioDTO") @Valid RegistroUsuarioDTO registroUsuarioDTO,
+            @ModelAttribute("registroUsuarioDTO") @Valid UsuarioDTO usuarioDTO,
             BindingResult errores,
             HttpSession session,
             Model modelo) {
@@ -78,14 +78,13 @@ public class UsuarioSignUpController {
             return "usuario/auth/signUp-usuario";
         }
 
-        if (usuarioService.existePorEmail(registroUsuarioDTO.getEmail())) {
+        if (usuarioService.existePorEmail(usuarioDTO.getEmail())) {
             modelo.addAttribute("error", "Ya existe un usuario con ese email.");
             return "usuario/auth/signUp-usuario";
         }
 
-        UsuarioDTO usuarioDTO = new UsuarioDTO();
-        usuarioDTO.setEmail(registroUsuarioDTO.getEmail());
-        usuarioDTO.setContrasena(registroUsuarioDTO.getContrasena());
+        usuarioDTO.setEmail(usuarioDTO.getEmail());
+        usuarioDTO.setContrasena(usuarioDTO.getContrasena());
 
         UsuarioDTO registrado = usuarioService.registrarUsuario(usuarioDTO);
         session.setAttribute("usuario", registrado);

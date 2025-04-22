@@ -16,10 +16,13 @@ import java.util.UUID;
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
 
     private final ModelMapper modelMapper = new ModelMapper();
+
+    public UsuarioServiceImpl(UsuarioRepository usuarioRepository) {
+        this.usuarioRepository = usuarioRepository;
+    }
 
     @Override
     public UsuarioDTO registrarUsuario(UsuarioDTO registroUsuarioDTO) {
@@ -120,10 +123,10 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
 
-    private Usuario convertToEntity (RegistroUsuarioDTO registroUsuarioDTO) {
-        return modelMapper.map(registroUsuarioDTO, Usuario.class);
-    }
-    private UsuarioDTO convertToDTO (Usuario usuario) {
-        return modelMapper.map(usuario, UsuarioDTO.class);
-    }
+//    private Usuario convertToEntity (RegistroUsuarioDTO registroUsuarioDTO) {
+//        return modelMapper.map(registroUsuarioDTO, Usuario.class);
+//    }
+//    private UsuarioDTO convertToDTO (Usuario usuario) {
+//        return modelMapper.map(usuario, UsuarioDTO.class);
+//    }
 }
