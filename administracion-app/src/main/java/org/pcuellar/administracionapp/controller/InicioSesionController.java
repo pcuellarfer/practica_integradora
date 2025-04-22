@@ -157,7 +157,7 @@ public class InicioSesionController {
                                                Model model) {
         if (usuarioDTO != null && usuarioDTO.getTipoUsuario() != null) {
             if (usuarioDTO.getTipoUsuario() == TipoUsuario.EMPLEADO) {
-                return "redirect:/empleado/dashboard";
+                return "redirect:/empleado/dashboard"; 
             } else if (usuarioDTO.getTipoUsuario() == TipoUsuario.ADMINISTRADOR) {
                 return "redirect:/admin/dashboard";
             }
