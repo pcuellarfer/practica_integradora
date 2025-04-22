@@ -105,8 +105,8 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public UsuarioDTO buscarPorNombre(String nombre) {
-        return usuarioRepository.findByNombre(nombre)
+    public UsuarioDTO buscarPorEmail(String email) {
+        return usuarioRepository.findByEmail(email)
                 .map(usuario -> {
                     UsuarioDTO dto = new UsuarioDTO();
                     dto.setId(usuario.getId());
@@ -114,7 +114,6 @@ public class UsuarioServiceImpl implements UsuarioService {
                     dto.setEmail(usuario.getEmail());
                     dto.setContrasena(usuario.getContrasena());
                     dto.setTipoUsuario(usuario.getTipoUsuario());
-                    // Agrega aquí cualquier otro campo necesario
                     return dto;
                 })
                 .orElse(null);

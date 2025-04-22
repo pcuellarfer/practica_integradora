@@ -41,7 +41,7 @@ public class InicioSesionController {
     public UsuarioDTO getUsuario(HttpSession session) {
         UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
         if (usuarioDTO == null) {
-            //usuarioDTO = new RegistroEmpleadoDTO(); // Se instancia como Empleado por defecto
+            usuarioDTO = new UsuarioDTO();
         }
         return usuarioDTO;
     }
@@ -67,14 +67,6 @@ public class InicioSesionController {
      */
     @GetMapping("/username")
     public String mostrarFormularioNombre(@ModelAttribute("usuario") UsuarioDTO usuario) {
-        if (usuario != null && usuario.getTipoUsuario() != null) {
-            if (usuario.getTipoUsuario() == TipoUsuario.EMPLEADO) {
-                return "redirect:/empleado/dashboard";
-            } else if (usuario.getTipoUsuario() == TipoUsuario.ADMINISTRADOR) {
-                return "redirect:/admin/dashboard";
-            }
-            return "redirect:/login/dashboard";
-        }
         return "usuario/auth/login-nombre";
     }
 
@@ -88,7 +80,7 @@ public class InicioSesionController {
      * </p>
      *
      * @param usuarioDTO el usuario actual en sesión (si existe).
-     * @param nombre el nombre ingresado por el usuario.
+     * @param email el email ingresado por el usuario.
      * @param result resultado de la validación.
      * @param session la sesión HTTP actual donde se guarda el usuario autenticado.
      * @param model el modelo para pasar atributos a la vista en caso de error.
@@ -96,26 +88,16 @@ public class InicioSesionController {
      */
     @PostMapping("/username")
     public String procesarFormularioNombre(@ModelAttribute("usuario") UsuarioDTO usuarioDTO,
-                                           @RequestParam String nombre,
+                                           @RequestParam String email,
                                            @Validated BindingResult result,
                                            HttpSession session, Model model) {
-
-        if (usuarioDTO != null && usuarioDTO.getTipoUsuario() != null) {
-            if (usuarioDTO.getTipoUsuario() == TipoUsuario.EMPLEADO) {
-                return "redirect:/empleado/dashboard";
-            } else if (usuarioDTO.getTipoUsuario() == TipoUsuario.ADMINISTRADOR) {
-                return "redirect:/admin/dashboard";
-            }
-            return "redirect:/login/dashboard";
-        }
-
-        if (result.hasErrors() || nombre == null || nombre.isBlank()) {
+        if (result.hasErrors() || email == null || email.isBlank()) {
             model.addAttribute("error", "El nombre no puede estar vacío.");
             return "usuario/auth/login-nombre";
         }
 
-        // Buscar usuario por nombre en la base de datos
-        UsuarioDTO usuarioExistente = usuarioService.buscarPorNombre(nombre);
+        // Buscar usuario por email en la base de datos
+        UsuarioDTO usuarioExistente = usuarioService.buscarPorEmail(email);
 
         if (usuarioExistente == null) {
             model.addAttribute("error", "No existe un usuario con ese nombre.");
@@ -136,7 +118,7 @@ public class InicioSesionController {
      */
     @GetMapping("/password")
     public String mostrarFormularioContrasena(@ModelAttribute("usuario") UsuarioDTO usuarioDTO) {
-        if (usuarioDTO == null || usuarioDTO.getNombre().isBlank()) {
+        if (usuarioDTO == null || usuarioDTO.getEmail().isBlank()) {
             return "redirect:/login/username";
         }
 
@@ -155,16 +137,7 @@ public class InicioSesionController {
     public String procesarFormularioContrasena(@ModelAttribute("usuario") UsuarioDTO usuarioDTO,
                                                @RequestParam String contrasena,
                                                Model model) {
-        if (usuarioDTO != null && usuarioDTO.getTipoUsuario() != null) {
-            if (usuarioDTO.getTipoUsuario() == TipoUsuario.EMPLEADO) {
-                return "redirect:/empleado/dashboard";
-            } else if (usuarioDTO.getTipoUsuario() == TipoUsuario.ADMINISTRADOR) {
-                return "redirect:/admin/dashboard";
-            }
-            return "redirect:/login/dashboard";
-        }
-
-        if (usuarioDTO == null || usuarioDTO.getNombre().isBlank()) {
+        if (usuarioDTO == null || usuarioDTO.getEmail().isBlank()) {
             return "redirect:/login/username";
         }
 
@@ -175,14 +148,6 @@ public class InicioSesionController {
 
         usuarioDTO.setContrasena(contrasena);
         usuarioService.iniciarSesion(usuarioDTO);
-
-        if (usuarioDTO.getTipoUsuario() == TipoUsuario.EMPLEADO) {
-            return "empleado/main/empleado-dashboard";
-        }
-
-        if (usuarioDTO.getTipoUsuario() == TipoUsuario.ADMINISTRADOR) {
-            return "admin/main/admin-dashboard";
-        }
 
         return "redirect:/login/dashboard";
     }

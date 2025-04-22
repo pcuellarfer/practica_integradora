@@ -27,5 +27,5 @@ public interface UsuarioService {
 
     void iniciarSesion(UsuarioDTO usuarioDTO);
 
-    UsuarioDTO buscarPorNombre(String nombre);
+    UsuarioDTO buscarPorEmail(String email);
 }

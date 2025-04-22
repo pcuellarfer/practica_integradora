@@ -24,8 +24,8 @@
         <!-- Formulario de Registro -->
         <form th:action="@{/login/username}" method="post" th:object="${susuario}">
             <div class="mb-3">
-                <label for="nombre" class="form-label">Usuario:</label>
-                <input type="text" id="nombre" name="nombre" class="form-control">
+                <label for="email" class="form-label">Email:</label>
+                <input type="text" id="email" name="email" class="form-control">
             </div>
             <button type="submit" class="btn btn-primary w-100">Introducir contraseña</button>
         </form>
