@@ -1,0 +1,3 @@
+rootProject.name = 'practica_integradora'
+
+include 'administracion-app', 'empleado-app'

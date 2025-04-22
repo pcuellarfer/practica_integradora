@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Empleado dashboard</title>
+</head>
+<body>
+<p>Sesión iniciada como: <span th:text="${empleado.nombre}">Nombre del Empleado</span></p>
+<form th:action="@{/empleado/logout}" method="get">
+
+    <a href="/dashboard/detalle">Ver mis detalles</a>
+
+    <button type="submit">Cerrar sesión</button>
+</form>
+</body>
+</html>
