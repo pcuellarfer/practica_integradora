@@ -5,11 +5,10 @@
     <title>Usuario dashboard</title>
 </head>
 <body>
-<p>Sesión iniciada como: <span th:text="${email}"></span></p>
-
-<p>parece que aun no eres empleado, <a href="/empleado/registro">REGISTRATE.</a></p>
 
 <form th:action="@{/login/logout}" method="get">
+    <p>Sesión iniciada como: <span th:text="${email}"></span></p>
+    <p>parece que aun no eres empleado, <a href="/empleado/registro">REGISTRATE.</a></p>
     <button type="submit">Cerrar sesión</button>
 </form>
 </body>

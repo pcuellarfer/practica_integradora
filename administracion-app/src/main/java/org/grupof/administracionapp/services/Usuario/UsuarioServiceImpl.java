@@ -23,10 +23,10 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public UsuarioDTO registrarUsuario(UsuarioDTO registroUsuarioDTO) {
+    public UsuarioDTO registrarUsuario(UsuarioDTO usuarioDTO) {
 
         //devuelve usuario DTO con mucho NULL
-        Usuario usuario = modelMapper.map(registroUsuarioDTO, Usuario.class);
+        Usuario usuario = modelMapper.map(usuarioDTO, Usuario.class);
         //Usuario usuario = convertToEntity(registroUsuarioDTO);
         usuario = usuarioRepository.save(usuario);
 
@@ -111,20 +111,27 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .map(usuario -> {
                     UsuarioDTO dto = new UsuarioDTO();
                     dto.setId(usuario.getId());
-                    dto.setNombre(usuario.getNombre());
                     dto.setEmail(usuario.getEmail());
                     dto.setContrasena(usuario.getContrasena());
-                    dto.setTipoUsuario(usuario.getTipoUsuario());
                     return dto;
                 })
                 .orElse(null);
     }
 
+    @Override
+    public boolean buscarBloqueado(String email) {
+        Optional<Usuario> usuarioOptional = usuarioRepository.findByEmail(email);
+        return usuarioOptional.map(Usuario::isEstadoBloqueado).orElse(false);
+    }
 
-//    private Usuario convertToEntity (RegistroUsuarioDTO registroUsuarioDTO) {
-//        return modelMapper.map(registroUsuarioDTO, Usuario.class);
-//    }
-//    private UsuarioDTO convertToDTO (Usuario usuario) {
-//        return modelMapper.map(usuario, UsuarioDTO.class);
-//    }
+    @Override
+    public void bloquearUsuario(String email, String demasiadosIntentosFallidos) {
+        Optional<Usuario> usuarioOptional = usuarioRepository.findByEmail(email);
+        if (usuarioOptional.isPresent()) {
+            Usuario usuario = usuarioOptional.get();
+            usuario.setEstadoBloqueado(true);
+            usuario.setMotivoBloqueo("Demasiados intentos fallidos");
+            usuarioRepository.save(usuario);
+        }
+    }
 }
