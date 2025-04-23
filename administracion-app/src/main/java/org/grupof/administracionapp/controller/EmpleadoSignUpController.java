@@ -1,6 +1,7 @@
 package org.grupof.administracionapp.controller;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.grupof.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
 import org.grupof.administracionapp.services.Empleado.EmpleadoService;
@@ -24,6 +25,12 @@ public class EmpleadoSignUpController {
         this.empleadoService = empleadoService;
     }
 
+    @GetMapping("/logout")
+    public String cerrarSesion(HttpSession session) {
+        session.invalidate();
+        return "redirect:/login/username";
+    }
+
     @GetMapping("/registro")
     public String mostrarFormularioPersonal(Model modelo) {
         modelo.addAttribute("registroEmpleadoDTO", new RegistroEmpleadoDTO());
@@ -32,22 +39,73 @@ public class EmpleadoSignUpController {
 
     @PostMapping("/registro")
     public String guardarDatosPersonales(
-            @ModelAttribute("registroEmpleadoDTO") RegistroEmpleadoDTO registroEmpleadoDTO,
-            HttpSession sesion)
-    {
-        sesion.setAttribute("empleado_personal", registroEmpleadoDTO);
+            @ModelAttribute("registroEmpleadoDTO") @Valid RegistroEmpleadoDTO registroEmpleadoDTO,
+            BindingResult errores,
+            HttpSession sesion,
+            Model modelo) {
+
+        if (errores.hasErrors()) {
+            modelo.addAttribute("error", "Corrige los errores del formulario.");
+            return "usuario/auth/signUp-usuario";
+        }
+
+        if (registroEmpleadoDTO.getNombre() == null || registroEmpleadoDTO.getNombre().isEmpty()) {
+            modelo.addAttribute("error", "El nombre es obligatorio.");
+            return "empleado/auth/FormDatosPersonales";
+        }
+
+        if (registroEmpleadoDTO.getApellido() == null || registroEmpleadoDTO.getApellido().isEmpty()) {
+            modelo.addAttribute("error", "El apellido es obligatorio.");
+            return "empleado/auth/FormDatosPersonales";
+        }
+
+        if (registroEmpleadoDTO.getFechaNacimiento() == null || registroEmpleadoDTO.getFechaNacimiento().isEmpty()) {
+            modelo.addAttribute("error", "La fecha de nacimiento es obligatoria.");
+            return "empleado/auth/FormDatosPersonales";
+        }
+
+        if (registroEmpleadoDTO.getGenero() == null || registroEmpleadoDTO.getGenero().isEmpty()) {
+            modelo.addAttribute("error", "El género es obligatorio.");
+            return "empleado/auth/FormDatosPersonales";
+        }
+
+        UsuarioDTO usuarioDTO = (UsuarioDTO) sesion.getAttribute("usuario");
+        if (usuarioDTO == null) {
+            return "redirect:/usuario/signup";
+        }
+
+        // Verificar si ya hay un empleado registrado para ese usuario
+        RegistroEmpleadoDTO empleadoExistente = empleadoService.buscarEmpleadoPorUsuarioId(usuarioDTO.getId());
+        if (empleadoExistente != null) {
+            modelo.addAttribute("error", "Ya existe un empleado registrado para este usuario.");
+            return "empleado/auth/FormDatosPersonales";
+        }
+
+        registroEmpleadoDTO.setNombre(registroEmpleadoDTO.getNombre());
+        registroEmpleadoDTO.setApellido(registroEmpleadoDTO.getApellido());
+        registroEmpleadoDTO.setFechaNacimiento(registroEmpleadoDTO.getFechaNacimiento());
+        registroEmpleadoDTO.setGenero(registroEmpleadoDTO.getGenero());
+
+        sesion.setAttribute("usuario", usuarioDTO);
+        sesion.setAttribute("registroEmpleadoDTO", registroEmpleadoDTO);
+
         return "redirect:/empleado/registro/empresarial";
     }
+
 
     @GetMapping("/registro/empresarial")
     public String mostrarFormularioEmpresarial(
             Model modelo,
             HttpSession sesion) {
 
-        RegistroEmpleadoDTO registroEmpleadoDTO = (RegistroEmpleadoDTO) sesion.getAttribute("empleado_personal");
-
+        RegistroEmpleadoDTO registroEmpleadoDTO = (RegistroEmpleadoDTO) sesion.getAttribute("registroEmpleadoDTO");
+        UsuarioDTO usuarioDTO = (UsuarioDTO) sesion.getAttribute("usuario");
         if (registroEmpleadoDTO == null) {
             return "redirect:/empleado/registro";
+        }
+
+        if (usuarioDTO == null) {
+            return "redirect:/usuario/signup";
         }
 
         modelo.addAttribute("registroEmpleadoDTO", registroEmpleadoDTO);
@@ -56,35 +114,38 @@ public class EmpleadoSignUpController {
 
     @PostMapping("/registro/empresarial")
     public String guardarDatosEmpresariales(
-            @ModelAttribute("registroempleadoDTO") @Validated RegistroEmpleadoDTO registroEmpleadoDTO,
+            @ModelAttribute("registroEmpleadoDTO") @Validated RegistroEmpleadoDTO registroEmpleadoDTO,
             BindingResult errores,
             HttpSession sesion,
-            Model modelo){
+            Model modelo) {
 
-        if(errores.hasErrors()) {
+        if (errores.hasErrors()) {
             modelo.addAttribute("error", "Corrige los errores del formulario");
             return "empleado/auth/FormDatosEmpresariales";
         }
 
-        //recuperar el usuario de la sesion o mandarlo a hacer usuario
+        if (registroEmpleadoDTO.getDepartamento() == null || registroEmpleadoDTO.getDepartamento().isEmpty()) {
+            modelo.addAttribute("error", "El departamento es obligatorio.");
+            return "empleado/auth/FormDatosEmpresariales";
+        }
+
+        if (registroEmpleadoDTO.getPuesto() == null || registroEmpleadoDTO.getPuesto().isEmpty()) {
+            modelo.addAttribute("error", "El puesto es obligatorio.");
+            return "empleado/auth/FormDatosEmpresariales";
+        }
+
+        RegistroEmpleadoDTO dtoSesion = (RegistroEmpleadoDTO) sesion.getAttribute("registroEmpleadoDTO");
         UsuarioDTO usuarioDTO = (UsuarioDTO) sesion.getAttribute("usuario");
-        if(usuarioDTO == null){
-            return "redirect:/usuario/signup";
+
+        if (dtoSesion == null || usuarioDTO == null) {
+            return "redirect:/empleado/registro";
         }
 
-        //recuperar la parte con los datos personales del usuario
-        RegistroEmpleadoDTO datosPersonales = (RegistroEmpleadoDTO) sesion.getAttribute("empleado_personal");
+        dtoSesion.setDepartamento(registroEmpleadoDTO.getDepartamento());
+        dtoSesion.setPuesto(registroEmpleadoDTO.getPuesto());
 
-        if (datosPersonales != null) {
-            registroEmpleadoDTO.setNombre(datosPersonales.getNombre());
-            registroEmpleadoDTO.setApellido(datosPersonales.getApellido());
-            registroEmpleadoDTO.setFechaNacimiento(datosPersonales.getFechaNacimiento());
-            registroEmpleadoDTO.setGenero(datosPersonales.getGenero());
-        }
-
-        empleadoService.registrarEmpleado(registroEmpleadoDTO, usuarioDTO);
-
-        sesion.removeAttribute("empleado_personal");
+        empleadoService.registrarEmpleado(dtoSesion, usuarioDTO);
+        sesion.removeAttribute("registroEmpleadoDTO");
 
         return "redirect:/empleado/dashboard";
     }

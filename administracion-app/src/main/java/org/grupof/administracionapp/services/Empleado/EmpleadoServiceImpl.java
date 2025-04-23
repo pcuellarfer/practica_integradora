@@ -51,7 +51,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     }
 
     @Override
-    public void registrarEmpleado(RegistroEmpleadoDTO registroEmpleadoDTO, UsuarioDTO usuarioDTO) {
+    public RegistroEmpleadoDTO registrarEmpleado(RegistroEmpleadoDTO registroEmpleadoDTO, UsuarioDTO usuarioDTO) {
         // Obtener el usuario de la base de datos
         Usuario usuario = usuarioRepository.findById(usuarioDTO.getId())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -65,6 +65,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 
         // Guardar empleado
         empleadoRepository.save(empleado);
+        return registroEmpleadoDTO;
     }
 
     /**

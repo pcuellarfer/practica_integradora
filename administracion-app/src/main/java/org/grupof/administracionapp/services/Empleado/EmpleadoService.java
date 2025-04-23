@@ -20,9 +20,9 @@ public interface EmpleadoService {
      * Registra un nuevo empleado en el sistema.
      *
      * @param registroEmpleadoDTO Objeto con los datos del empleado a registrar.
+     * @return
      */
-    void registrarEmpleado(RegistroEmpleadoDTO registroEmpleadoDTO, UsuarioDTO usuarioDTO);
-
+    RegistroEmpleadoDTO registrarEmpleado(RegistroEmpleadoDTO registroEmpleadoDTO, UsuarioDTO usuarioDTO);
 
     /**
      * Edita los datos de un empleado existente.

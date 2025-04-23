@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.grupof.administracionapp.auxiliar.TipoUsuario;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -43,4 +44,6 @@ public class Usuario {
     //para que cuando borre un usuario se borre su empleado
     @OneToOne(mappedBy = "usuario")
     private Empleado empleado;
+
+    private byte[] archivo;
 }
