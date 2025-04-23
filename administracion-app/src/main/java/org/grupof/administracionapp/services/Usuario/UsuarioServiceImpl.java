@@ -134,11 +134,4 @@ public class UsuarioServiceImpl implements UsuarioService {
             usuarioRepository.save(usuario);
         }
     }
-
-//    private Usuario convertToEntity (RegistroUsuarioDTO registroUsuarioDTO) {
-//        return modelMapper.map(registroUsuarioDTO, Usuario.class);
-//    }
-//    private UsuarioDTO convertToDTO (Usuario usuario) {
-//        return modelMapper.map(usuario, UsuarioDTO.class);
-//    }
 }
