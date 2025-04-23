@@ -180,29 +180,6 @@ public class EmpleadoSignUpController {
         empleadoService.registrarEmpleado(dtoSesion, usuarioDTO);
         sesion.removeAttribute("registroEmpleadoDTO");
 
-        return "redirect:/empleado/dashboard";
-    }
-
-    /**
-     * Muestra el panel principal del empleado con su información personal.
-     *
-     * @param sesion Sesión actual para identificar al usuario.
-     * @param modelo Modelo con los datos del usuario y empleado.
-     * @return Vista del dashboard del empleado o redirección si el usuario no está logueado.
-     */
-    @GetMapping("/dashboard")
-    public String dashboard(HttpSession sesion, Model modelo) {
-        UsuarioDTO usuarioDTO = (UsuarioDTO) sesion.getAttribute("usuario");
-
-        if (usuarioDTO == null) {
-            return "redirect:/usuario/signup";
-        }
-
-        RegistroEmpleadoDTO empleadoDTO = empleadoService.buscarEmpleadoPorUsuarioId(usuarioDTO.getId());
-
-        modelo.addAttribute("usuario", usuarioDTO);
-        modelo.addAttribute("empleado", empleadoDTO);
-
-        return "empleado/main/empleado-dashboard";
+        return "redirect:/dashboard/dashboard";
     }
 }

@@ -94,29 +94,12 @@ public class UsuarioSignUpController {
         usuarioDTO.setEmail(usuarioDTO.getEmail());
         usuarioDTO.setContrasena(passwordEncoder.encode(usuarioDTO.getContrasena()));
 
-        UsuarioDTO registrado = usuarioService.registrarUsuario(usuarioDTO);
-        session.setAttribute("usuario", registrado);
+        UsuarioDTO usuario = usuarioService.registrarUsuario(usuarioDTO);
+        session.setAttribute("usuario", usuario);
 
-        return "redirect:/usuario/dashboard";
-    }
+        System.err.println("Usuario registrado: " + usuario.getEmail());
 
-    /**
-     * Muestra el panel principal (dashboard) del usuario tras iniciar sesión o registrarse.
-     * Si no hay ningún usuario almacenado en sesión, redirige al formulario de inicio de sesión.
-     *
-     * @param session sesión HTTP actual.
-     * @param model modelo que permite pasar datos a la vista.
-     * @return el nombre de la vista del dashboard del usuario o redirección si no hay usuario en sesión.
-     */
-    @GetMapping("/dashboard")
-    public String dashboard(HttpSession session, Model model) {
-        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
-        if (usuarioDTO == null) {
-            return "redirect:/login/signup";
-        }
-
-        model.addAttribute("email", usuarioDTO.getEmail());
-        return "usuario/main/usuario-dashboard";
+        return "redirect:/dashboard/dashboard";
     }
 }
 

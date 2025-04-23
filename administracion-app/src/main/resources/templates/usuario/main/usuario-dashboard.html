@@ -21,7 +21,7 @@
         <!-- Contenido del dashboard -->
         <form th:action="@{/login/logout}" method="get">
             <div class="mb-3">
-                <p>Sesión iniciada como: <strong><span th:text="${email}"></span></strong></p>
+                <p>Sesión iniciada como: <strong><span th:text="${usuario.getEmail()}"></span></strong></p>
                 <p>
                     Parece que aún no eres empleado,
                     <a class="link-primary" href="/empleado/registro">regístrate aquí</a>.

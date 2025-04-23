@@ -178,23 +178,7 @@ public class InicioSesionController {
         // Si contraseña es correcta
         session.setAttribute("usuario", usuarioBBDD);
         session.removeAttribute("intentos"); // Reiniciar contador
-        return "redirect:/login/dashboard";
-    }
-
-
-    /**
-     * Muestra el panel principal del usuario una vez autenticado.
-     * Si el usuario no está en sesión, redirige automáticamente desde los filtros previos.
-     *
-     * @param session sesión HTTP activa.
-     * @param model modelo con datos del usuario para la vista.
-     * @return vista del panel principal del usuario.
-     */
-    @GetMapping("/dashboard")
-    public String dashboard(HttpSession session, Model model) {
-        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
-        model.addAttribute("email", usuario.getEmail());
-        return "usuario/main/usuario-dashboard";
+        return "redirect:/dashboard/dashboard";
     }
 }
 
