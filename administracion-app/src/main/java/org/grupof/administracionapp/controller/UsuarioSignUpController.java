@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
 import org.grupof.administracionapp.services.Usuario.UsuarioService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,6 +21,7 @@ public class UsuarioSignUpController {
     /**
      * Servicio que gestiona la lógica de negocio relacionada con usuarios.
      */
+    private final PasswordEncoder passwordEncoder;
     private final UsuarioService usuarioService;
 
     /**
@@ -27,8 +29,10 @@ public class UsuarioSignUpController {
      *
      * @param usuarioService servicio para gestión de usuarios.
      */
-    public UsuarioSignUpController(UsuarioService usuarioService) {
+    public UsuarioSignUpController(UsuarioService usuarioService, PasswordEncoder passwordEncoder) {
         this.usuarioService = usuarioService;
+        this.passwordEncoder = passwordEncoder;
+
     }
 
     /**
@@ -82,7 +86,8 @@ public class UsuarioSignUpController {
         }
 
         usuarioDTO.setEmail(usuarioDTO.getEmail());
-        usuarioDTO.setContrasena(usuarioDTO.getContrasena());
+
+        usuarioDTO.setContrasena(passwordEncoder.encode(usuarioDTO.getContrasena()));
 
         UsuarioDTO registrado = usuarioService.registrarUsuario(usuarioDTO);
         session.setAttribute("usuario", registrado);
