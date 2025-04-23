@@ -21,22 +21,48 @@ public class EmpleadoSignUpController {
 
     private final EmpleadoService empleadoService;
 
+    /**
+     * Constructor para inyectar el servicio de empleado.
+     *
+     * @param empleadoService Servicio para gestionar lógica relacionada con empleados.
+     */
     public EmpleadoSignUpController(EmpleadoService empleadoService) {
         this.empleadoService = empleadoService;
     }
 
+    /**
+     * Cierra la sesión del usuario y redirige a la pantalla de login.
+     *
+     * @param session La sesión HTTP activa.
+     * @return Redirección a la pantalla de login.
+     */
     @GetMapping("/logout")
     public String cerrarSesion(HttpSession session) {
         session.invalidate();
         return "redirect:/login/username";
     }
 
+    /**
+     * Muestra el formulario para introducir los datos personales del empleado.
+     *
+     * @param modelo Modelo para pasar el DTO al formulario.
+     * @return Vista del formulario de datos personales.
+     */
     @GetMapping("/registro")
     public String mostrarFormularioPersonal(Model modelo) {
         modelo.addAttribute("registroEmpleadoDTO", new RegistroEmpleadoDTO());
         return "empleado/auth/FormDatosPersonales";
     }
 
+    /**
+     * Guarda los datos personales del empleado si son válidos.
+     *
+     * @param registroEmpleadoDTO DTO con los datos introducidos.
+     * @param errores Objeto que contiene errores de validación.
+     * @param sesion Sesión actual del usuario.
+     * @param modelo Modelo para pasar mensajes o datos a la vista.
+     * @return Redirección a la siguiente etapa del registro o regreso al formulario con errores.
+     */
     @PostMapping("/registro")
     public String guardarDatosPersonales(
             @ModelAttribute("registroEmpleadoDTO") @Valid RegistroEmpleadoDTO registroEmpleadoDTO,
@@ -74,17 +100,11 @@ public class EmpleadoSignUpController {
             return "redirect:/usuario/signup";
         }
 
-        // Verificar si ya hay un empleado registrado para ese usuario
         RegistroEmpleadoDTO empleadoExistente = empleadoService.buscarEmpleadoPorUsuarioId(usuarioDTO.getId());
         if (empleadoExistente != null) {
             modelo.addAttribute("error", "Ya existe un empleado registrado para este usuario.");
             return "empleado/auth/FormDatosPersonales";
         }
-
-        registroEmpleadoDTO.setNombre(registroEmpleadoDTO.getNombre());
-        registroEmpleadoDTO.setApellido(registroEmpleadoDTO.getApellido());
-        registroEmpleadoDTO.setFechaNacimiento(registroEmpleadoDTO.getFechaNacimiento());
-        registroEmpleadoDTO.setGenero(registroEmpleadoDTO.getGenero());
 
         sesion.setAttribute("usuario", usuarioDTO);
         sesion.setAttribute("registroEmpleadoDTO", registroEmpleadoDTO);
@@ -92,14 +112,18 @@ public class EmpleadoSignUpController {
         return "redirect:/empleado/registro/empresarial";
     }
 
-
+    /**
+     * Muestra el formulario de datos empresariales del empleado.
+     *
+     * @param modelo Modelo para pasar los datos.
+     * @param sesion Sesión actual para recuperar el DTO de registro.
+     * @return Vista del formulario de datos empresariales o redirección si faltan datos.
+     */
     @GetMapping("/registro/empresarial")
-    public String mostrarFormularioEmpresarial(
-            Model modelo,
-            HttpSession sesion) {
-
+    public String mostrarFormularioEmpresarial(Model modelo, HttpSession sesion) {
         RegistroEmpleadoDTO registroEmpleadoDTO = (RegistroEmpleadoDTO) sesion.getAttribute("registroEmpleadoDTO");
         UsuarioDTO usuarioDTO = (UsuarioDTO) sesion.getAttribute("usuario");
+
         if (registroEmpleadoDTO == null) {
             return "redirect:/empleado/registro";
         }
@@ -112,6 +136,15 @@ public class EmpleadoSignUpController {
         return "empleado/auth/FormDatosEmpresariales";
     }
 
+    /**
+     * Guarda los datos empresariales del empleado y completa el proceso de registro.
+     *
+     * @param registroEmpleadoDTO DTO con los datos empresariales.
+     * @param errores Objeto de validación.
+     * @param sesion Sesión actual para obtener y actualizar datos.
+     * @param modelo Modelo para pasar mensajes de error.
+     * @return Redirección al dashboard del empleado o regreso al formulario si hay errores.
+     */
     @PostMapping("/registro/empresarial")
     public String guardarDatosEmpresariales(
             @ModelAttribute("registroEmpleadoDTO") @Validated RegistroEmpleadoDTO registroEmpleadoDTO,
@@ -150,10 +183,15 @@ public class EmpleadoSignUpController {
         return "redirect:/empleado/dashboard";
     }
 
+    /**
+     * Muestra el panel principal del empleado con su información personal.
+     *
+     * @param sesion Sesión actual para identificar al usuario.
+     * @param modelo Modelo con los datos del usuario y empleado.
+     * @return Vista del dashboard del empleado o redirección si el usuario no está logueado.
+     */
     @GetMapping("/dashboard")
-    public String dashboard(
-            HttpSession sesion,
-            Model modelo) {
+    public String dashboard(HttpSession sesion, Model modelo) {
         UsuarioDTO usuarioDTO = (UsuarioDTO) sesion.getAttribute("usuario");
 
         if (usuarioDTO == null) {
@@ -167,5 +205,4 @@ public class EmpleadoSignUpController {
 
         return "empleado/main/empleado-dashboard";
     }
-
 }

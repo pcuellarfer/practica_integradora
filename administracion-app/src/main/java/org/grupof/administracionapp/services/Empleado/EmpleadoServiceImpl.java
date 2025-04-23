@@ -20,17 +20,14 @@ import java.util.stream.Collectors;
 /**
  * Implementación del servicio {@link EmpleadoService} que gestiona
  * las operaciones CRUD relacionadas con los empleados.
- * Utiliza {@link EmpleadoRepository} para interactuar con la base de datos.
+ * Utiliza {@link EmpleadoRepository} y {@link UsuarioRepository} para interactuar con la base de datos.
  */
 @Service
 public class EmpleadoServiceImpl implements EmpleadoService {
 
-
     private final ModelMapper modelMapper = new ModelMapper();
-
     private final EmpleadoRepository empleadoRepository;
     private final UsuarioRepository usuarioRepository;
-
 
     @Autowired
     public EmpleadoServiceImpl(EmpleadoRepository empleadoRepository, UsuarioRepository usuarioRepository) {
@@ -38,42 +35,30 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         this.usuarioRepository = usuarioRepository;
     }
 
-    public RegistroEmpleadoDTO buscarEmpleadoPorUsuarioId(UUID usuarioId) {
-        Optional<Empleado> empleadoOpt = empleadoRepository.findByUsuarioId(usuarioId);
-
-        if (empleadoOpt.isPresent()) {
-            RegistroEmpleadoDTO dto = new RegistroEmpleadoDTO();
-            BeanUtils.copyProperties(empleadoOpt.get(), dto);
-            return dto;
-        }
-
-        return null;
-    }
-
+    /**
+     * Registra un nuevo empleado en el sistema y lo asocia a un usuario existente.
+     *
+     * @param registroEmpleadoDTO Objeto que contiene los datos del nuevo empleado.
+     * @param usuarioDTO Objeto del usuario con el que se asociará el empleado.
+     */
     @Override
-    public RegistroEmpleadoDTO registrarEmpleado(RegistroEmpleadoDTO registroEmpleadoDTO, UsuarioDTO usuarioDTO) {
-        // Obtener el usuario de la base de datos
+    public void registrarEmpleado(RegistroEmpleadoDTO registroEmpleadoDTO, UsuarioDTO usuarioDTO) {
         Usuario usuario = usuarioRepository.findById(usuarioDTO.getId())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        // Mapear DTO a entidad
         Empleado empleado = modelMapper.map(registroEmpleadoDTO, Empleado.class);
-
-        // Campos que no están en el DTO
         empleado.setFechaContratacion(LocalDateTime.now());
         empleado.setUsuario(usuario);
 
-        // Guardar empleado
         empleadoRepository.save(empleado);
-        return registroEmpleadoDTO;
     }
 
     /**
      * Edita los datos de un empleado existente.
      *
-     * @param id identificador del empleado a editar.
-     * @param dto objeto con los nuevos datos del empleado.
-     * @return DTO con los datos actualizados, o null si no se encontró el empleado.
+     * @param id Identificador del empleado a editar.
+     * @param dto Objeto con los nuevos datos del empleado.
+     * @return DTO del empleado actualizado, o null si no se encontró.
      */
     @Override
     public RegistroEmpleadoDTO editarEmpleado(UUID id, RegistroEmpleadoDTO dto) {
@@ -90,9 +75,9 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     }
 
     /**
-     * Elimina un empleado por su identificador.
+     * Elimina lógicamente un empleado del sistema.
      *
-     * @param id identificador del empleado a eliminar.
+     * @param id Identificador del empleado a eliminar.
      * @return true si el empleado fue eliminado, false si no existía.
      */
     @Override
@@ -105,8 +90,8 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     /**
      * Busca un empleado por su identificador.
      *
-     * @param id identificador del empleado.
-     * @return DTO del empleado encontrado o null si no existe.
+     * @param id Identificador del empleado.
+     * @return DTO del empleado encontrado, o null si no existe.
      */
     @Override
     public RegistroEmpleadoDTO buscarEmpleado(UUID id) {
@@ -119,16 +104,36 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     }
 
     /**
-     * Obtiene una lista de todos los empleados registrados.
+     * Obtiene una lista de todos los empleados registrados en el sistema.
      *
-     * @return lista de DTOs de empleados.
+     * @return Lista de DTOs representando a los empleados.
      */
     @Override
     public List<RegistroEmpleadoDTO> listarEmpleados() {
-        return empleadoRepository.findAll().stream().map(emp -> {
+        return empleadoRepository.findAll().stream()
+                .map(emp -> {
+                    RegistroEmpleadoDTO dto = new RegistroEmpleadoDTO();
+                    BeanUtils.copyProperties(emp, dto);
+                    return dto;
+                }).collect(Collectors.toList());
+    }
+
+    /**
+     * Busca un empleado a partir del identificador del usuario al que está asociado.
+     *
+     * @param usuarioId Identificador del usuario asociado al empleado.
+     * @return DTO del empleado correspondiente, o null si no existe.
+     */
+    @Override
+    public RegistroEmpleadoDTO buscarEmpleadoPorUsuarioId(UUID usuarioId) {
+        Optional<Empleado> empleadoOpt = empleadoRepository.findByUsuarioId(usuarioId);
+
+        if (empleadoOpt.isPresent()) {
             RegistroEmpleadoDTO dto = new RegistroEmpleadoDTO();
-            BeanUtils.copyProperties(emp, dto);
+            BeanUtils.copyProperties(empleadoOpt.get(), dto);
             return dto;
-        }).collect(Collectors.toList());
+        }
+
+        return null;
     }
 }
