@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * Controlador responsable de gestionar el inicio y cierre de sesión de los usuarios,
- * así como la redirección a los paneles correspondientes según su rol.
  * Proporciona formularios para introducir el nombre de usuario (email) y la contraseña,
  * validando los datos e interactuando con el servicio de usuario.
  */
