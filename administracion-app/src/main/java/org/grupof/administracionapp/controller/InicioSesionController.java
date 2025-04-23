@@ -3,6 +3,7 @@ package org.grupof.administracionapp.controller;
 import jakarta.servlet.http.HttpSession;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
 import org.grupof.administracionapp.services.Usuario.UsuarioService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/login")
 public class InicioSesionController {
 
+    private final PasswordEncoder passwordEncoder;
     private final UsuarioService usuarioService;
 
     /**
@@ -24,8 +26,9 @@ public class InicioSesionController {
      *
      * @param usuarioService servicio de gestión de usuarios.
      */
-    public InicioSesionController(UsuarioService usuarioService) {
+    public InicioSesionController(UsuarioService usuarioService, PasswordEncoder passwordEncoder) {
         this.usuarioService = usuarioService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -126,6 +129,7 @@ public class InicioSesionController {
     @PostMapping("/password")
     public String procesarFormularioContrasena(@ModelAttribute("usuario") UsuarioDTO usuarioDTO,
                                                @RequestParam String contrasena,
+                                               HttpSession session,
                                                Model model) {
         if (usuarioDTO == null || usuarioDTO.getEmail().isBlank()) {
             return "redirect:/login/username";
@@ -151,11 +155,14 @@ public class InicioSesionController {
 //            return "usuario/auth/login-contrasena";
 //        }
 
+        UsuarioDTO usuarioBBDD = usuarioService.buscarPorEmail(usuarioDTO.getEmail());
 
-        usuarioDTO.setContrasena(contrasena);
-        usuarioService.iniciarSesion(usuarioDTO);
+        if (!passwordEncoder.matches(contrasena, usuarioBBDD.getContrasena())){
+            model.addAttribute("error", "Contraseña incorrecta.");
+            return "usuario/auth/login-contrasena";
+        }
 
-
+        session.setAttribute("usuario", usuarioBBDD);
         return "redirect:/login/dashboard";
     }
 
@@ -171,7 +178,6 @@ public class InicioSesionController {
     public String dashboard(HttpSession session, Model model) {
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
         model.addAttribute("email", usuario.getEmail());
-        System.err.println("Devuelve formulario");
         return "usuario/main/usuario-dashboard";
     }
 }

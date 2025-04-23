@@ -32,7 +32,6 @@ public class UsuarioSignUpController {
     public UsuarioSignUpController(UsuarioService usuarioService, PasswordEncoder passwordEncoder) {
         this.usuarioService = usuarioService;
         this.passwordEncoder = passwordEncoder;
-
     }
 
     /**
