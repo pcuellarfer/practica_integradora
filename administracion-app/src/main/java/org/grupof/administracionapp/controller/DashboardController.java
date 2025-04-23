@@ -19,9 +19,8 @@ public class DashboardController {
         this.empleadoService = empleadoService;
     }
 
-    //inicio sesion
     @GetMapping("/dashboard")
-    public String dashboard1(HttpSession session, Model modelo) {
+    public String dashboard(HttpSession session, Model modelo) {
 
         UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
 
