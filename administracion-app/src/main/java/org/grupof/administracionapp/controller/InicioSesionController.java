@@ -10,9 +10,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * Controlador responsable de gestionar el inicio y cierre de sesión de los usuarios,
- * Proporciona formularios para introducir el nombre de usuario (email) y la contraseña,
- * validando los datos e interactuando con el servicio de usuario.
+ * Controlador responsable de gestionar el inicio y cierre de sesión de los usuarios.
+ * Proporciona formularios para introducir el email y la contraseña, validando los datos
+ * e interactuando con el servicio de usuario.
  */
 @Controller
 @RequestMapping("/login")
@@ -22,9 +22,10 @@ public class InicioSesionController {
     private final UsuarioService usuarioService;
 
     /**
-     * Constructor que inyecta el servicio encargado de la lógica relacionada con usuarios.
+     * Constructor que inyecta las dependencias necesarias para la gestión de autenticación.
      *
-     * @param usuarioService servicio de gestión de usuarios.
+     * @param usuarioService servicio encargado de las operaciones con usuarios.
+     * @param passwordEncoder codificador de contraseñas utilizado para validaciones.
      */
     public InicioSesionController(UsuarioService usuarioService, PasswordEncoder passwordEncoder) {
         this.usuarioService = usuarioService;
@@ -32,11 +33,11 @@ public class InicioSesionController {
     }
 
     /**
-     * Obtiene o crea un objeto UsuarioDTO para la sesión.
-     * Se utiliza como modelo compartido en los formularios de login.
+     * Añade un objeto {@link UsuarioDTO} al modelo, reutilizando el de la sesión si existe.
+     * Este método se ejecuta antes de cada controlador con acceso al modelo "usuario".
      *
      * @param session sesión HTTP actual.
-     * @return objeto UsuarioDTO existente en sesión o uno nuevo si no existe.
+     * @return objeto UsuarioDTO existente o uno nuevo si no hay usuario en sesión.
      */
     @ModelAttribute("usuario")
     public UsuarioDTO getUsuario(HttpSession session) {
@@ -48,10 +49,10 @@ public class InicioSesionController {
     }
 
     /**
-     * Cierra la sesión actual, invalidando todos los datos de usuario.
+     * Invalida la sesión actual del usuario, cerrando la sesión.
      *
-     * @param session sesión HTTP actual.
-     * @return redirección al formulario de introducción del email.
+     * @param session sesión HTTP a invalidar.
+     * @return redirección al formulario de ingreso del email.
      */
     @GetMapping("/logout")
     public String cerrarSesion(HttpSession session) {
@@ -61,10 +62,9 @@ public class InicioSesionController {
 
     /**
      * Muestra el formulario para introducir el email del usuario.
-     * Si ya hay un usuario en sesión, continúa con el proceso normal.
      *
-     * @param usuario usuario almacenado en sesión.
-     * @return vista del formulario de email.
+     * @param usuario objeto de usuario recuperado del modelo (puede estar en sesión).
+     * @return vista del formulario de login por email.
      */
     @GetMapping("/username")
     public String mostrarFormularioNombre(@ModelAttribute("usuario") UsuarioDTO usuario) {
@@ -72,14 +72,14 @@ public class InicioSesionController {
     }
 
     /**
-     * Procesa el formulario de ingreso del email.
-     * Verifica si el email existe en el sistema y guarda el usuario en sesión.
+     * Procesa el formulario de email del usuario.
+     * Si el email existe, guarda el usuario en sesión y redirige a la vista de contraseña.
      *
-     * @param usuarioDTO objeto usuario con el email ingresado.
-     * @param result resultado de la validación del objeto.
+     * @param usuarioDTO objeto que contiene el email ingresado.
+     * @param result resultado de la validación del formulario.
      * @param session sesión HTTP actual.
-     * @param model modelo para enviar mensajes de error a la vista.
-     * @return redirección al formulario de contraseña o mensaje de error si el email no existe.
+     * @param model modelo para comunicar mensajes a la vista.
+     * @return vista de contraseña o recarga del formulario de email en caso de error.
      */
     @PostMapping("/username")
     public String procesarFormularioNombre(@ModelAttribute("usuario") UsuarioDTO usuarioDTO,
@@ -98,15 +98,23 @@ public class InicioSesionController {
             return "usuario/auth/login-nombre";
         }
 
+        boolean usuarioBLoqueado = usuarioService.buscarBloqueado(usuarioDTO.getEmail());
+
+        if (usuarioBLoqueado) {
+            model.addAttribute("error", "El usuario está bloqueado.");
+            return "usuario/auth/login-nombre";
+        }
+
         session.setAttribute("usuario", usuarioExistente);
         return "usuario/auth/login-contrasena";
     }
 
     /**
-     * Muestra el formulario para introducir la contraseña del usuario.
+     * Muestra el formulario para ingresar la contraseña.
+     * Redirige al formulario de email si no hay email definido en sesión.
      *
-     * @param usuarioDTO usuario actual obtenido de la sesión.
-     * @return vista del formulario de contraseña o redirección si no hay email definido.
+     * @param usuarioDTO usuario obtenido del modelo o sesión.
+     * @return vista de contraseña o redirección si no hay email.
      */
     @GetMapping("/password")
     public String mostrarFormularioContrasena(@ModelAttribute("usuario") UsuarioDTO usuarioDTO) {
@@ -118,13 +126,15 @@ public class InicioSesionController {
     }
 
     /**
-     * Procesa el formulario de ingreso de contraseña.
-     * Si la contraseña es correcta, autentica al usuario y lo redirige a su dashboard.
+     * Procesa el ingreso de la contraseña del usuario.
+     * Si es válida, guarda el usuario en sesión y redirige al dashboard.
+     * Si no, muestra mensaje de error y permite reintentar.
      *
-     * @param usuarioDTO usuario actual obtenido de la sesión.
-     * @param contrasena contraseña ingresada por el usuario.
-     * @param model modelo para enviar mensajes de error a la vista.
-     * @return redirección al panel correspondiente al tipo de usuario o mensaje de error.
+     * @param usuarioDTO usuario obtenido del modelo o sesión.
+     * @param contrasena contraseña ingresada.
+     * @param session sesión HTTP actual.
+     * @param model modelo para enviar mensajes a la vista.
+     * @return redirección al dashboard o recarga de la vista de contraseña si hay error.
      */
     @PostMapping("/password")
     public String procesarFormularioContrasena(@ModelAttribute("usuario") UsuarioDTO usuarioDTO,
@@ -139,40 +149,46 @@ public class InicioSesionController {
             model.addAttribute("error", "La contraseña no puede estar vacía.");
             return "usuario/auth/login-contrasena";
         }
-//        if (!usuarioService.validarContrasena(usuarioDTO.getEmail(), contrasena)) {
-//            model.addAttribute("error", "Contraseña incorrecta.");
-//            Integer intentos = (Integer) session.getAttribute("intentos");
-//            if (intentos == null) {
-//                intentos = 0;
-//            }
-//            intentos++;
-//            session.setAttribute("intentos", intentos);
-//
-//            if (intentos >= 3) {
-//                session.invalidate();
-//                return "redirect:/login/bloqueado";
-//            }
-//            return "usuario/auth/login-contrasena";
-//        }
 
+        // Buscar en BBDD
         UsuarioDTO usuarioBBDD = usuarioService.buscarPorEmail(usuarioDTO.getEmail());
 
-        if (!passwordEncoder.matches(contrasena, usuarioBBDD.getContrasena())){
+        // Verificación de contraseña
+        if (!passwordEncoder.matches(contrasena, usuarioBBDD.getContrasena())) {
             model.addAttribute("error", "Contraseña incorrecta.");
+
+            // Manejar contador de intentos fallidos en sesión
+            Integer intentos = (Integer) session.getAttribute("intentos");
+            if (intentos == null) intentos = 0;
+            intentos++;
+
+            session.setAttribute("intentos", intentos);
+
+            if (intentos >= 3) {
+                // Bloquear el usuario en la base de datos
+                usuarioService.bloquearUsuario(usuarioDTO.getEmail(), "Demasiados intentos fallidos");
+                model.addAttribute("error", "El usuario bloqueado por demasiados intentos fallidos.");
+                session.invalidate();
+                return "redirect:/login/username";
+            }
+
             return "usuario/auth/login-contrasena";
         }
 
+        // Si contraseña es correcta
         session.setAttribute("usuario", usuarioBBDD);
+        session.removeAttribute("intentos"); // Reiniciar contador
         return "redirect:/login/dashboard";
     }
 
+
     /**
-     * Muestra un dashboard genérico para usuarios cuyo tipo no está claramente definido,
-     * o cuando se accede directamente a la ruta de dashboard.
+     * Muestra el panel principal del usuario una vez autenticado.
+     * Si el usuario no está en sesión, redirige automáticamente desde los filtros previos.
      *
-     * @param session sesión HTTP actual.
-     * @param model modelo para pasar el nombre del usuario a la vista.
-     * @return vista del panel general de usuario.
+     * @param session sesión HTTP activa.
+     * @param model modelo con datos del usuario para la vista.
+     * @return vista del panel principal del usuario.
      */
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
@@ -181,4 +197,5 @@ public class InicioSesionController {
         return "usuario/main/usuario-dashboard";
     }
 }
+
 

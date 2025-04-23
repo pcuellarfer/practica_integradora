@@ -118,6 +118,22 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .orElse(null);
     }
 
+    @Override
+    public boolean buscarBloqueado(String email) {
+        Optional<Usuario> usuarioOptional = usuarioRepository.findByEmail(email);
+        return usuarioOptional.map(Usuario::isEstadoBloqueado).orElse(false);
+    }
+
+    @Override
+    public void bloquearUsuario(String email, String demasiadosIntentosFallidos) {
+        Optional<Usuario> usuarioOptional = usuarioRepository.findByEmail(email);
+        if (usuarioOptional.isPresent()) {
+            Usuario usuario = usuarioOptional.get();
+            usuario.setEstadoBloqueado(true);
+            usuario.setMotivoBloqueo("Demasiados intentos fallidos");
+            usuarioRepository.save(usuario);
+        }
+    }
 
 //    private Usuario convertToEntity (RegistroUsuarioDTO registroUsuarioDTO) {
 //        return modelMapper.map(registroUsuarioDTO, Usuario.class);
