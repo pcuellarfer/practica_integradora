@@ -1,7 +1,6 @@
 package org.grupof.administracionapp.controller;
 
 import jakarta.servlet.http.HttpSession;
-import org.grupof.administracionapp.auxiliar.TipoUsuario;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
 import org.grupof.administracionapp.services.Usuario.UsuarioService;
 import org.springframework.stereotype.Controller;
@@ -137,17 +136,26 @@ public class InicioSesionController {
             model.addAttribute("error", "La contraseña no puede estar vacía.");
             return "usuario/auth/login-contrasena";
         }
+//        if (!usuarioService.validarContrasena(usuarioDTO.getEmail(), contrasena)) {
+//            model.addAttribute("error", "Contraseña incorrecta.");
+//            Integer intentos = (Integer) session.getAttribute("intentos");
+//            if (intentos == null) {
+//                intentos = 0;
+//            }
+//            intentos++;
+//            session.setAttribute("intentos", intentos);
+//
+//            if (intentos >= 3) {
+//                session.invalidate();
+//                return "redirect:/login/bloqueado";
+//            }
+//            return "usuario/auth/login-contrasena";
+//        }
+
 
         usuarioDTO.setContrasena(contrasena);
         usuarioService.iniciarSesion(usuarioDTO);
 
-        if (usuarioDTO.getTipoUsuario() == TipoUsuario.EMPLEADO) {
-            return "empleado/main/empleado-dashboard";
-        }
-
-        if (usuarioDTO.getTipoUsuario() == TipoUsuario.ADMINISTRADOR) {
-            return "admin/main/admin-dashboard";
-        }
 
         return "redirect:/login/dashboard";
     }
@@ -163,7 +171,8 @@ public class InicioSesionController {
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
-        model.addAttribute("nombre", usuario.getNombre());
+        model.addAttribute("email", usuario.getEmail());
+        System.err.println("Devuelve formulario");
         return "usuario/main/usuario-dashboard";
     }
 }
