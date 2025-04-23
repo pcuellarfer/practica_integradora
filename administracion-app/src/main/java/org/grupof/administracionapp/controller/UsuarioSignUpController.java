@@ -2,7 +2,6 @@ package org.grupof.administracionapp.controller;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import org.grupof.administracionapp.dto.Usuario.RegistroUsuarioDTO;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
 import org.grupof.administracionapp.services.Usuario.UsuarioService;
 import org.springframework.stereotype.Controller;
@@ -52,7 +51,7 @@ public class UsuarioSignUpController {
      */
     @GetMapping("/signup")
     public String mostrarFormularioRegistro(Model modelo) {
-        modelo.addAttribute("registroUsuarioDTO", new RegistroUsuarioDTO());
+        modelo.addAttribute("usuarioDTO", new UsuarioDTO());
         return "usuario/auth/signUp-usuario";
     }
 
@@ -60,7 +59,6 @@ public class UsuarioSignUpController {
      * Procesa el formulario de registro de un nuevo usuario.
      * Valida los datos introducidos y registra al usuario si todo es correcto.
      *
-     * @param registroUsuarioDTO DTO con los datos introducidos por el usuario.
      * @param errores objeto que contiene los errores de validación.
      * @param session sesión HTTP actual para almacenar el usuario autenticado.
      * @param modelo modelo de datos para la vista.
@@ -68,7 +66,7 @@ public class UsuarioSignUpController {
      */
     @PostMapping("/signup")
     public String registrarUsuario(
-            @ModelAttribute("registroUsuarioDTO") @Valid UsuarioDTO usuarioDTO,
+            @ModelAttribute("usuarioDTO") @Valid UsuarioDTO usuarioDTO,
             BindingResult errores,
             HttpSession session,
             Model modelo) {

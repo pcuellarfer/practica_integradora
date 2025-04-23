@@ -23,10 +23,10 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public UsuarioDTO registrarUsuario(UsuarioDTO registroUsuarioDTO) {
+    public UsuarioDTO registrarUsuario(UsuarioDTO usuarioDTO) {
 
         //devuelve usuario DTO con mucho NULL
-        Usuario usuario = modelMapper.map(registroUsuarioDTO, Usuario.class);
+        Usuario usuario = modelMapper.map(usuarioDTO, Usuario.class);
         //Usuario usuario = convertToEntity(registroUsuarioDTO);
         usuario = usuarioRepository.save(usuario);
 
@@ -111,10 +111,8 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .map(usuario -> {
                     UsuarioDTO dto = new UsuarioDTO();
                     dto.setId(usuario.getId());
-                    dto.setNombre(usuario.getNombre());
                     dto.setEmail(usuario.getEmail());
                     dto.setContrasena(usuario.getContrasena());
-                    dto.setTipoUsuario(usuario.getTipoUsuario());
                     return dto;
                 })
                 .orElse(null);
