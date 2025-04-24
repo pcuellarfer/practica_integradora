@@ -23,15 +23,50 @@ public class Empleado{
     @Column(name = "PK_empleado")
     private UUID id;
 
+    //paso1 datos personales
     private String nombre;
     private String apellido;
-    private String fechaNacimiento;
+    private String foto;
     private String genero;
+    private String fechaNacimiento;
+    private String edad;
+    private String pais;
+    private String comentarios;
 
+    //paso2 datos de contacto
+    private String tipoDocumento;
+    private String documento;
+    private String prefijoTelefono;
+    private String telefono;
+    //opcionalmente otros telefonos de contacto?
+    private String direccion;
+        private String tipovia;
+        private String nombreVia;
+        private String numVia;
+        private String portal;
+        private String planta;
+        private String puerta;
+        private String localidad;
+        private String region;
+        private String codigoPostal;
+
+    //paso3 datos profesionales
     private String departamento;
-    private String puesto;
+    private String especialidades;
 
-    private BigDecimal salario;
+    //paso 4 datos economicos
+    private String cuenta;
+        private String banco;
+        private String numCuenta;
+    private String salario;
+    private String comision;
+    private String tarjetaCredito;
+        private String tipoTarjeta;
+        private String numTarjeta;
+        private String caducidad;
+            private String mes;
+            private String ano;
+        private String cvc;
 
     @Column(name = "fecha_contratacion")
     private LocalDateTime fechaContratacion;
