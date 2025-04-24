@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -27,10 +28,18 @@ public class Empleado {
     private String nombre;
     private String apellido;
     private String foto;
-    private String genero;
-    private String fechaNacimiento;
-    private String edad;
-    private String pais;
+
+    @ManyToOne
+    @JoinColumn(name = "genero_id")
+    private Genero genero;
+
+    private LocalDate fechaNacimiento;
+    private int edad;
+
+    @ManyToOne
+    @JoinColumn(name = "pais_id")
+    private Pais pais;
+
     private String comentarios;
 
     //paso2 datos de contacto
