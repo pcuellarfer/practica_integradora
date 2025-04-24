@@ -1,4 +1,4 @@
-package org.grupof.administracionapp.entity;
+package org.grupof.administracionapp.entity.registroEmpleado;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

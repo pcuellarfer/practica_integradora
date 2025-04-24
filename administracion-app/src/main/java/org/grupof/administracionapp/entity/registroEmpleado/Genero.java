@@ -1,4 +1,4 @@
-package org.grupof.administracionapp.entity;
+package org.grupof.administracionapp.entity.registroEmpleado;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -19,6 +19,7 @@ public class Genero {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    //femenino, masculino, no binaro, etc
     private String identidad;
 
 }
