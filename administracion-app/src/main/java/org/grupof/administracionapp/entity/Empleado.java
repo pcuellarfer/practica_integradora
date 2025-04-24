@@ -16,7 +16,7 @@ import java.util.UUID;
 @Setter
 @Entity
 @Table(name = "empleados")
-public class Empleado{
+public class Empleado {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -40,15 +40,15 @@ public class Empleado{
     private String telefono;
     //opcionalmente otros telefonos de contacto?
     private String direccion;
-        private String tipovia;
-        private String nombreVia;
-        private String numVia;
-        private String portal;
-        private String planta;
-        private String puerta;
-        private String localidad;
-        private String region;
-        private String codigoPostal;
+    private String tipovia;
+    private String nombreVia;
+    private String numVia;
+    private String portal;
+    private String planta;
+    private String puerta;
+    private String localidad;
+    private String region;
+    private String codigoPostal;
 
     //paso3 datos profesionales
     private String departamento;
@@ -56,17 +56,17 @@ public class Empleado{
 
     //paso 4 datos economicos
     private String cuenta;
-        private String banco;
-        private String numCuenta;
+    private String banco;
+    private String numCuenta;
     private String salario;
     private String comision;
     private String tarjetaCredito;
-        private String tipoTarjeta;
-        private String numTarjeta;
-        private String caducidad;
-            private String mes;
-            private String ano;
-        private String cvc;
+    private String tipoTarjeta;
+    private String numTarjeta;
+    private String caducidad;
+    private String mes;
+    private String ano;
+    private String cvc;
 
     @Column(name = "fecha_contratacion")
     private LocalDateTime fechaContratacion;
