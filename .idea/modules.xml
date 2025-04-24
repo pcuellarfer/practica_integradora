@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/empleado-app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/empleado-app.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/org.pcuellar.administracion-app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/org.pcuellar.administracion-app.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/administracion-app/practica_integradora.administracion-app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/administracion-app/practica_integradora.administracion-app.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/empleado-app/practica_integradora.empleado-app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/empleado-app/practica_integradora.empleado-app.main.iml" />
     </modules>
