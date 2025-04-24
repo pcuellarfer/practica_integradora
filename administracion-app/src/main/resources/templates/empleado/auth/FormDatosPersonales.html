@@ -14,12 +14,12 @@
         <div class="row align-items-center">
             <div class="col-2"></div>
             <div class="col">
-                <h1 class="text-center mb-2">Introduce los datos</h1>
+                <h1 class="text-center mb-2">Paso 1 - Datos personales</h1>
             </div>
             <div class="col-2"></div>
         </div>
         <!-- Vincula el formulario al objeto "usuario" del modelo -->
-        <form th:action="@{/empleado/registro}" th:object="${registroEmpleadoDTO}" method="post">
+        <form th:action="@{}" th:object="${registroEmpleadoDTO}" method="post">
 
             <div class="mb-3">
                 <label for="nombre" class="form-label">Usuario:</label>
@@ -33,16 +33,50 @@
                 <span class="error-message" th:if="${#fields.hasErrors('apellido')}" th:errors="*{apellido}"></span>
             </div>
 
+            <!--Aqui iria el campo para la foto-->
+
+            <div class="mb-3">
+                <label class="form-label">Género:</label>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="femenino" name="genero" value="Femenino" th:field="*{genero}" checked>
+                    <label class="form-check-label" for="femenino">Femenino</label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="masculino" name="genero" value="Masculino" th:field="*{genero}">
+                    <label class="form-check-label" for="masculino">Masculino</label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="otro" name="genero" value="Otro" th:field="*{genero}">
+                    <label class="form-check-label" for="otro">Otro</label>
+                </div>
+
+                <span class="error-message" th:if="${#fields.hasErrors('genero')}" th:errors="*{genero}"></span>
+
+                <!--Boton de deseleccionar radios-->
+                <!--Boton de seleccionar el primer radio-->
+            </div>
+
             <div class="mb-3">
                 <label for="fechaNacimiento" class="form-label">Fecha de nacimiento:</label>
-                <input type="date" id="fechaNacimiento" name="fechaNacimiento" class="form-control" th:field="*{fechaNacimiento}">
+                <input type="text" id="fechaNacimiento" name="fechaNacimiento" class="form-control" th:field="*{fechaNacimiento}">
                 <span class="error-message" th:if="${#fields.hasErrors('fechaNacimiento')}" th:errors="*{fechaNacimiento}"></span>
             </div>
 
             <div class="mb-3">
-                <label for="genero" class="form-label">genero:</label>
-                <input type="text" id="genero" name="genero" class="form-control" th:field="*{genero}">
-                <span class="error-message" th:if="${#fields.hasErrors('genero')}" th:errors="*{genero}"></span>
+                <label for="edad" class="form-label">apellido:</label>
+                <input type="text" id="edad" name="edad" class="form-control" th:field="*{edad}">
+                <span class="error-message" th:if="${#fields.hasErrors('edad')}" th:errors="*{edad}"></span>
+            </div>
+
+            <!--Campo que recorra toda la tabla de la entidad pais y haga un select simple-->
+
+            <div class="mb-3">
+                <label for="comentarios" class="form-label">Comentarios:</label>
+                <textarea id="comentarios" name="comentarios" class="form-control" th:field="*{comentarios}" rows="4"></textarea>
+                <span class="error-message" th:if="${#fields.hasErrors('comentarios')}" th:errors="*{comentarios}"></span>
             </div>
 
             <button type="submit" class="btn btn-primary w-100">Enviar</button>
