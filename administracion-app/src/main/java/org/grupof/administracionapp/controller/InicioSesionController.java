@@ -2,7 +2,10 @@ package org.grupof.administracionapp.controller;
 
 import jakarta.servlet.http.HttpSession;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
+import org.grupof.administracionapp.services.EmailService;
 import org.grupof.administracionapp.services.Usuario.UsuarioService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +23,7 @@ public class InicioSesionController {
 
     private final PasswordEncoder passwordEncoder;
     private final UsuarioService usuarioService;
+    private final EmailService emailService;
 
     /**
      * Constructor que inyecta las dependencias necesarias para la gestión de autenticación.
@@ -27,9 +31,10 @@ public class InicioSesionController {
      * @param usuarioService servicio encargado de las operaciones con usuarios.
      * @param passwordEncoder codificador de contraseñas utilizado para validaciones.
      */
-    public InicioSesionController(UsuarioService usuarioService, PasswordEncoder passwordEncoder) {
+    public InicioSesionController(UsuarioService usuarioService, PasswordEncoder passwordEncoder, EmailService emailService) {
         this.usuarioService = usuarioService;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
     /**
@@ -179,6 +184,29 @@ public class InicioSesionController {
         session.setAttribute("usuario", usuarioBBDD);
         session.removeAttribute("intentos"); // Reiniciar contador
         return "redirect:/dashboard/dashboard";
+    }
+
+
+
+    @GetMapping("/enviar-correo")
+    public ResponseEntity<String> enviarCorreo() {
+
+        return ResponseEntity.ok("Correo enviado");
+    }
+
+    @GetMapping("/recuperación")
+    public String mostrarFormularioRecuperacion() {
+        return "usuario/auth/recuperacion";
+    }
+
+    @PostMapping("/recuperación")
+    public String procesarFormularioRecuperacion(@RequestParam String email, Model model) {
+        String asunto = "Verifica tu cuenta";
+        String enlace = "http://localhost:8080/verificacion?token=abc123";
+
+        emailService.enviarCorreoConEnlace(email, asunto, enlace);
+        model.addAttribute("mensaje", "Se ha enviado un enlace de recuperación a tu correo.");
+        return "usuario/auth/recuperacion";
     }
 }
 
