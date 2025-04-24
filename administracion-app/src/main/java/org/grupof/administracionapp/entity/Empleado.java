@@ -33,6 +33,8 @@ public class Empleado{
 
     private BigDecimal salario;
 
+    //ayuda
+
     @Column(name = "fecha_contratacion")
     private LocalDateTime fechaContratacion;
 
