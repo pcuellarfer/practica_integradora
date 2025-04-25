@@ -1,5 +1,6 @@
 package org.grupof.administracionapp.services.Usuario;
 
+import org.grupof.administracionapp.dto.Usuario.RegistroUsuarioDTO;
 import org.modelmapper.ModelMapper;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
 import org.grupof.administracionapp.entity.Usuario;
@@ -35,14 +36,15 @@ public class UsuarioServiceImpl implements UsuarioService {
     /**
      * Registra un nuevo usuario en la base de datos.
      *
-     * @param usuarioDTO objeto DTO con los datos del usuario a registrar
+     * @param registroUsuarioDTO objeto DTO con los datos del usuario a registrar
      * @return el usuario registrado como DTO
      */
     @Override
-    public UsuarioDTO registrarUsuario(UsuarioDTO usuarioDTO) {
-        Usuario usuario = modelMapper.map(usuarioDTO, Usuario.class);
+    public UsuarioDTO registrarUsuario(RegistroUsuarioDTO registroUsuarioDTO) {
+        Usuario usuario = modelMapper.map(registroUsuarioDTO, Usuario.class);
         usuario = usuarioRepository.save(usuario);
-        return modelMapper.map(usuario, UsuarioDTO.class);
+        return modelMapper.map(usuario, UsuarioDTO.class);//devolver directamente UsuarioDTO
+        //return modelMapper.map(usuario, RegistroUsuarioDTO.class); //para que devuelva un RegistroUsuarioDTO
     }
 
     /**

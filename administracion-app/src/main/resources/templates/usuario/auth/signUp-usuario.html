@@ -22,7 +22,7 @@
         </div>
 
         <!-- Formulario de Registro -->
-        <form th:action="@{/usuario/signup}" th:object="${usuarioDTO}" method="post">
+        <form th:action="@{/usuario/signup}" th:object="${registroUsuarioDTO}" method="post">
             <div class="mb-3">
                 <label for="email" class="form-label">Correo electrónico:</label>
                 <input type="text" id="email" name="email" class="form-control" th:field="*{email}">

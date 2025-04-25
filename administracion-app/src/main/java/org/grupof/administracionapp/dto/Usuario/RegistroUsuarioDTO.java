@@ -13,9 +13,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor @NoArgsConstructor  @Data
 public class RegistroUsuarioDTO {
 
-    @NotBlank(message = "El nombre no puede estar vacío")
-    private String nombre;
-
     @NotBlank(message = "El email no puede estar vacío")
     @Email(message = "El email no tiene un formato válido")
     private String email;
@@ -26,10 +23,5 @@ public class RegistroUsuarioDTO {
             message = "La contraseña debe tener entre 8 y 12 caracteres, incluyendo una mayúscula, una minúscula, un número y un signo de puntuación."
     )
     private String contrasena;
-
-    private TipoUsuario tipoUsuario;
-    private boolean estadoBloqueado = false;
-    private LocalDateTime bloqueoFechaHora;
-    private String motivoBloqueo;
 
 }

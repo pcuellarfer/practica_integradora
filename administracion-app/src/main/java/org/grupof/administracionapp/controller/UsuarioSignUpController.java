@@ -2,6 +2,7 @@ package org.grupof.administracionapp.controller;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.grupof.administracionapp.dto.Usuario.RegistroUsuarioDTO;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
 import org.grupof.administracionapp.services.Usuario.UsuarioService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -59,7 +60,7 @@ public class UsuarioSignUpController {
      */
     @GetMapping("/signup")
     public String mostrarFormularioRegistro(Model modelo) {
-        modelo.addAttribute("usuarioDTO", new UsuarioDTO());
+        modelo.addAttribute("registroUsuarioDTO", new RegistroUsuarioDTO());
         return "usuario/auth/signUp-usuario";
     }
 
@@ -67,7 +68,7 @@ public class UsuarioSignUpController {
      * Procesa el formulario de registro de usuario. Valida los datos recibidos y, si son correctos,
      * registra un nuevo usuario en el sistema y lo almacena en la sesión actual.
      *
-     * @param usuarioDTO objeto que contiene los datos introducidos en el formulario.
+     * @param registroUsuarioDTO objeto que contiene los datos introducidos en el formulario.
      * @param errores    objeto que contiene los errores de validación del formulario.
      * @param session    sesión HTTP actual para almacenar al usuario autenticado.
      * @param modelo     modelo de datos para la vista.
@@ -76,24 +77,24 @@ public class UsuarioSignUpController {
      */
     @PostMapping("/signup")
     public String registrarUsuario(
-            @ModelAttribute("usuarioDTO") @Valid UsuarioDTO usuarioDTO,
+            @ModelAttribute("registroUsuarioDTO") @Valid RegistroUsuarioDTO registroUsuarioDTO,
             BindingResult errores,
             HttpSession session,
             Model modelo) {
 
-        if (usuarioService.existePorEmail(usuarioDTO.getEmail())) {
+        if (usuarioService.existePorEmail(registroUsuarioDTO.getEmail())) {
             modelo.addAttribute("error", "Ya existe un usuario con ese email.");
             return "usuario/auth/signUp-usuario";
         }
 
-//        if (errores.hasErrors()) {
-//            return "usuario/auth/signUp-usuario";
-//        }
+        if (errores.hasErrors()) {
+            System.err.println("tiene errores");
+            return "usuario/auth/signUp-usuario";
+        }
 
-        usuarioDTO.setEmail(usuarioDTO.getEmail());
-        usuarioDTO.setContrasena(passwordEncoder.encode(usuarioDTO.getContrasena()));
+        registroUsuarioDTO.setContrasena(passwordEncoder.encode(registroUsuarioDTO.getContrasena()));
 
-        UsuarioDTO usuario = usuarioService.registrarUsuario(usuarioDTO);
+        UsuarioDTO usuario = usuarioService.registrarUsuario(registroUsuarioDTO);
         session.setAttribute("usuario", usuario);
 
         System.err.println("Usuario registrado: " + usuario.getEmail());
