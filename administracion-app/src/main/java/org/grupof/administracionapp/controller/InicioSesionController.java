@@ -120,20 +120,22 @@ public class InicioSesionController {
     }
 
     /**
-     * Muestra el formulario para ingresar la contraseña.
-     * Redirige al formulario de email si no hay email definido en sesión.
+     * Muestra el formulario para restablecer la contraseña del usuario.
+     * Si el objeto {@link UsuarioDTO} es nulo o el correo electrónico está vacío,
+     * redirige al usuario a la página de inicio de sesión.
      *
-     * @param usuarioDTO usuario obtenido del modelo o sesión.
-     * @return vista de contraseña o redirección si no hay email.
+     * @param usuarioDTO El objeto que contiene la información del usuario.
+     * @return El nombre de la vista a mostrar, o una redirección si el correo es inválido.
      */
     @GetMapping("/password")
     public String mostrarFormularioContrasena(@ModelAttribute("usuario") UsuarioDTO usuarioDTO) {
-        if (usuarioDTO == null || usuarioDTO.getEmail().isBlank()) {
+        // Verificamos si usuarioDTO es null o si el campo email es null o está vacío
+        if (usuarioDTO == null || usuarioDTO.getEmail() == null || usuarioDTO.getEmail().isBlank()) {
             return "redirect:/login/username";
         }
-
         return "usuario/auth/login-contrasena";
     }
+
 
     /**
      * Procesa el ingreso de la contraseña del usuario.
