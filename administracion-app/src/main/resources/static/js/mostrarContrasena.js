@@ -9,6 +9,22 @@ function mostrarContrasena() {
     campocontrasena3.type = checkbox.checked ? "text" : "password";
 }
 
+function mostrarContrasenaRestablecer() {
+    var contrasena1 = document.getElementById("contrasena1");
+    var contrasena2 = document.getElementById("contrasena2");
+    var checkbox = document.getElementById("mostrarcontrasena");
+
+    // Si el checkbox está marcado, se muestran las contraseñas
+    if (checkbox.checked) {
+        contrasena1.type = "text";
+        contrasena2.type = "text";
+    } else {
+        contrasena1.type = "password";
+        contrasena2.type = "password";
+    }
+}
+
+
 //Funcion para recuperar la contraseña
 function recuperarContrasena() {
     let nombreUsuario = document.getElementById("nombreusuario").value;

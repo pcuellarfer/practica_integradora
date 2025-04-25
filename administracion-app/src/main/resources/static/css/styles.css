@@ -9,7 +9,7 @@ body {
 }
 
 .container {
-    max-width: 600px;
+    max-width: 700px; /* Aumentado de 600px a 700px */
     background: rgba(255, 255, 255, 0.9);
     padding: 30px;
     border-radius: 15px;
@@ -30,10 +30,13 @@ h2 {
 }
 
 .form-control, .form-select {
+    width: 100%;
+    max-width: 100%;
     border-radius: 10px;
     border: 1px solid #ddd;
     transition: all 0.3s ease-in-out;
-    padding: 10px;
+    padding: 12px 15px;
+    font-size: 16px;
 }
 
 .form-control:hover, .form-select:hover {
@@ -43,11 +46,13 @@ h2 {
 }
 
 .btn-primary {
+    width: 100%;
+    max-width: 100%;
     background-color: #007bff;
     border: none;
     border-radius: 10px;
-    padding: 10px;
-    font-size: 16px;
+    padding: 12px;
+    font-size: 18px;
     transition: all 0.3s ease-in-out;
 }
 
@@ -55,6 +60,13 @@ h2 {
     background-color: #0056b3;
     transform: scale(1.05);
     box-shadow: 0px 5px 15px rgba(0, 123, 255, 0.4);
+}
+
+button {
+    width: 100%;
+    max-width: 100%;
+    display: block;
+    margin: 20px auto 0;
 }
 
 .form-check-input:checked {
@@ -110,15 +122,9 @@ h2 {
     color: white;
 }
 
-button {
-    display: block;
-    margin: 20px auto 0;
-}
-
-/* styles.css */
-
+/* Navegación */
 .header {
-    background-color: #007bff; /* Azul Bootstrap */
+    background-color: #007bff;
     padding: 15px 0;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
@@ -149,7 +155,6 @@ button {
 }
 
 .nav-links a:hover {
-    background-color: #0056b3; /* Azul más oscuro */
+    background-color: #0056b3;
     border-radius: 5px;
 }
-
