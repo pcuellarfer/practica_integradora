@@ -11,6 +11,7 @@ import org.grupof.administracionapp.entity.embeddable.TarjetaCredito;
 import org.grupof.administracionapp.entity.registroEmpleado.Genero;
 import org.grupof.administracionapp.entity.registroEmpleado.Pais;
 import org.grupof.administracionapp.entity.registroEmpleado.TipoDocumento;
+import org.grupof.administracionapp.validations.FechaPasada;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -91,7 +92,7 @@ public class Empleado {
     //ayuda
 
         //paso 5 resumen
-
+    //@FechaPasada
     @Column(name = "fecha_contratacion")
     private LocalDateTime fechaContratacion;
 

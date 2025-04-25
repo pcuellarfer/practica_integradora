@@ -86,9 +86,11 @@ public class UsuarioSignUpController {
             return "usuario/auth/signUp-usuario";
         }
 
-//        if (errores.hasErrors()) {
-//            return "usuario/auth/signUp-usuario";
-//        }
+        if (errores.hasErrors()) {
+            modelo.addAttribute("error", "Corrige los errores del formulario.");
+            System.err.println(errores);
+            return "usuario/auth/signUp-usuario";
+        }
 
         usuarioDTO.setEmail(usuarioDTO.getEmail());
         usuarioDTO.setContrasena(passwordEncoder.encode(usuarioDTO.getContrasena()));
@@ -97,6 +99,8 @@ public class UsuarioSignUpController {
         session.setAttribute("usuario", usuario);
 
         System.err.println("Usuario registrado: " + usuario.getEmail());
+
+
 
         return "redirect:/dashboard/dashboard";
     }
