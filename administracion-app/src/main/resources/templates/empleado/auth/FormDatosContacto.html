@@ -20,7 +20,21 @@
         </div>
         <!-- Vincula el formulario al objeto "usuario" del modelo -->
         <form th:action="@{/empleado/registro/empresarial}" th:object="${registroEmpleadoDTO}" method="post">
-
+            <!--            Tipo documento-->
+            <!--            o Documento-->
+            <!--            o Prefijo internacional del teléfono móvil-->
+            <!--            o Teléfono móvil-->
+            <!--            o (Opcionalmente) Otro(s)s teléfono(s) de contacto-->
+            <!--            o Dirección:-->
+                <!--            ▪ Tipo de vía-->
+                <!--            ▪ Nombre de la vía-->
+                <!--            ▪ Número-->
+                <!--            ▪ Portal-->
+                <!--            ▪ Planta-->
+                <!--            ▪ Puerta-->
+                <!--            ▪ Localidad-->
+                <!--            ▪ Región / Comunidad autónoma / Estado-->
+                <!--            ▪ CP-->
 
             <button type="submit" class="btn btn-primary w-100">Paso 3 - Datos profesionales</button>
         </form>
