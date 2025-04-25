@@ -68,6 +68,8 @@ public class Empleado {
     private String ano;
     private String cvc;
 
+    //ayuda
+
     @Column(name = "fecha_contratacion")
     private LocalDateTime fechaContratacion;
 
