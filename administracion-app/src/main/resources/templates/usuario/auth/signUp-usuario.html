@@ -27,6 +27,7 @@
                 <label for="email" class="form-label">Correo electrónico:</label>
                 <input type="text" id="email" name="email" class="form-control" th:field="*{email}">
                 <span class="error-message" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+                <span class="error-message" th:if="${error}" th:text="${error}" ></span>
             </div>
 
             <div class="mb-3">
@@ -45,6 +46,7 @@
             </div>-->
 
             <button type="submit" class="btn btn-primary w-100">Enviar</button>
+            <a href="/login/username" class="btn btn-secondary w-100">Iniciar Sesion</a>
         </form>
     </div>
 </div>
