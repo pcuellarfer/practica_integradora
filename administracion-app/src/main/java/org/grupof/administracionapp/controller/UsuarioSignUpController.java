@@ -81,11 +81,6 @@ public class UsuarioSignUpController {
             HttpSession session,
             Model modelo) {
 
-        if (errores.hasErrors()) {
-            modelo.addAttribute("error", "Corrige los errores del formulario.");
-            return "usuario/auth/signUp-usuario";
-        }
-
         if (usuarioService.existePorEmail(usuarioDTO.getEmail())) {
             modelo.addAttribute("error", "Ya existe un usuario con ese email.");
             return "usuario/auth/signUp-usuario";
