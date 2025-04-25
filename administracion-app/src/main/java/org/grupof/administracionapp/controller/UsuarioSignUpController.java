@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
  * así como el acceso a su panel principal y el cierre de sesión.
  */
 @Controller
-@RequestMapping("/usuario")
+@RequestMapping("/registro")
 public class UsuarioSignUpController {
 
     /**
@@ -58,7 +58,7 @@ public class UsuarioSignUpController {
      * @param modelo modelo de datos para la vista.
      * @return el nombre de la vista correspondiente al formulario de registro.
      */
-    @GetMapping("/signup")
+    @GetMapping("/usuario")
     public String mostrarFormularioRegistro(Model modelo) {
         modelo.addAttribute("registroUsuarioDTO", new RegistroUsuarioDTO());
         return "usuario/auth/signUp-usuario";

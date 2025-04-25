@@ -1,6 +1,10 @@
 package org.grupof.administracionapp;
 
 import org.grupof.administracionapp.entity.Usuario;
+import org.grupof.administracionapp.entity.registroEmpleado.Genero;
+import org.grupof.administracionapp.entity.registroEmpleado.Pais;
+import org.grupof.administracionapp.repository.GeneroRepository;
+import org.grupof.administracionapp.repository.PaisRepository;
 import org.grupof.administracionapp.repository.UsuarioRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -33,7 +37,7 @@ public class DatosIniciales {
      * @return el {@link CommandLineRunner} que se ejecutará al iniciar la aplicación.
      */
     @Bean
-    CommandLineRunner insertarDatos(UsuarioRepository usuarioRepository) {
+    CommandLineRunner insertarDatos(UsuarioRepository usuarioRepository, PaisRepository paisRepository, GeneroRepository generoRepository) {
         return args -> {
             Usuario usuarioInicial = new Usuario();
             usuarioInicial.setNombre("Juan");
@@ -41,6 +45,29 @@ public class DatosIniciales {
             usuarioInicial.setEmail("davidsmh23@gmail.com");
 
             usuarioRepository.save(usuarioInicial);
+
+
+            ///// PAISES //////
+
+            Pais espana = new Pais("España", "+34");
+            Pais francia = new Pais("Francia", "+33");
+            Pais belgica = new Pais("Belgica", "+32");
+            paisRepository.save(espana);
+            paisRepository.save(francia);
+            paisRepository.save(belgica);
+
+            ///// GENEROS //////
+
+            Genero femenino = new Genero("Femenino");
+            Genero masculino = new Genero("Masculino");
+            Genero noBinarie = new Genero("No Binarie");
+            Genero paco = new Genero("Paco");
+
+            generoRepository.save(femenino);
+            generoRepository.save(masculino);
+            generoRepository.save(noBinarie);
+            generoRepository.save(paco);
+
         };
     }
 }

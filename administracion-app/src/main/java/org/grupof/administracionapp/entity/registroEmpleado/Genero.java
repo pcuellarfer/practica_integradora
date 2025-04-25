@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.grupof.administracionapp.repository.GeneroRepository;
 
 import java.util.UUID;
 
@@ -21,5 +22,10 @@ public class Genero {
 
     //femenino, masculino, no binaro, etc
     private String identidad;
+
+    //metodo para insercion inicial
+    public Genero(String identidad) {
+        this.identidad = identidad;
+    }
 
 }

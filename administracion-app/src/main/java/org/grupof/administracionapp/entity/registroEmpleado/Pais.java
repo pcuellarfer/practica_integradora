@@ -22,4 +22,10 @@ public class Pais {
     private String nombre;
     private String prefijoTelefonico;
 
+    //metodo para insercion inicial
+    public Pais(String nombre, String prefijoTelefonico) {
+        this.nombre = nombre;
+        this.prefijoTelefonico = prefijoTelefonico;
+    }
+
 }
