@@ -29,6 +29,7 @@ public class Usuario {
 
     private String nombre;
     private String contrasena;
+    private String contrasenaRecuperacion;
 
     @Email(message = "El email no es válido.")
     private String email;

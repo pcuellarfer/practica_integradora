@@ -2,12 +2,18 @@ package org.grupof.administracionapp.controller;
 
 import jakarta.servlet.http.HttpSession;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
+import org.grupof.administracionapp.services.Email.EmailService;
 import org.grupof.administracionapp.services.Usuario.UsuarioService;
+import org.grupof.administracionapp.services.Token.TokenService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Controlador responsable de gestionar el inicio y cierre de sesión de los usuarios.
@@ -20,6 +26,8 @@ public class InicioSesionController {
 
     private final PasswordEncoder passwordEncoder;
     private final UsuarioService usuarioService;
+    private final EmailService emailService;
+    private final TokenService tokenService;
 
     /**
      * Constructor que inyecta las dependencias necesarias para la gestión de autenticación.
@@ -27,9 +35,11 @@ public class InicioSesionController {
      * @param usuarioService servicio encargado de las operaciones con usuarios.
      * @param passwordEncoder codificador de contraseñas utilizado para validaciones.
      */
-    public InicioSesionController(UsuarioService usuarioService, PasswordEncoder passwordEncoder) {
+    public InicioSesionController(UsuarioService usuarioService, PasswordEncoder passwordEncoder, EmailService emailService, TokenService tokenService) {
         this.usuarioService = usuarioService;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
+        this.tokenService = tokenService;
     }
 
     /**
@@ -180,6 +190,132 @@ public class InicioSesionController {
         session.removeAttribute("intentos"); // Reiniciar contador
         return "redirect:/dashboard/dashboard";
     }
+
+    /**
+     * Endpoint de prueba para verificar el funcionamiento del envío de correo.
+     *
+     * @return una respuesta HTTP 200 con un mensaje indicando que el correo fue enviado.
+     */
+    @GetMapping("/enviar-correo")
+    public ResponseEntity<String> enviarCorreo() {
+        return ResponseEntity.ok("Correo enviado");
+    }
+
+    /**
+     * Muestra el formulario de recuperación de contraseña.
+     *
+     * @return vista del formulario de recuperación.
+     */
+    @GetMapping("/recuperación")
+    public String mostrarFormularioRecuperacion() {
+        return "usuario/auth/recuperacion";
+    }
+
+    /**
+     * Procesa el formulario de recuperación de contraseña: genera un token y lo envía al email proporcionado.
+     *
+     * @param email dirección de correo del usuario que solicita la recuperación.
+     * @param model modelo para pasar datos a la vista.
+     * @return vista del mismo formulario con un mensaje de confirmación.
+     */
+    @PostMapping("/recuperación")
+    public String procesarFormularioRecuperacion(@RequestParam String email, Model model) {
+        String asunto = "Verifica tu cuenta";
+
+        String token = UUID.randomUUID().toString();
+        tokenService.guardarToken(email, token);
+
+        String enlace = "http://localhost:8080/login/verificacion?token=" + token;
+        emailService.enviarCorreoConEnlace(email, asunto, enlace);
+
+        model.addAttribute("mensaje", "Se ha enviado un enlace de recuperación a tu correo.");
+        return "usuario/auth/recuperacion";
+    }
+
+    /**
+     * Muestra el formulario para establecer una nueva contraseña tras verificar el token.
+     *
+     * @param token token de verificación proporcionado en el enlace.
+     * @param model modelo para pasar el email y token a la vista.
+     * @return vista del formulario para introducir la nueva contraseña, o error si el token no es válido.
+     */
+    @GetMapping("/verificacion")
+    public String mostrarFormularioNuevaContrasena(@RequestParam String token, Model model) {
+        Optional<String> email = tokenService.validarToken(token);
+        if (email.isEmpty()) {
+            return "error/token-invalido";
+        }
+
+        model.addAttribute("email", email.get());
+        model.addAttribute("token", token);
+        return "usuario/auth/nueva-contrasena";
+    }
+
+    /**
+     * Muestra el formulario para introducir una nueva contraseña.
+     * Valida que el token proporcionado sea válido y esté asociado a un usuario.
+     *
+     * @param token el token de restablecimiento recibido por correo electrónico.
+     * @param model el modelo para pasar datos a la vista.
+     * @return la vista para introducir una nueva contraseña o una vista de error si el token no es válido.
+     */
+    @GetMapping("/restablecer-contrasena")
+    public String mostrarFormularioRestablecerContrasena(@RequestParam String token, Model model) {
+        Optional<String> email = tokenService.validarToken(token);
+        if (email.isEmpty()) {
+            return "error/token-invalido";
+        }
+
+        model.addAttribute("email", email.get());
+        model.addAttribute("token", token);
+        return "usuario/auth/nueva-contrasena";
+    }
+
+    /**
+     * Procesa el formulario de restablecimiento de contraseña.
+     * Valida el token, compara las contraseñas ingresadas y, si todo es correcto,
+     * actualiza la contraseña del usuario y elimina el token.
+     *
+     * @param token el token recibido por correo.
+     * @param email el email del usuario.
+     * @param contrasena la nueva contraseña ingresada.
+     * @param contrasenaRecuperacion la confirmación de la nueva contraseña.
+     * @param model el modelo para pasar datos a la vista en caso de error.
+     * @return redirección a la pantalla de éxito o retorno a la vista del formulario si hay errores.
+     */
+    @PostMapping("/restablecer-contrasena")
+    public String restablecerContrasena(
+            @RequestParam String token,
+            @RequestParam String email,
+            @RequestParam String contrasena,
+            @RequestParam String contrasenaRecuperacion,
+            Model model
+    ) {
+        Optional<String> emailToken = tokenService.validarToken(token);
+
+        if (emailToken.isEmpty() || !emailToken.get().equals(email)) {
+            return "error/token-invalido";
+        }
+
+        if (!contrasena.equals(contrasenaRecuperacion)) {
+            model.addAttribute("email", email);
+            model.addAttribute("token", token);
+            model.addAttribute("error", "Las contraseñas no coinciden.");
+            return "usuario/auth/nueva-contrasena";
+        }
+
+        usuarioService.actualizarContrasena(email, contrasena);
+        tokenService.eliminarToken(token);
+        return "redirect:/login/contrasenaActualizada";
+    }
+
+    /**
+     * Muestra una vista de confirmación cuando la contraseña se ha actualizado con éxito.
+     *
+     * @return la vista que informa al usuario de que su contraseña ha sido actualizada.
+     */
+    @GetMapping("/contrasenaActualizada")
+    public String mostrarContrasenaActualizada() {
+        return "usuario/auth/contrasena-actualizada";
+    }
 }
-
-

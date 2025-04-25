@@ -22,4 +22,11 @@ public class UsuarioDTO {
             message = "La contraseña debe tener entre 8 y 12 caracteres, incluyendo una mayúscula, una minúscula, un número y un signo de puntuación."
     )
     private String contrasena;
+
+    @NotBlank(message = "La contraseña no puede estar vacía")
+    @Pattern(
+            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*\\p{Punct}).{8,12}$",
+            message = "La contraseña debe tener entre 8 y 12 caracteres, incluyendo una mayúscula, una minúscula, un número y un signo de puntuación."
+    )
+    private String contrasenaRecuperacion;
 }

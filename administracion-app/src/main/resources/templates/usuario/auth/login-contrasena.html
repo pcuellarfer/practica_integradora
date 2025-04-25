@@ -31,6 +31,8 @@
             <input type="checkbox" id="mostrarcontrasena" onclick="mostrarContrasena()"> Mostrar contraseña
             <button type="submit" class="btn btn-primary w-100 mt-3">Iniciar sesión</button>
         </form>
+
+        <a href="/login/recuperación" class="btn btn-secondary w-100">¿Has olvidado la contraseña?</a>
         <!-- Mensaje de error (si existe) -->
         <p th:if="${error}" th:text="${error}"></p>
     </div>
