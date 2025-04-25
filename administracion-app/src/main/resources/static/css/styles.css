@@ -1,60 +1,71 @@
 body {
-    background: linear-gradient(135deg, #6a11cb, #2575fc);
-    font-family: 'Arial', sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     margin: 0;
+    background-color: #f4f4f4; /* Un gris claro de fondo */
+    color: #333; /* Texto principal oscuro */
 }
 
 .container {
     max-width: 600px;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
-    animation: fadeIn 1s ease-in-out;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
+    background-color: #fff; /* Fondo blanco para el contenedor */
+    padding: 20px;
+    border-radius: 5px;
+    border: 1px solid #ddd; /* Borde sutil */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra suave */
 }
 
 h2 {
-    color: #333;
+    color: #222;
     text-align: center;
-    margin-bottom: 20px;
-    font-weight: bold;
+    margin-bottom: 15px;
+    font-weight: normal; /* Menos llamativo que bold */
 }
 
 .form-control, .form-select {
-    border-radius: 10px;
-    border: 1px solid #ddd;
-    transition: all 0.3s ease-in-out;
-    padding: 10px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    padding: 8px;
+    margin-bottom: 10px;
+    width: 100%; /* Ocupar todo el ancho disponible */
+    box-sizing: border-box; /* Incluir padding y border en el ancho */
+    font-size: 1em;
 }
 
-.form-control:hover, .form-select:hover {
-    border-color: #007bff;
-    box-shadow: 0px 0px 10px rgba(0, 123, 255, 0.3);
-    transform: scale(1.02);
+.form-control:focus, .form-select:focus {
+    outline: none; /* Eliminar el borde de enfoque predeterminado */
+    border-color: #007bff; /* Un azul sutil para el enfoque */
+    box-shadow: 0 0 3px rgba(0, 123, 255, 0.5); /* Sombra de enfoque suave */
 }
 
 .btn-primary {
     background-color: #007bff;
+    color: white;
     border: none;
-    border-radius: 10px;
-    padding: 10px;
-    font-size: 16px;
-    transition: all 0.3s ease-in-out;
+    border-radius: 3px;
+    padding: 10px 15px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .btn-primary:hover {
     background-color: #0056b3;
-    transform: scale(1.05);
-    box-shadow: 0px 5px 15px rgba(0, 123, 255, 0.4);
+}
+
+.form-check {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.form-check-input {
+    margin-right: 8px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
 }
 
 .form-check-input:checked {
@@ -63,64 +74,67 @@ h2 {
 }
 
 .form-check-label {
-    margin-left: 10px;
-}
-
-.form-check-input {
-    transition: all 0.3s ease-in-out;
-}
-
-.form-check-input:hover {
-    transform: scale(1.1);
-}
-
-.form-label {
-    font-weight: bold;
     color: #555;
 }
 
-.error-message {
-    color: #ff3860;
-    font-size: 14px;
-    margin-top: 5px;
-    animation: shake 0.5s ease-in-out;
+.form-label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+    font-size: 0.9em;
 }
 
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-10px); }
-    50% { transform: translateX(10px); }
-    75% { transform: translateX(-10px); }
+.error-message {
+    color: #dc3545; /* Rojo para errores */
+    font-size: 0.85em;
+    margin-top: 5px;
 }
 
 .table {
-    background: white;
-    border-radius: 10px;
-    overflow: hidden;
+    width: 100%;
+    background-color: #fff;
+    border-collapse: collapse; /* Unir los bordes de las celdas */
+    margin-top: 20px;
+    border-radius: 5px;
+    overflow: hidden; /* Para que el border-radius funcione correctamente */
+    border: 1px solid #ddd;
 }
 
 .table th, .table td {
-    padding: 12px;
-    border: 1px solid #ddd;
+    padding: 10px;
+    border: 1px solid #eee; /* Bordes más claros para las celdas */
     text-align: left;
 }
 
 .table th {
-    background-color: #007bff;
-    color: white;
+    background-color: #f8f9fa; /* Un gris muy claro para los encabezados */
+    color: #333;
+    font-weight: bold;
 }
 
 button {
     display: block;
-    margin: 20px auto 0;
+    margin: 15px auto 0;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    background-color: #eee;
+    color: #333;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-/* styles.css */
+button:hover {
+    background-color: #ddd;
+}
+
+/* styles.css para la navegación */
 
 .header {
-    background-color: #007bff; /* Azul Bootstrap */
-    padding: 15px 0;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #f8f9fa; /* Gris claro para el encabezado */
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
 }
 
 .navbar {
@@ -133,7 +147,7 @@ button {
     padding: 0;
     margin: 0;
     display: flex;
-    gap: 20px;
+    gap: 15px;
 }
 
 .nav-links li {
@@ -142,14 +156,13 @@ button {
 
 .nav-links a {
     text-decoration: none;
-    color: white;
-    font-weight: bold;
-    padding: 10px 15px;
-    transition: background 0.3s, border-radius 0.3s;
+    color: #333;
+    font-weight: normal;
+    padding: 8px 12px;
+    border-radius: 3px;
+    transition: background-color 0.3s ease;
 }
 
 .nav-links a:hover {
-    background-color: #0056b3; /* Azul más oscuro */
-    border-radius: 5px;
+    background-color: #e9ecef; /* Un gris aún más claro al pasar el ratón */
 }
-
