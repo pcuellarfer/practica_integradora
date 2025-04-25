@@ -19,12 +19,45 @@
             <div class="col-2"></div>
         </div>
         <!-- Vincula el formulario al objeto "usuario" del modelo -->
-        <form th:action="@{/empleado/registro/empresarial}" th:object="${registroEmpleadoDTO}" method="post">
-            <!--            Tipo documento-->
-            <!--            o Documento-->
-            <!--            o Prefijo internacional del teléfono móvil-->
-            <!--            o Teléfono móvil-->
-            <!--            o (Opcionalmente) Otro(s)s teléfono(s) de contacto-->
+        <form th:action="@{/registro/paso1}" th:object="${paso2}" method="post">
+
+            <div class="mb-3">
+                <label class="form-label">Tipo de documento:</label>
+                <div th:each="tipoDocumento : ${documentos}" class="form-check">
+                    <input class="form-check-input" type="radio"
+                           th:id="${tipoDocumento.tipo}"
+                           th:value="${tipoDocumento.id}"
+                           th:field="*{tipoDocumento}" />
+                    <label class="form-check-label" th:for="${tipoDocumento.tipo}" th:text="${tipoDocumento.tipo}"></label>
+                </div>
+
+
+                <span class="error-message" th:if="${#fields.hasErrors('tipoDocumento')}" th:errors="*{tipoDocumento}"></span>
+
+                <!--Boton de deseleccionar radios-->
+                <!--Boton de seleccionar el primer radio-->
+            </div>
+
+            <div class="mb-3">
+                <label for="documento" class="form-label">Documento:</label>
+                <input type="text" id="documento" name="documento" class="form-control" th:field="*{documento}">
+                <span class="error-message" th:if="${#fields.hasErrors('documento')}" th:errors="*{documento}"></span>
+            </div>
+
+            <div class="mb-3">
+                <label for="prefijoTelefono" class="form-label">Prefijo telefonico:</label>
+                <input type="text" id="prefijoTelefono" name="prefijoTelefono" class="form-control" th:field="*{prefijoTelefono}">
+                <span class="error-message" th:if="${#fields.hasErrors('prefijoTelefono')}" th:errors="*{prefijoTelefono}"></span>
+            </div>
+
+            <div class="mb-3">
+                <label for="telefono" class="form-label">Telefono:</label>
+                <input type="text" id="telefono" name="telefono" class="form-control" th:field="*{telefono}">
+                <span class="error-message" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}"></span>
+            </div>
+
+            <!--telefono movil opcional??-->
+
             <!--            o Dirección:-->
                 <!--            ▪ Tipo de vía-->
                 <!--            ▪ Nombre de la vía-->

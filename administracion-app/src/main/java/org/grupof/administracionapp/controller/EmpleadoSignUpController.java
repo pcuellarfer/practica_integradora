@@ -5,6 +5,7 @@ import org.grupof.administracionapp.dto.Empleado.Paso2ContactoDTO;
 import org.grupof.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
 import org.grupof.administracionapp.services.Genero.GeneroService;
 import org.grupof.administracionapp.services.Pais.PaisService;
+import org.grupof.administracionapp.services.TipoDocumento.TipoDocumentoService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,10 +18,12 @@ public class EmpleadoSignUpController {
 
     private final PaisService paisService;
     private final GeneroService generoService;
+    private final TipoDocumentoService tipoDocumentoService;
 
-    public EmpleadoSignUpController(PaisService paisService, GeneroService generoService) {
+    public EmpleadoSignUpController(PaisService paisService, GeneroService generoService, TipoDocumentoService tipoDocumentoService) {
         this.paisService = paisService;
         this.generoService = generoService;
+        this.tipoDocumentoService = tipoDocumentoService;
     }
 
     //añadir un nuevo RegistroEmpleadoDTO vacio a la sesion
@@ -62,9 +65,26 @@ public class EmpleadoSignUpController {
         return "redirect:/registro/paso2";
     }
 
-    @GetMapping("/empleado")
-    public String mostrarPaso1(Model modelo) {
+    @GetMapping("/paso2")
+    public String mostrarPaso2(Model modelo) {
         modelo.addAttribute("paso2", new Paso2ContactoDTO());
-        return "empleado/auth/FormDatosPersonales";
+        modelo.addAttribute("documentos", tipoDocumentoService.getAllTipoDocumento());
+        return "empleado/auth/FormDatosContacto";
     }
+
+    @PostMapping("/paso2")
+    public String procesarPaso2(
+            @ModelAttribute("paso2") Paso2ContactoDTO paso2,
+            BindingResult errores,
+            Model modelo) {
+
+        if (errores.hasErrors()) {
+            return "empleado/auth/FormDatosPersonales";
+        }
+
+        registroEmpleadoDTO().setPaso2ContactoDTO(paso2);
+
+        return "redirect:/registro/paso2";
+    }
+
 }

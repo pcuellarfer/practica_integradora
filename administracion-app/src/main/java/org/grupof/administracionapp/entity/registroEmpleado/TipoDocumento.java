@@ -24,4 +24,9 @@ public class TipoDocumento {
     //DNI, NIE, numro de pasaporte
     private String tipo;
 
+    //contrctor para insercion de datos iniciales
+    public TipoDocumento(String tipo) {
+        this.tipo = tipo;
+    }
+
 }

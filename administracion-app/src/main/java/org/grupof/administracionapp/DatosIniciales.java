@@ -3,8 +3,10 @@ package org.grupof.administracionapp;
 import org.grupof.administracionapp.entity.Usuario;
 import org.grupof.administracionapp.entity.registroEmpleado.Genero;
 import org.grupof.administracionapp.entity.registroEmpleado.Pais;
+import org.grupof.administracionapp.entity.registroEmpleado.TipoDocumento;
 import org.grupof.administracionapp.repository.GeneroRepository;
 import org.grupof.administracionapp.repository.PaisRepository;
+import org.grupof.administracionapp.repository.TipoDocumentoRepository;
 import org.grupof.administracionapp.repository.UsuarioRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -37,7 +39,7 @@ public class DatosIniciales {
      * @return el {@link CommandLineRunner} que se ejecutará al iniciar la aplicación.
      */
     @Bean
-    CommandLineRunner insertarDatos(UsuarioRepository usuarioRepository, PaisRepository paisRepository, GeneroRepository generoRepository) {
+    CommandLineRunner insertarDatos(UsuarioRepository usuarioRepository, PaisRepository paisRepository, GeneroRepository generoRepository, TipoDocumentoRepository tipoDocumentoRepository) {
         return args -> {
             Usuario usuarioInicial = new Usuario();
             usuarioInicial.setNombre("Juan");
@@ -68,6 +70,15 @@ public class DatosIniciales {
             generoRepository.save(noBinarie);
             generoRepository.save(paco);
 
+            /// TIPOS DE DOCUMENTOS ///
+
+            TipoDocumento DNI = new TipoDocumento("DNI");
+            TipoDocumento NIE = new TipoDocumento("NIE");
+            TipoDocumento pasaporte = new TipoDocumento("PASAPORTE");
+
+            tipoDocumentoRepository.save(DNI);
+            tipoDocumentoRepository.save(NIE);
+            tipoDocumentoRepository.save(pasaporte);
         };
     }
 }
