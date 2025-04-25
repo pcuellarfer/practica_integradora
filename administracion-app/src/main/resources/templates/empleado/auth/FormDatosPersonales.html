@@ -18,7 +18,7 @@
             </div>
             <div class="col-2"></div>
         </div>
-        <!-- Vincula el formulario al objeto "usuario" del modelo -->
+
         <form th:action="@{}" th:object="${registroEmpleadoDTO}" method="post">
 
             <div class="mb-3">
@@ -71,7 +71,13 @@
                 <span class="error-message" th:if="${#fields.hasErrors('edad')}" th:errors="*{edad}"></span>
             </div>
 
-            <!--Campo que recorra toda la tabla de la entidad pais y haga un select simple-->
+            <!--hay que tener españa seleccionada-->
+            <label for="pais">País:</label>
+            <select name="pais" id="pais">
+                <th:block th:each="pais : ${paises}">
+                    <option th:value="${pais.id}" th:text="${pais.nombre}"></option>
+                </th:block>
+            </select>
 
             <div class="mb-3">
                 <label for="comentarios" class="form-label">Comentarios:</label>
@@ -79,7 +85,7 @@
                 <span class="error-message" th:if="${#fields.hasErrors('comentarios')}" th:errors="*{comentarios}"></span>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100">Enviar</button>
+            <button type="submit" class="btn btn-primary w-100">Paso 2 - Datos de contacto</button>
         </form>
         <!-- Mensaje de error (si existe) -->
         <p th:if="${error}" th:text="${error}" style="color: red;"></p>
