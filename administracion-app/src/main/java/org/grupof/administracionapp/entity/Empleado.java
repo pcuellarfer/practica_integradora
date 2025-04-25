@@ -90,6 +90,8 @@ public class Empleado {
 
     //ayuda
 
+        //paso 5 resumen
+
     @Column(name = "fecha_contratacion")
     private LocalDateTime fechaContratacion;
 
