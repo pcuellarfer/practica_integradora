@@ -4,6 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
 import org.grupof.administracionapp.entity.Usuario;
 import org.grupof.administracionapp.repository.UsuarioRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,14 +20,16 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final ModelMapper modelMapper = new ModelMapper();
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Constructor que recibe el repositorio de usuarios para acceder a los datos.
      *
      * @param usuarioRepository repositorio de usuario
      */
-    public UsuarioServiceImpl(UsuarioRepository usuarioRepository) {
+    public UsuarioServiceImpl(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -233,11 +236,23 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     /**
-     * Actualiza la contraseña de un usuario. (No implementado)
+     * Actualiza la contraseña de un usuario codificándola antes de guardarla.
+     * Busca al usuario por su email, y si existe, codifica la nueva contraseña utilizando
+     * el {@link org.springframework.security.crypto.password.PasswordEncoder} y la guarda
+     * en el repositorio.
      *
-     * @param s email o identificador
-     * @param nuevaContrasena nueva contraseña
+     * @param email el email del usuario cuya contraseña se desea actualizar.
+     * @param nuevaContrasena la nueva contraseña en texto plano.
      */
     @Override
-    public void actualizarContrasena(String s, String nuevaContrasena) {}
+    public void actualizarContrasena(String email, String nuevaContrasena) {
+        Optional<Usuario> usuarioOptional = usuarioRepository.findByEmail(email);
+        if (usuarioOptional.isPresent()) {
+            Usuario usuario = usuarioOptional.get();
+            String contrasenaCodificada = passwordEncoder.encode(nuevaContrasena);
+            usuario.setContrasena(contrasenaCodificada);
+            usuarioRepository.save(usuario);
+        }
+    }
+
 }

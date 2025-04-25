@@ -149,10 +149,11 @@ public interface UsuarioService {
     void bloquearUsuario(@NotBlank(message = "El email no puede estar vacío") @Email(message = "El email no tiene un formato válido") String email, String demasiadosIntentosFallidos);
 
     /**
-     * Actualiza la contraseña de un usuario.
+     * Actualiza la contraseña del usuario identificado por su correo electrónico.
      *
-     * @param s identificador o email del usuario
-     * @param nuevaContrasena nueva contraseña a establecer
+     * @param email el correo electrónico del usuario cuya contraseña se va a actualizar.
+     * @param nuevaContrasena la nueva contraseña en texto plano que será codificada antes de guardarse.
      */
-    void actualizarContrasena(String s, String nuevaContrasena);
+    void actualizarContrasena(String email, String nuevaContrasena);
+
 }

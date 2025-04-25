@@ -38,7 +38,7 @@ public class DatosIniciales {
             Usuario usuarioInicial = new Usuario();
             usuarioInicial.setNombre("Juan");
             usuarioInicial.setContrasena(passwordEncoder.encode("Contraseña@-"));
-            usuarioInicial.setEmail("juan@gmail.com");
+            usuarioInicial.setEmail("davidsmh23@gmail.com");
 
             usuarioRepository.save(usuarioInicial);
         };

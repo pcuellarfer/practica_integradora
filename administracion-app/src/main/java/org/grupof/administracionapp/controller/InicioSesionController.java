@@ -225,8 +225,8 @@ public class InicioSesionController {
         String token = UUID.randomUUID().toString();
         tokenService.guardarToken(email, token);
 
-        String enlace = "http://localhost:8080/verificacion?token=" + token;
-        emailService.enviarCorreoConEnlace(email, "Recuperación de contraseña", enlace);
+        String enlace = "http://localhost:8080/login/verificacion?token=" + token;
+        emailService.enviarCorreoConEnlace(email, asunto, enlace);
 
         model.addAttribute("mensaje", "Se ha enviado un enlace de recuperación a tu correo.");
         return "usuario/auth/recuperacion";
@@ -252,30 +252,70 @@ public class InicioSesionController {
     }
 
     /**
-     * Procesa la nueva contraseña introducida por el usuario después de validar el token.
+     * Muestra el formulario para introducir una nueva contraseña.
+     * Valida que el token proporcionado sea válido y esté asociado a un usuario.
      *
-     * @param token           token de verificación.
-     * @param nuevaContrasena nueva contraseña a establecer.
-     * @param model           modelo para la vista en caso de error.
-     * @return redirección al login si todo ha ido bien, o error si el token no es válido.
+     * @param token el token de restablecimiento recibido por correo electrónico.
+     * @param model el modelo para pasar datos a la vista.
+     * @return la vista para introducir una nueva contraseña o una vista de error si el token no es válido.
      */
-    @PostMapping("/restablecer-contrasena")
-    public String restablecerContrasena(
-            @RequestParam String token,
-            @RequestParam String nuevaContrasena,
-            Model model
-    ) {
+    @GetMapping("/restablecer-contrasena")
+    public String mostrarFormularioRestablecerContrasena(@RequestParam String token, Model model) {
         Optional<String> email = tokenService.validarToken(token);
         if (email.isEmpty()) {
             return "error/token-invalido";
         }
 
-        usuarioService.actualizarContrasena(email.get(), nuevaContrasena);
-        tokenService.eliminarToken(token);
-        return "redirect:/login?contrasenaActualizada";
+        model.addAttribute("email", email.get());
+        model.addAttribute("token", token);
+        return "usuario/auth/nueva-contrasena";
     }
 
+    /**
+     * Procesa el formulario de restablecimiento de contraseña.
+     * Valida el token, compara las contraseñas ingresadas y, si todo es correcto,
+     * actualiza la contraseña del usuario y elimina el token.
+     *
+     * @param token el token recibido por correo.
+     * @param email el email del usuario.
+     * @param contrasena la nueva contraseña ingresada.
+     * @param contrasenaRecuperacion la confirmación de la nueva contraseña.
+     * @param model el modelo para pasar datos a la vista en caso de error.
+     * @return redirección a la pantalla de éxito o retorno a la vista del formulario si hay errores.
+     */
+    @PostMapping("/restablecer-contrasena")
+    public String restablecerContrasena(
+            @RequestParam String token,
+            @RequestParam String email,
+            @RequestParam String contrasena,
+            @RequestParam String contrasenaRecuperacion,
+            Model model
+    ) {
+        Optional<String> emailToken = tokenService.validarToken(token);
 
+        if (emailToken.isEmpty() || !emailToken.get().equals(email)) {
+            return "error/token-invalido";
+        }
+
+        if (!contrasena.equals(contrasenaRecuperacion)) {
+            model.addAttribute("email", email);
+            model.addAttribute("token", token);
+            model.addAttribute("error", "Las contraseñas no coinciden.");
+            return "usuario/auth/nueva-contrasena";
+        }
+
+        usuarioService.actualizarContrasena(email, contrasena);
+        tokenService.eliminarToken(token);
+        return "redirect:/login/contrasenaActualizada";
+    }
+
+    /**
+     * Muestra una vista de confirmación cuando la contraseña se ha actualizado con éxito.
+     *
+     * @return la vista que informa al usuario de que su contraseña ha sido actualizada.
+     */
+    @GetMapping("/contrasenaActualizada")
+    public String mostrarContrasenaActualizada() {
+        return "usuario/auth/contrasena-actualizada";
+    }
 }
-
-
