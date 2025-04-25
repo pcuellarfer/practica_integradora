@@ -42,7 +42,7 @@ public class DashboardController {
         UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
 
         if (usuarioDTO == null) {
-            return "redirect:/usuario/signup";
+            return "redirect:/login/username";
         }
 
         RegistroEmpleadoDTO empleadoDTO = empleadoService.buscarEmpleadoPorUsuarioId(usuarioDTO.getId());
