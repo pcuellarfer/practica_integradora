@@ -149,4 +149,10 @@ public class EmpleadoSignUpController {
 
         return "redirect:/registro/paso5";
     }
+
+    @GetMapping("/paso5")
+    public String mostrarPaso5(@ModelAttribute("registroEmpleado") RegistroEmpleadoDTO registroEmpleado, Model modelo) {
+        modelo.addAttribute("paso5", registroEmpleado);
+        return "empleado/auth/Resumen";
+    }
 }
