@@ -1,14 +1,16 @@
 package org.grupof.administracionapp.controller;
 
-import org.grupof.administracionapp.dto.Empleado.Paso1PersonalDTO;
-import org.grupof.administracionapp.dto.Empleado.Paso2ContactoDTO;
-import org.grupof.administracionapp.dto.Empleado.Paso3ProfesionalDTO;
-import org.grupof.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
+import org.grupof.administracionapp.dto.Empleado.*;
+import org.grupof.administracionapp.entity.embeddable.CuentaCorriente;
 import org.grupof.administracionapp.entity.embeddable.Direccion;
+import org.grupof.administracionapp.entity.embeddable.TarjetaCredito;
+import org.grupof.administracionapp.repository.BancoRepository;
 import org.grupof.administracionapp.services.Departamento.DepartamentoService;
 import org.grupof.administracionapp.services.Genero.GeneroService;
 import org.grupof.administracionapp.services.Pais.PaisService;
 import org.grupof.administracionapp.services.TipoDocumento.TipoDocumentoService;
+import org.grupof.administracionapp.services.TipoTarjetaService.TipoTarjetaService;
+import org.grupof.administracionapp.services.banco.BancoService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,12 +25,21 @@ public class EmpleadoSignUpController {
     private final GeneroService generoService;
     private final TipoDocumentoService tipoDocumentoService;
     private final DepartamentoService departamentoService;
+    private final BancoRepository bancoRepository;
+    private final BancoService bancoService;
+    private final TipoTarjetaService tipoTarjetaService;
 
-    public EmpleadoSignUpController(PaisService paisService, GeneroService generoService, TipoDocumentoService tipoDocumentoService, DepartamentoService departamentoService) {
+    public EmpleadoSignUpController(PaisService paisService,
+                                    GeneroService generoService,
+                                    TipoDocumentoService tipoDocumentoService,
+                                    DepartamentoService departamentoService, BancoRepository bancoRepository, BancoService bancoService, TipoTarjetaService tipoTarjetaService) {
         this.paisService = paisService;
         this.generoService = generoService;
         this.tipoDocumentoService = tipoDocumentoService;
         this.departamentoService = departamentoService;
+        this.bancoRepository = bancoRepository;
+        this.bancoService = bancoService;
+        this.tipoTarjetaService = tipoTarjetaService;
     }
 
     //añadir un nuevo RegistroEmpleadoDTO vacio a la sesion
@@ -42,12 +53,14 @@ public class EmpleadoSignUpController {
         modelo.addAttribute("paso1", new Paso1PersonalDTO());
         modelo.addAttribute("paises", paisService.getAllPaises());
         modelo.addAttribute("generos", generoService.getAllGeneros());
+
         return "empleado/auth/FormDatosPersonales";
     }
 
     @PostMapping("/paso1")
     public String procesarPaso2(
             @ModelAttribute("paso1") Paso1PersonalDTO paso1,
+            @ModelAttribute("registroEmpleado") RegistroEmpleadoDTO registroEmpleado,
             BindingResult errores,
             Model modelo) {
 
@@ -56,16 +69,6 @@ public class EmpleadoSignUpController {
         }
 
         registroEmpleadoDTO().setPaso1PersonalDTO(paso1);
-
-        //prueba
-        System.err.println(paso1.getNombre());
-        System.err.println(paso1.getApellido());
-        System.err.println(paso1.getFoto());
-        System.err.println(paso1.getGenero());
-        System.err.println(paso1.getFechaNacimiento());
-        System.err.println(paso1.getEdad());
-        System.err.println(paso1.getPais());
-        System.err.println(paso1.getComentarios());
 
         return "redirect:/registro/paso2";
     }
@@ -82,11 +85,12 @@ public class EmpleadoSignUpController {
     @PostMapping("/paso2")
     public String procesarPaso2(
             @ModelAttribute("paso2") Paso2ContactoDTO paso2,
+            @ModelAttribute("registroEmpleado") RegistroEmpleadoDTO registroEmpleado,
             BindingResult errores,
             Model modelo) {
 
         if (errores.hasErrors()) {
-            return "empleado/auth/FormDatosPersonales";
+            return "empleado/auth/FormDatosContacto";
         }
 
         registroEmpleadoDTO().setPaso2ContactoDTO(paso2);
@@ -104,15 +108,45 @@ public class EmpleadoSignUpController {
     @PostMapping("/paso3")
     public String procesarPaso3(
             @ModelAttribute("paso3") Paso3ProfesionalDTO paso3,
+            @ModelAttribute("registroEmpleado") RegistroEmpleadoDTO registroEmpleado,
             BindingResult errores,
             Model modelo) {
 
         if (errores.hasErrors()) {
-            return "empleado/auth/FormDatosPersonales";
+            return "empleado/auth/FormDatosProfesionales";
         }
 
         registroEmpleadoDTO().setPaso3ProfesionalDTO(paso3);
 
-        return "redirect:/registro/paso3";
+        return "redirect:/registro/paso4";
+    }
+
+    @GetMapping("/paso4")
+    public String mostrarPaso4(Model modelo) {
+        Paso4EconomicosDTO paso4 = new Paso4EconomicosDTO();
+        paso4.setCuentaCorriente(new CuentaCorriente());
+        paso4.setTarjetaCredito(new TarjetaCredito());
+
+        modelo.addAttribute("paso4", paso4);
+
+        modelo.addAttribute("bancos", bancoService.getAllBancos());
+        modelo.addAttribute("tiposTarjeta", tipoTarjetaService.getAllTiposTarjetas());
+        return "empleado/auth/FormDatosEconomicos";
+    }
+
+    @PostMapping("/paso4")
+    public String procesarPaso4(
+            @ModelAttribute("paso4") Paso4EconomicosDTO paso4,
+            @ModelAttribute("registroEmpleado") RegistroEmpleadoDTO registroEmpleado,
+            BindingResult errores,
+            Model modelo) {
+
+        if (errores.hasErrors()) {
+            return "empleado/auth/FormDatosEconomicos";
+        }
+
+        registroEmpleadoDTO().setPaso4EconomicosDTO(paso4);
+
+        return "redirect:/registro/paso5";
     }
 }
