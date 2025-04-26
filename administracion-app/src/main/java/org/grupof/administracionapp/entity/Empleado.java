@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.grupof.administracionapp.entity.embeddable.CuentaCorriente;
 import org.grupof.administracionapp.entity.embeddable.Direccion;
 import org.grupof.administracionapp.entity.embeddable.TarjetaCredito;
+import org.grupof.administracionapp.entity.registroEmpleado.Departamento;
 import org.grupof.administracionapp.entity.registroEmpleado.Genero;
 import org.grupof.administracionapp.entity.registroEmpleado.Pais;
 import org.grupof.administracionapp.entity.registroEmpleado.TipoDocumento;
@@ -64,8 +65,13 @@ public class Empleado {
     private Direccion direccion;
 
     //paso3 datos profesionales
-    private String departamento;
-    private String especialidades;
+    @ManyToOne
+    @JoinColumn(name = "departamento_id")
+    private Departamento departamento;
+
+//    @ManyToOne
+//    @JoinColumn(name = "especialida")
+//    private String especialidades;
 
     //paso 4 datos economicos - en secondary tablke
     @AttributeOverride(name = "banco", column = @Column(table = "datos_economicos"))

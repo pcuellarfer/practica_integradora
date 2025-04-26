@@ -1,13 +1,11 @@
 package org.grupof.administracionapp;
 
 import org.grupof.administracionapp.entity.Usuario;
+import org.grupof.administracionapp.entity.registroEmpleado.Departamento;
 import org.grupof.administracionapp.entity.registroEmpleado.Genero;
 import org.grupof.administracionapp.entity.registroEmpleado.Pais;
 import org.grupof.administracionapp.entity.registroEmpleado.TipoDocumento;
-import org.grupof.administracionapp.repository.GeneroRepository;
-import org.grupof.administracionapp.repository.PaisRepository;
-import org.grupof.administracionapp.repository.TipoDocumentoRepository;
-import org.grupof.administracionapp.repository.UsuarioRepository;
+import org.grupof.administracionapp.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,7 +37,11 @@ public class DatosIniciales {
      * @return el {@link CommandLineRunner} que se ejecutará al iniciar la aplicación.
      */
     @Bean
-    CommandLineRunner insertarDatos(UsuarioRepository usuarioRepository, PaisRepository paisRepository, GeneroRepository generoRepository, TipoDocumentoRepository tipoDocumentoRepository) {
+    CommandLineRunner insertarDatos(UsuarioRepository usuarioRepository,
+                                    PaisRepository paisRepository,
+                                    GeneroRepository generoRepository,
+                                    TipoDocumentoRepository tipoDocumentoRepository,
+                                    DepartamentoRepository departamentoRepository) {
         return args -> {
             Usuario usuarioInicial = new Usuario();
             usuarioInicial.setNombre("Juan");
@@ -79,6 +81,17 @@ public class DatosIniciales {
             tipoDocumentoRepository.save(DNI);
             tipoDocumentoRepository.save(NIE);
             tipoDocumentoRepository.save(pasaporte);
+
+            /// DEPARTAMENTOS ///
+
+            Departamento informatica = new Departamento("Informatica");
+            Departamento RRHH = new Departamento("Universidad");
+            Departamento marketing = new Departamento("Marketing");
+
+            departamentoRepository.save(informatica);
+            departamentoRepository.save(RRHH);
+            departamentoRepository.save(marketing);
+
         };
     }
 }

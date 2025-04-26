@@ -10,7 +10,7 @@ public class RegistroEmpleadoDTO {
 
     private Paso1PersonalDTO paso1PersonalDTO;
     private Paso2ContactoDTO paso2ContactoDTO;
-    //paso 3
+    private Paso3ProfesionalDTO paso3ProfesionalDTO;
     //paso 4
 
 }
