@@ -88,7 +88,6 @@ public class UsuarioSignUpController {
         }
 
         if (errores.hasErrors()) {
-            System.err.println("tiene errores");
             return "usuario/auth/signUp-usuario";
         }
 

@@ -18,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/registro")
@@ -58,10 +59,14 @@ public class EmpleadoSignUpController {
 
     // Paso 1
     @GetMapping("/empleado")
-    public String mostrarPaso1(Model modelo, @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario) {
+    public String mostrarPaso1(Model modelo,
+                               @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario,
+                               RedirectAttributes redirectAttributes) {
 
         if (usuario == null) {
-            return "redirect:/login/username";
+            //se usa redirectAttributes y addflashAttribute porque con model.addatribute no se guarda entre redirecciones
+            redirectAttributes.addFlashAttribute("error", "Estabas intentando registrar un empleado sin usuario. Te hemos redirigido para que registres un usuario.");
+            return "redirect:/registro/usuario";
         }
 
         modelo.addAttribute("paso1", new Paso1PersonalDTO());
@@ -79,10 +84,6 @@ public class EmpleadoSignUpController {
             Model modelo,
             @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuarioDTO) {
 
-        if (usuarioDTO == null) {
-            return "redirect:/login/username";
-        }
-
         if (errores.hasErrors()) {
             return "empleado/auth/FormDatosPersonales";
         }
@@ -94,10 +95,14 @@ public class EmpleadoSignUpController {
 
     // Paso 2
     @GetMapping("/paso2")
-    public String mostrarPaso2(Model modelo, @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario) {
+    public String mostrarPaso2(Model modelo,
+                               @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario,
+                               RedirectAttributes redirectAttributes) {
 
         if (usuario == null) {
-            return "redirect:/login/username";
+            //se usa redirectAttributes y addflashAttribute porque con model.addatribute no se guarda entre redirecciones
+            redirectAttributes.addFlashAttribute("error", "Estabas intentando registrar un empleado sin usuario. Te hemos redirigido para que registres un usuario.");
+            return "redirect:/registro/usuario";
         }
 
         Paso2ContactoDTO paso2 = new Paso2ContactoDTO();
@@ -116,10 +121,6 @@ public class EmpleadoSignUpController {
             Model modelo,
             @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario) {
 
-        if (usuario == null) {
-            return "redirect:/login/username";
-        }
-
         if (errores.hasErrors()) {
             return "empleado/auth/FormDatosContacto";
         }
@@ -131,10 +132,14 @@ public class EmpleadoSignUpController {
 
     // Paso 3
     @GetMapping("/paso3")
-    public String mostrarPaso3(Model modelo, @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario) {
+    public String mostrarPaso3(Model modelo,
+                               @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario,
+                               RedirectAttributes redirectAttributes) {
 
         if (usuario == null) {
-            return "redirect:/login/username";
+            //se usa redirectAttributes y addflashAttribute porque con model.addatribute no se guarda entre redirecciones
+            redirectAttributes.addFlashAttribute("error", "Estabas intentando registrar un empleado sin usuario. Te hemos redirigido para que registres un usuario.");
+            return "redirect:/registro/usuario";
         }
 
         modelo.addAttribute("paso3", new Paso3ProfesionalDTO());
@@ -151,10 +156,6 @@ public class EmpleadoSignUpController {
             Model modelo,
             @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario) {
 
-        if (usuario == null) {
-            return "redirect:/login/username";
-        }
-
         if (errores.hasErrors()) {
             return "empleado/auth/FormDatosProfesionales";
         }
@@ -166,10 +167,14 @@ public class EmpleadoSignUpController {
 
     // Paso 4
     @GetMapping("/paso4")
-    public String mostrarPaso4(Model modelo, @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario) {
+    public String mostrarPaso4(Model modelo,
+                               @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario,
+                               RedirectAttributes redirectAttributes) {
 
         if (usuario == null) {
-            return "redirect:/login/username";
+            //se usa redirectAttributes y addflashAttribute porque con model.addatribute no se guarda entre redirecciones
+            redirectAttributes.addFlashAttribute("error", "Estabas intentando registrar un empleado sin usuario. Te hemos redirigido para que registres un usuario.");
+            return "redirect:/registro/usuario";
         }
 
         Paso4EconomicosDTO paso4 = new Paso4EconomicosDTO();
@@ -191,10 +196,6 @@ public class EmpleadoSignUpController {
             Model modelo,
             @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario) {
 
-        if (usuario == null) {
-            return "redirect:/login/username";
-        }
-
         if (errores.hasErrors()) {
             return "empleado/auth/FormDatosEconomicos";
         }
@@ -207,10 +208,13 @@ public class EmpleadoSignUpController {
     // Paso 5
     @GetMapping("/paso5")
     public String mostrarPaso5(@ModelAttribute("registroEmpleado") RegistroEmpleadoDTO registroEmpleado,
-                               Model modelo, @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario) {
+                               Model modelo, @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario,
+                               RedirectAttributes redirectAttributes) {
 
         if (usuario == null) {
-            return "redirect:/login/username";
+            //se usa redirectAttributes y addflashAttribute porque con model.addatribute no se guarda entre redirecciones
+            redirectAttributes.addFlashAttribute("error", "Estabas intentando registrar un empleado sin usuario. Te hemos redirigido para que registres un usuario.");
+            return "redirect:/registro/usuario";
         }
 
         modelo.addAttribute("paso5", registroEmpleado);
@@ -224,7 +228,7 @@ public class EmpleadoSignUpController {
             SessionStatus sesion) {
 
         if (usuarioDTO == null) {
-            return "redirect:/login/username";
+            return "redirect:/registro/usuario";
         }
 
         empleadoService.registrarEmpleado(registroEmpleadoDTO, usuarioDTO);
