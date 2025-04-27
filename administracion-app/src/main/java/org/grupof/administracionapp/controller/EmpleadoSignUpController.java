@@ -57,6 +57,11 @@ public class EmpleadoSignUpController {
         return new RegistroEmpleadoDTO();
     }
 
+    @ModelAttribute("usuario")
+    public UsuarioDTO getUsuario(@SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario) {
+        return usuario;
+    }
+
     // Paso 1
     @GetMapping("/empleado")
     public String mostrarPaso1(Model modelo,
