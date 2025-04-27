@@ -94,10 +94,8 @@ public class UsuarioSignUpController {
 
         registroUsuarioDTO.setContrasena(passwordEncoder.encode(registroUsuarioDTO.getContrasena()));
 
-        UsuarioDTO usuario = usuarioService.registrarUsuario(registroUsuarioDTO);
-        session.setAttribute("usuario", usuario);
-
-        System.err.println("Usuario registrado: " + usuario.getEmail());
+        UsuarioDTO usuarioDTO = usuarioService.registrarUsuario(registroUsuarioDTO);
+        session.setAttribute("usuario", usuarioDTO);
 
         return "redirect:/dashboard/dashboard";
     }
