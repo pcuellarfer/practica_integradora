@@ -75,7 +75,7 @@ public class UsuarioSignUpController {
      * @return redirección al dashboard del usuario si el registro es exitoso,
      * o recarga del formulario en caso de errores.
      */
-    @PostMapping("/signup")
+    @PostMapping("/usuario/signup")
     public String registrarUsuario(
             @ModelAttribute("registroUsuarioDTO") @Valid RegistroUsuarioDTO registroUsuarioDTO,
             BindingResult errores,
