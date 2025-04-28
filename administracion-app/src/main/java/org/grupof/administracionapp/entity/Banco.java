@@ -1,4 +1,4 @@
-package org.grupof.administracionapp.entity.registroEmpleado;
+package org.grupof.administracionapp.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,17 +16,10 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-public class TipoDocumento {
+public class Banco {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    //DNI, NIE, numro de pasaporte
-    private String tipo;
-
-    //contrctor para insercion de datos iniciales
-    public TipoDocumento(String tipo) {
-        this.tipo = tipo;
-    }
-
+    private String nombre;
 }

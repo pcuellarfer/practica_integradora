@@ -1,0 +1,16 @@
+package org.grupof.administracionapp.dto.Empleado;
+
+import lombok.*;
+
+import java.util.UUID;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+@Getter
+@Setter
+
+public class Paso3ProfesionalDTO {
+    private UUID departamento;
+//  private String especialidades;
+}

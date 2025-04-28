@@ -1,4 +1,4 @@
-package org.grupof.administracionapp.entity.registroEmpleado;
+package org.grupof.administracionapp.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,20 +12,12 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
-@Entity
-public class Pais {
 
+@Entity
+public class TipoTarjeta {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     private String nombre;
-    private String prefijoTelefonico;
-
-    //metodo para insercion inicial
-    public Pais(String nombre, String prefijoTelefonico) {
-        this.nombre = nombre;
-        this.prefijoTelefonico = prefijoTelefonico;
-    }
-
 }

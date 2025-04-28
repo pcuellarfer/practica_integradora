@@ -2,6 +2,7 @@ package org.grupof.administracionapp.services.Usuario;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import org.grupof.administracionapp.dto.Usuario.RegistroUsuarioDTO;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
 import org.grupof.administracionapp.entity.Usuario;
 
@@ -19,7 +20,7 @@ public interface UsuarioService {
      * @param registroUsuarioDTO datos del usuario a registrar
      * @return el DTO del usuario registrado
      */
-    UsuarioDTO registrarUsuario(UsuarioDTO registroUsuarioDTO);
+    UsuarioDTO registrarUsuario(RegistroUsuarioDTO registroUsuarioDTO);
 
     /**
      * Busca un usuario por su ID.

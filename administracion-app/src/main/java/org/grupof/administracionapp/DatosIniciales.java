@@ -1,7 +1,11 @@
 package org.grupof.administracionapp;
 
 import org.grupof.administracionapp.entity.Usuario;
-import org.grupof.administracionapp.repository.UsuarioRepository;
+import org.grupof.administracionapp.entity.registroEmpleado.Departamento;
+import org.grupof.administracionapp.entity.registroEmpleado.Genero;
+import org.grupof.administracionapp.entity.registroEmpleado.Pais;
+import org.grupof.administracionapp.entity.registroEmpleado.TipoDocumento;
+import org.grupof.administracionapp.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,7 +37,11 @@ public class DatosIniciales {
      * @return el {@link CommandLineRunner} que se ejecutará al iniciar la aplicación.
      */
     @Bean
-    CommandLineRunner insertarDatos(UsuarioRepository usuarioRepository) {
+    CommandLineRunner insertarDatos(UsuarioRepository usuarioRepository,
+                                    PaisRepository paisRepository,
+                                    GeneroRepository generoRepository,
+                                    TipoDocumentoRepository tipoDocumentoRepository,
+                                    DepartamentoRepository departamentoRepository) {
         return args -> {
             Usuario usuarioInicial = new Usuario();
             usuarioInicial.setNombre("Juan");
@@ -41,6 +49,49 @@ public class DatosIniciales {
             usuarioInicial.setEmail("davidsmh23@gmail.com");
 
             usuarioRepository.save(usuarioInicial);
+
+
+            ///// PAISES //////
+
+            Pais espana = new Pais("España", "+34");
+            Pais francia = new Pais("Francia", "+33");
+            Pais belgica = new Pais("Belgica", "+32");
+            paisRepository.save(espana);
+            paisRepository.save(francia);
+            paisRepository.save(belgica);
+
+            ///// GENEROS //////
+
+            Genero femenino = new Genero("Femenino");
+            Genero masculino = new Genero("Masculino");
+            Genero noBinarie = new Genero("No Binarie");
+            Genero paco = new Genero("Paco");
+
+            generoRepository.save(femenino);
+            generoRepository.save(masculino);
+            generoRepository.save(noBinarie);
+            generoRepository.save(paco);
+
+            /// TIPOS DE DOCUMENTOS ///
+
+            TipoDocumento DNI = new TipoDocumento("DNI");
+            TipoDocumento NIE = new TipoDocumento("NIE");
+            TipoDocumento pasaporte = new TipoDocumento("PASAPORTE");
+
+            tipoDocumentoRepository.save(DNI);
+            tipoDocumentoRepository.save(NIE);
+            tipoDocumentoRepository.save(pasaporte);
+
+            /// DEPARTAMENTOS ///
+
+            Departamento informatica = new Departamento("Informatica");
+            Departamento RRHH = new Departamento("Universidad");
+            Departamento marketing = new Departamento("Marketing");
+
+            departamentoRepository.save(informatica);
+            departamentoRepository.save(RRHH);
+            departamentoRepository.save(marketing);
+
         };
     }
 }

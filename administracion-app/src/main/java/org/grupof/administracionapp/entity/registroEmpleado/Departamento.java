@@ -1,6 +1,9 @@
 package org.grupof.administracionapp.entity.registroEmpleado;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,24 +11,21 @@ import lombok.Setter;
 
 import java.util.UUID;
 
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-@Entity
-public class Pais {
 
+@Entity
+public class Departamento {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     private String nombre;
-    private String prefijoTelefonico;
 
-    //metodo para insercion inicial
-    public Pais(String nombre, String prefijoTelefonico) {
+    //constructor para insercion de datos iniciales
+    public Departamento(String nombre) {
         this.nombre = nombre;
-        this.prefijoTelefonico = prefijoTelefonico;
     }
-
 }

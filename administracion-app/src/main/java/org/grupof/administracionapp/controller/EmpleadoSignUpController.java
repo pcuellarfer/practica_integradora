@@ -1,184 +1,246 @@
 package org.grupof.administracionapp.controller;
 
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
-import org.grupof.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
+import org.grupof.administracionapp.dto.Empleado.*;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
+import org.grupof.administracionapp.entity.embeddable.CuentaCorriente;
+import org.grupof.administracionapp.entity.embeddable.Direccion;
+import org.grupof.administracionapp.entity.embeddable.TarjetaCredito;
+import org.grupof.administracionapp.repository.BancoRepository;
+import org.grupof.administracionapp.services.Departamento.DepartamentoService;
 import org.grupof.administracionapp.services.Empleado.EmpleadoService;
+import org.grupof.administracionapp.services.Genero.GeneroService;
+import org.grupof.administracionapp.services.Pais.PaisService;
+import org.grupof.administracionapp.services.TipoDocumento.TipoDocumentoService;
+import org.grupof.administracionapp.services.TipoTarjetaService.TipoTarjetaService;
+import org.grupof.administracionapp.services.banco.BancoService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-/**
- * Controlador encargado del proceso de registro de un empleado.
- * Maneja las vistas y la lógica de negocio para el login y el registro de un empleado.
- */
 @Controller
-@RequestMapping("/empleado")
+@RequestMapping("/registro")
+@SessionAttributes({"registroEmpleado", "usuario"})
 public class EmpleadoSignUpController {
 
+    private final PaisService paisService;
+    private final GeneroService generoService;
+    private final TipoDocumentoService tipoDocumentoService;
+    private final DepartamentoService departamentoService;
+    private final BancoRepository bancoRepository;
+    private final BancoService bancoService;
+    private final TipoTarjetaService tipoTarjetaService;
     private final EmpleadoService empleadoService;
 
-    /**
-     * Constructor para inyectar el servicio de empleado.
-     *
-     * @param empleadoService Servicio para gestionar lógica relacionada con empleados.
-     */
-    public EmpleadoSignUpController(EmpleadoService empleadoService) {
+    public EmpleadoSignUpController(PaisService paisService,
+                                    GeneroService generoService,
+                                    TipoDocumentoService tipoDocumentoService,
+                                    DepartamentoService departamentoService,
+                                    BancoRepository bancoRepository,
+                                    BancoService bancoService,
+                                    TipoTarjetaService tipoTarjetaService, EmpleadoService empleadoService) {
+        this.paisService = paisService;
+        this.generoService = generoService;
+        this.tipoDocumentoService = tipoDocumentoService;
+        this.departamentoService = departamentoService;
+        this.bancoRepository = bancoRepository;
+        this.bancoService = bancoService;
+        this.tipoTarjetaService = tipoTarjetaService;
         this.empleadoService = empleadoService;
     }
 
-    /**
-     * Cierra la sesión del usuario y redirige a la pantalla de login.
-     *
-     * @param session La sesión HTTP activa.
-     * @return Redirección a la pantalla de login.
-     */
-    @GetMapping("/logout")
-    public String cerrarSesion(HttpSession session) {
-        session.invalidate();
-        return "redirect:/login/username";
+    //añadir un nuevo RegistroEmpleadoDTO vacio a la sesion
+    @ModelAttribute("registroEmpleado")
+    public RegistroEmpleadoDTO registroEmpleadoDTO() {
+        return new RegistroEmpleadoDTO();
     }
 
-    /**
-     * Muestra el formulario para introducir los datos personales del empleado.
-     *
-     * @param modelo Modelo para pasar el DTO al formulario.
-     * @return Vista del formulario de datos personales.
-     */
-    @GetMapping("/registro")
-    public String mostrarFormularioPersonal(Model modelo) {
-        modelo.addAttribute("registroEmpleadoDTO", new RegistroEmpleadoDTO());
-        return "empleado/auth/FormDatosPersonalesOLD";
+    @ModelAttribute("usuario")
+    public UsuarioDTO getUsuario(@SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario) {
+        return usuario;
     }
 
-    /**
-     * Guarda los datos personales del empleado si son válidos.
-     *
-     * @param registroEmpleadoDTO DTO con los datos introducidos.
-     * @param errores Objeto que contiene errores de validación.
-     * @param sesion Sesión actual del usuario.
-     * @param modelo Modelo para pasar mensajes o datos a la vista.
-     * @return Redirección a la siguiente etapa del registro o regreso al formulario con errores.
-     */
-    @PostMapping("/registro")
-    public String guardarDatosPersonales(
-            @ModelAttribute("registroEmpleadoDTO") @Valid RegistroEmpleadoDTO registroEmpleadoDTO,
+    // Paso 1
+    @GetMapping("/empleado")
+    public String mostrarPaso1(Model modelo,
+                               @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario,
+                               RedirectAttributes redirectAttributes) {
+
+        if (usuario == null) {
+            //se usa redirectAttributes y addflashAttribute porque con model.addatribute no se guarda entre redirecciones
+            redirectAttributes.addFlashAttribute("error", "Estabas intentando registrar un empleado sin usuario. Te hemos redirigido para que registres un usuario.");
+            return "redirect:/registro/usuario";
+        }
+
+        modelo.addAttribute("paso1", new Paso1PersonalDTO());
+        modelo.addAttribute("paises", paisService.getAllPaises());
+        modelo.addAttribute("generos", generoService.getAllGeneros());
+
+        return "empleado/auth/FormDatosPersonales";
+    }
+
+    @PostMapping("/paso1")
+    public String procesarPaso2(
+            @ModelAttribute("paso1") Paso1PersonalDTO paso1,
+            @ModelAttribute("registroEmpleado") RegistroEmpleadoDTO registroEmpleado,
             BindingResult errores,
-            HttpSession sesion,
-            Model modelo) {
-
-
-
-        if (registroEmpleadoDTO.getNombre() == null || registroEmpleadoDTO.getNombre().isEmpty()) {
-            modelo.addAttribute("error", "El nombre es obligatorio.");
-            return "empleado/auth/FormDatosPersonalesOLD";
-        }
-
-        if (registroEmpleadoDTO.getApellido() == null || registroEmpleadoDTO.getApellido().isEmpty()) {
-            modelo.addAttribute("error", "El apellido es obligatorio.");
-            return "empleado/auth/FormDatosPersonalesOLD";
-        }
-
-        if (registroEmpleadoDTO.getFechaNacimiento() == null || registroEmpleadoDTO.getFechaNacimiento().isEmpty()) {
-            modelo.addAttribute("error", "La fecha de nacimiento es obligatoria.");
-            return "empleado/auth/FormDatosPersonalesOLD";
-        }
-
-        if (registroEmpleadoDTO.getGenero() == null || registroEmpleadoDTO.getGenero().isEmpty()) {
-            modelo.addAttribute("error", "El género es obligatorio.");
-            return "empleado/auth/FormDatosPersonalesOLD";
-        }
-
-
-
-        UsuarioDTO usuarioDTO = (UsuarioDTO) sesion.getAttribute("usuario");
-        if (usuarioDTO == null) {
-            return "redirect:/usuario/signup";
-        }
-
-        RegistroEmpleadoDTO empleadoExistente = empleadoService.buscarEmpleadoPorUsuarioId(usuarioDTO.getId());
-        if (empleadoExistente != null) {
-            modelo.addAttribute("error", "Ya existe un empleado registrado para este usuario.");
-            return "empleado/auth/FormDatosPersonalesOLD";
-        }
-
-        sesion.setAttribute("usuario", usuarioDTO);
-        sesion.setAttribute("registroEmpleadoDTO", registroEmpleadoDTO);
-
-        return "redirect:/empleado/registro/empresarial";
-    }
-
-    /**
-     * Muestra el formulario de datos empresariales del empleado.
-     *
-     * @param modelo Modelo para pasar los datos.
-     * @param sesion Sesión actual para recuperar el DTO de registro.
-     * @return Vista del formulario de datos empresariales o redirección si faltan datos.
-     */
-    @GetMapping("/registro/empresarial")
-    public String mostrarFormularioEmpresarial(Model modelo, HttpSession sesion) {
-        RegistroEmpleadoDTO registroEmpleadoDTO = (RegistroEmpleadoDTO) sesion.getAttribute("registroEmpleadoDTO");
-        UsuarioDTO usuarioDTO = (UsuarioDTO) sesion.getAttribute("usuario");
-
-        if (registroEmpleadoDTO == null) {
-            return "redirect:/empleado/registro";
-        }
-
-        if (usuarioDTO == null) {
-            return "redirect:/usuario/signup";
-        }
-
-        modelo.addAttribute("registroEmpleadoDTO", registroEmpleadoDTO);
-        return "empleado/auth/FormDatosEmpresarialesOLD";
-    }
-
-    /**
-     * Guarda los datos empresariales del empleado y completa el proceso de registro.
-     *
-     * @param registroEmpleadoDTO DTO con los datos empresariales.
-     * @param errores Objeto de validación.
-     * @param sesion Sesión actual para obtener y actualizar datos.
-     * @param modelo Modelo para pasar mensajes de error.
-     * @return Redirección al dashboard del empleado o regreso al formulario si hay errores.
-     */
-    @PostMapping("/registro/empresarial")
-    public String guardarDatosEmpresariales(
-            @ModelAttribute("registroEmpleadoDTO") @Validated RegistroEmpleadoDTO registroEmpleadoDTO,
-            BindingResult errores,
-            HttpSession sesion,
-            Model modelo) {
+            Model modelo,
+            @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuarioDTO) {
 
         if (errores.hasErrors()) {
-            modelo.addAttribute("error", "Corrige los errores del formulario");
-            return "empleado/auth/FormDatosEmpresarialesOLD";
+            return "empleado/auth/FormDatosPersonales";
         }
 
-        if (registroEmpleadoDTO.getDepartamento() == null || registroEmpleadoDTO.getDepartamento().isEmpty()) {
-            modelo.addAttribute("error", "El departamento es obligatorio.");
-            return "empleado/auth/FormDatosEmpresarialesOLD";
+        registroEmpleado.setPaso1PersonalDTO(paso1);
+
+        return "redirect:/registro/paso2";
+    }
+
+    // Paso 2
+    @GetMapping("/paso2")
+    public String mostrarPaso2(Model modelo,
+                               @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario,
+                               RedirectAttributes redirectAttributes) {
+
+        if (usuario == null) {
+            //se usa redirectAttributes y addflashAttribute porque con model.addatribute no se guarda entre redirecciones
+            redirectAttributes.addFlashAttribute("error", "Estabas intentando registrar un empleado sin usuario. Te hemos redirigido para que registres un usuario.");
+            return "redirect:/registro/usuario";
         }
 
-        if (registroEmpleadoDTO.getPuesto() == null || registroEmpleadoDTO.getPuesto().isEmpty()) {
-            modelo.addAttribute("error", "El puesto es obligatorio.");
-            return "empleado/auth/FormDatosEmpresarialesOLD";
+        Paso2ContactoDTO paso2 = new Paso2ContactoDTO();
+        paso2.setDireccion(new Direccion());
+        modelo.addAttribute("paso2", paso2);
+        modelo.addAttribute("documentos", tipoDocumentoService.getAllTipoDocumento());
+
+        return "empleado/auth/FormDatosContacto";
+    }
+
+    @PostMapping("/paso2")
+    public String procesarPaso2(
+            @ModelAttribute("paso2") Paso2ContactoDTO paso2,
+            @ModelAttribute("registroEmpleado") RegistroEmpleadoDTO registroEmpleado,
+            BindingResult errores,
+            Model modelo,
+            @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario) {
+
+        if (errores.hasErrors()) {
+            return "empleado/auth/FormDatosContacto";
         }
 
-        RegistroEmpleadoDTO dtoSesion = (RegistroEmpleadoDTO) sesion.getAttribute("registroEmpleadoDTO");
-        UsuarioDTO usuarioDTO = (UsuarioDTO) sesion.getAttribute("usuario");
+        registroEmpleado.setPaso2ContactoDTO(paso2);
 
-        if (dtoSesion == null || usuarioDTO == null) {
-            return "redirect:/empleado/registro";
+        return "redirect:/registro/paso3";
+    }
+
+    // Paso 3
+    @GetMapping("/paso3")
+    public String mostrarPaso3(Model modelo,
+                               @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario,
+                               RedirectAttributes redirectAttributes) {
+
+        if (usuario == null) {
+            //se usa redirectAttributes y addflashAttribute porque con model.addatribute no se guarda entre redirecciones
+            redirectAttributes.addFlashAttribute("error", "Estabas intentando registrar un empleado sin usuario. Te hemos redirigido para que registres un usuario.");
+            return "redirect:/registro/usuario";
         }
 
-        dtoSesion.setDepartamento(registroEmpleadoDTO.getDepartamento());
-        dtoSesion.setPuesto(registroEmpleadoDTO.getPuesto());
+        modelo.addAttribute("paso3", new Paso3ProfesionalDTO());
+        modelo.addAttribute("departamentos", departamentoService.getAllDepartamentos());
 
-        empleadoService.registrarEmpleado(dtoSesion, usuarioDTO);
-        sesion.removeAttribute("registroEmpleadoDTO");
+        return "empleado/auth/FormDatosProfesionales";
+    }
+
+    @PostMapping("/paso3")
+    public String procesarPaso3(
+            @ModelAttribute("paso3") Paso3ProfesionalDTO paso3,
+            @ModelAttribute("registroEmpleado") RegistroEmpleadoDTO registroEmpleado,
+            BindingResult errores,
+            Model modelo,
+            @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario) {
+
+        if (errores.hasErrors()) {
+            return "empleado/auth/FormDatosProfesionales";
+        }
+
+        registroEmpleado.setPaso3ProfesionalDTO(paso3);
+
+        return "redirect:/registro/paso4";
+    }
+
+    // Paso 4
+    @GetMapping("/paso4")
+    public String mostrarPaso4(Model modelo,
+                               @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario,
+                               RedirectAttributes redirectAttributes) {
+
+        if (usuario == null) {
+            //se usa redirectAttributes y addflashAttribute porque con model.addatribute no se guarda entre redirecciones
+            redirectAttributes.addFlashAttribute("error", "Estabas intentando registrar un empleado sin usuario. Te hemos redirigido para que registres un usuario.");
+            return "redirect:/registro/usuario";
+        }
+
+        Paso4EconomicosDTO paso4 = new Paso4EconomicosDTO();
+        paso4.setCuentaCorriente(new CuentaCorriente());
+        paso4.setTarjetaCredito(new TarjetaCredito());
+
+        modelo.addAttribute("paso4", paso4);
+        modelo.addAttribute("bancos", bancoService.getAllBancos());
+        modelo.addAttribute("tiposTarjeta", tipoTarjetaService.getAllTiposTarjetas());
+
+        return "empleado/auth/FormDatosEconomicos";
+    }
+
+    @PostMapping("/paso4")
+    public String procesarPaso4(
+            @ModelAttribute("paso4") Paso4EconomicosDTO paso4,
+            @ModelAttribute("registroEmpleado") RegistroEmpleadoDTO registroEmpleado,
+            BindingResult errores,
+            Model modelo,
+            @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario) {
+
+        if (errores.hasErrors()) {
+            return "empleado/auth/FormDatosEconomicos";
+        }
+
+        registroEmpleado.setPaso4EconomicosDTO(paso4);
+
+        return "redirect:/registro/paso5";
+    }
+
+    // Paso 5
+    @GetMapping("/paso5")
+    public String mostrarPaso5(@ModelAttribute("registroEmpleado") RegistroEmpleadoDTO registroEmpleado,
+                               Model modelo, @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario,
+                               RedirectAttributes redirectAttributes) {
+
+        if (usuario == null) {
+            //se usa redirectAttributes y addflashAttribute porque con model.addatribute no se guarda entre redirecciones
+            redirectAttributes.addFlashAttribute("error", "Estabas intentando registrar un empleado sin usuario. Te hemos redirigido para que registres un usuario.");
+            return "redirect:/registro/usuario";
+        }
+
+        modelo.addAttribute("paso5", registroEmpleado);
+        return "empleado/auth/Resumen";
+    }
+
+    @PostMapping("/paso5")
+    public String procesarPaso5(
+            @ModelAttribute("registroEmpleado") RegistroEmpleadoDTO registroEmpleadoDTO,
+            @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuarioDTO,
+            SessionStatus sesion) {
+
+        if (usuarioDTO == null) {
+            return "redirect:/registro/usuario";
+        }
+
+        empleadoService.registrarEmpleado(registroEmpleadoDTO, usuarioDTO);
+
+        sesion.setComplete();
 
         return "redirect:/dashboard/dashboard";
     }
 }
+

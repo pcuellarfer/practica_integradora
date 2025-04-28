@@ -4,29 +4,21 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.UUID;
 
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Data
 @Getter
 @Setter
+
 @Entity
-public class TipoDocumento {
+public class especialidad {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    //DNI, NIE, numro de pasaporte
-    private String tipo;
-
-    //contrctor para insercion de datos iniciales
-    public TipoDocumento(String tipo) {
-        this.tipo = tipo;
-    }
-
+    private String nombre;
 }

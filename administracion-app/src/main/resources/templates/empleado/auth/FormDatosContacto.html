@@ -19,20 +19,96 @@
             <div class="col-2"></div>
         </div>
         <!-- Vincula el formulario al objeto "usuario" del modelo -->
-        <form th:action="@{/empleado/registro/empresarial}" th:object="${registroEmpleadoDTO}" method="post">
+        <form th:action="@{/registro/paso2}" th:object="${paso2}" method="post">
 
             <div class="mb-3">
-                <label for="departamento" class="form-label">departamento:</label>
-                <input type="text" id="departamento" name="departamento" class="form-control" th:field="*{departamento}">
-                <span class="error-message" th:if="${#fields.hasErrors('departamento')}" th:errors="*{departamento}"></span>
+                <label class="form-label">Tipo de documento:</label>
+                <div th:each="tipoDocumento : ${documentos}" class="form-check">
+                    <input class="form-check-input" type="radio"
+                           th:id="${tipoDocumento.tipo}"
+                           th:value="${tipoDocumento.id}"
+                           th:field="*{tipoDocumento}" />
+                    <label class="form-check-label" th:for="${tipoDocumento.tipo}" th:text="${tipoDocumento.tipo}"></label>
+                </div>
+
+
+                <span class="error-message" th:if="${#fields.hasErrors('tipoDocumento')}" th:errors="*{tipoDocumento}"></span>
+
+                <!--Boton de deseleccionar radios-->
+                <!--Boton de seleccionar el primer radio-->
             </div>
 
             <div class="mb-3">
-                <label for="puesto" class="form-label">puesto:</label>
-                <input type="text" id="puesto" name="puesto" class="form-control" th:field="*{puesto}">
-                <span class="error-message" th:if="${#fields.hasErrors('puesto')}" th:errors="*{puesto}"></span>
+                <label for="documento" class="form-label">Documento:</label>
+                <input type="text" id="documento" name="documento" class="form-control" th:field="*{documento}">
+                <span class="error-message" th:if="${#fields.hasErrors('documento')}" th:errors="*{documento}"></span>
             </div>
-            <button type="submit" class="btn btn-primary w-100">Registrarse</button>
+
+            <div class="mb-3">
+                <label for="prefijoTelefono" class="form-label">Prefijo telefonico:</label>
+                <input type="text" id="prefijoTelefono" name="prefijoTelefono" class="form-control" th:field="*{prefijoTelefono}">
+                <span class="error-message" th:if="${#fields.hasErrors('prefijoTelefono')}" th:errors="*{prefijoTelefono}"></span>
+            </div>
+
+            <div class="mb-3">
+                <label for="telefono" class="form-label">Telefono:</label>
+                <input type="text" id="telefono" name="telefono" class="form-control" th:field="*{telefono}">
+                <span class="error-message" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}"></span>
+            </div>
+
+            <!--telefono movil opcional??-->
+
+            <!--Dirección:-->
+                <!--Tipo de vía-->
+            <div class="mb-3">
+                <label for="direccion.nombreDireccion" class="form-label">calle:</label>
+                <input type="text" id="direccion.nombreDireccion" name="direccion.nombreDireccion" class="form-control" th:field="*{direccion.nombreDireccion}">
+                <span class="error-message" th:if="${#fields.hasErrors('direccion.nombreDireccion')}" th:errors="*{direccion.nombreDireccion}"></span>
+            </div>
+
+            <div class="mb-3">
+                <label for="direccion.numeroDireccion" class="form-label">Numero de calle:</label>
+                <input type="text" id="direccion.numeroDireccion" name="direccion.numeroDireccion" class="form-control" th:field="*{direccion.numeroDireccion}">
+                <span class="error-message" th:if="${#fields.hasErrors('direccion.numeroDireccion')}" th:errors="*{direccion.numeroDireccion}"></span>
+            </div>
+
+            <div class="mb-3">
+                <label for="direccion.portal" class="form-label">portal:</label>
+                <input type="text" id="direccion.portal" name="direccion.portal" class="form-control" th:field="*{direccion.portal}">
+                <span class="error-message" th:if="${#fields.hasErrors('direccion.portal')}" th:errors="*{direccion.portal}"></span>
+            </div>
+
+            <div class="mb-3">
+                <label for="direccion.planta" class="form-label">Planta:</label>
+                <input type="text" id="direccion.planta" name="direccion.planta" class="form-control" th:field="*{direccion.planta}">
+                <span class="error-message" th:if="${#fields.hasErrors('direccion.planta')}" th:errors="*{direccion.planta}"></span>
+            </div>
+
+            <div class="mb-3">
+                <label for="direccion.puerta" class="form-label">Puerta:</label>
+                <input type="text" id="direccion.puerta" name="direccion.puerta" class="form-control" th:field="*{direccion.puerta}">
+                <span class="error-message" th:if="${#fields.hasErrors('direccion.puerta')}" th:errors="*{direccion.puerta}"></span>
+            </div>
+
+            <div class="mb-3">
+                <label for="direccion.localidad" class="form-label">localidad:</label>
+                <input type="text" id="direccion.localidad" name="direccion.localidad" class="form-control" th:field="*{direccion.localidad}">
+                <span class="error-message" th:if="${#fields.hasErrors('direccion.localidad')}" th:errors="*{direccion.localidad}"></span>
+            </div>
+
+            <div class="mb-3">
+                <label for="direccion.region" class="form-label">region:</label>
+                <input type="text" id="direccion.region" name="direccion.region" class="form-control" th:field="*{direccion.region}">
+                <span class="error-message" th:if="${#fields.hasErrors('direccion.region')}" th:errors="*{direccion.region}"></span>
+            </div>
+
+            <div class="mb-3">
+                <label for="direccion.codigoPostal" class="form-label">Codigo Postal:</label>
+                <input type="text" id="direccion.codigoPostal" name="direccion.codigoPostal" class="form-control" th:field="*{direccion.codigoPostal}">
+                <span class="error-message" th:if="${#fields.hasErrors('direccion.codigoPostal')}" th:errors="*{direccion.codigoPostal}"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Paso 3 - Datos profesionales</button>
         </form>
         <!-- Mensaje de error (si existe) -->
         <p th:if="${error}" th:text="${error}" style="color: red;"></p>

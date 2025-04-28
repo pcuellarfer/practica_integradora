@@ -24,14 +24,14 @@
         <form th:action="@{/login/recuperación}" method="post">
             <div class="mb-3">
                 <label for="email" class="form-label">Introduce tu email:</label>
-                <input type="text" id="email" name="email" class="form-control">
+                <input type="text" id="email" name="email" class="form-control">2
             </div>
             <button type="submit" class="btn btn-primary w-100">Enviar correo de recuperación</button>
         </form>
 
         <p th:if="${mensaje}" th:text="${mensaje}"></p>
 
-        <a href="/login/username" class="btn btn-secondary w-100">Volver al inicio</a>
+        <a href="/login/username" class="btn btn-secondary w-100 mt-3">Volver al inicio</a>
     </div>
 </div>
 </body>

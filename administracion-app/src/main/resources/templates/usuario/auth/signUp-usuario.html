@@ -21,13 +21,16 @@
             <div class="col-2"></div>
         </div>
 
+        <div>
+            <p class="error-message" th:text="${error}"></p>
+        </div>
+
         <!-- Formulario de Registro -->
-        <form th:action="@{/usuario/signup}" th:object="${usuarioDTO}" method="post">
+        <form th:action="@{/registro/usuario/signup}" th:object="${registroUsuarioDTO}" method="post">
             <div class="mb-3">
                 <label for="email" class="form-label">Correo electrónico:</label>
                 <input type="text" id="email" name="email" class="form-control" th:field="*{email}">
                 <span class="error-message" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
-                <span class="error-message" th:if="${error}" th:text="${error}" ></span>
             </div>
 
             <div class="mb-3">
@@ -36,17 +39,9 @@
                 <span class="error-message" th:if="${#fields.hasErrors('contrasena')}" th:errors="*{contrasena}"></span>
             </div>
 
-            <label for="mostrarcontrasena"></label><input type="checkbox" id="mostrarcontrasena" onclick="mostrarContrasena()"> Mostrar contraseña
-
-            <!--no se si Jose Ramon quiere que la confirmacion sea en el backend o frontend
-            <div class="mb-3">
-                <label for="confirmarContrasena" class="form-label">Confirmar Contraseña</label>
-                <input type="password" id="confirmarContrasena" name="confirmarContrasena" class="form-control">
-                <div id="errorContrasena" class="text-danger" style="display: none;">Las contraseñas no coinciden.</div>
-            </div>-->
-
+            <input type="checkbox" id="mostrarcontrasena" onclick="mostrarContrasena()"><label for="mostrarcontrasena"> Mostrar contraseña</label>
             <button type="submit" class="btn btn-primary w-100">Enviar</button>
-            <a href="/login/username" class="btn btn-secondary w-100">Iniciar Sesion</a>
+            <a href="/login/username" class="btn btn-secondary w-100 mt-3">Iniciar Sesion</a>
         </form>
     </div>
 </div>

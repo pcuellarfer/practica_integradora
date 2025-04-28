@@ -49,3 +49,14 @@ function recuperarContrasena() {
             console.error(error);
         });
 }
+
+function deseleccionarPais() {
+    document.getElementById("pais").selectedIndex = 0; // Selecciona la opción vacía (primer valor en la lista)
+}
+
+function deseleccionarGenero() {
+    var radios = document.getElementsByName("genero");
+    for (var i = 0; i < radios.length; i++) {
+        radios[i].checked = false;
+    }
+}

@@ -8,6 +8,26 @@
     <script th:src="@{/js/mostrarContrasena.js}"></script>
 </head>
 <body>
+<form th:action="@{/registro/paso3}" th:object="${paso3}" method="post">
 
+    <div class="row align-items-center">
+        <div class="col-2"></div>
+        <div class="col">
+            <h1 class="text-center mb-2">Paso 3 - Datos Profesionales</h1>
+        </div>
+        <div class="col-2"></div>
+    </div>
+
+    <label for="departamento">Departamento:</label>
+    <select id="departamento" th:field="*{departamento}" class="form-control">
+        <option value="">Seleccione un departamento</option>
+        <option th:each="departamento : ${departamentos}" th:value="${departamento.id}" th:text="${departamento.nombre}"></option>
+    </select>
+    <!--o Especialidades-->
+
+    <button type="submit" class="btn btn-primary w-100">Paso 4 - Datos economicos</button>
+</form>
+<!-- Mensaje de error (si existe) -->
+<p th:if="${error}" th:text="${error}" style="color: red;"></p>
 </body>
 </html>
