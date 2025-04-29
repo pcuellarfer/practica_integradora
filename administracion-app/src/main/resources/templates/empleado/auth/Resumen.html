@@ -23,20 +23,22 @@
 
 <!--    <h2>Datos de Contacto</h2>-->
 
-<!--    <p>Tipo de documento: <span th:text="${paso5.paso2ContactoDTO.tipoDocumento.tipo}"></span></p>-->
-<!--    <p>Documento: <span th:text="${paso5.paso2ContactoDTO.documento}"></span></p>-->
-<!--    <p>Prefijo Telefónico: <span th:text="${paso5.paso2ContactoDTO.prefijoTelefono}"></span></p>-->
-<!--    <p>Teléfono: <span th:text="${paso5.paso2ContactoDTO.telefono}"></span></p>-->
+    <p>Tipo de documento: <span th:text="${tipoDocumento.tipo}"></span></p>
+    <p>Documento: <span th:text="${paso5.paso2ContactoDTO.documento}"></span></p>
+    <p>Prefijo Telefónico: <span th:text="${paso5.paso2ContactoDTO.prefijoTelefono}"></span></p>
+    <p>Teléfono: <span th:text="${paso5.paso2ContactoDTO.telefono}"></span></p>
 
-<!--    <h3>Dirección</h3>-->
-<!--    <p>Nombre de la calle: <span th:text="${paso5.paso2ContactoDTO.direccion.nombreDireccion}"></span></p>-->
-<!--    <p>Número: <span th:text="${paso5.paso2ContactoDTO.direccion.numeroDireccion}"></span></p>-->
-<!--    <p>Portal: <span th:text="${paso5.paso2ContactoDTO.direccion.portal}"></span></p>-->
-<!--    <p>Planta: <span th:text="${paso5.paso2ContactoDTO.direccion.planta}"></span></p>-->
-<!--    <p>Puerta: <span th:text="${paso5.paso2ContactoDTO.direccion.puerta}"></span></p>-->
-<!--    <p>Localidad: <span th:text="${paso5.paso2ContactoDTO.direccion.localidad}"></span></p>-->
-<!--    <p>Región: <span th:text="${paso5.paso2ContactoDTO.direccion.region}"></span></p>-->
-<!--    <p>Código Postal: <span th:text="${paso5.paso2ContactoDTO.direccion.codigoPostal}"></span></p>-->
+    <h3>Dirección</h3>
+
+    <p>Tipo de vía: <span th:text="${tipoVia.tipo}"></span></p>
+    <p>Nombre de la calle: <span th:text="${paso5.paso2ContactoDTO.direccion.nombreDireccion}"></span></p>
+    <p>Número: <span th:text="${paso5.paso2ContactoDTO.direccion.numeroDireccion}"></span></p>
+    <p>Portal: <span th:text="${paso5.paso2ContactoDTO.direccion.portal}"></span></p>
+    <p>Planta: <span th:text="${paso5.paso2ContactoDTO.direccion.planta}"></span></p>
+    <p>Puerta: <span th:text="${paso5.paso2ContactoDTO.direccion.puerta}"></span></p>
+    <p>Localidad: <span th:text="${paso5.paso2ContactoDTO.direccion.localidad}"></span></p>
+    <p>Región: <span th:text="${paso5.paso2ContactoDTO.direccion.region}"></span></p>
+    <p>Código Postal: <span th:text="${paso5.paso2ContactoDTO.direccion.codigoPostal}"></span></p>
 
 
 <!--    <h2>Datos Profesionales</h2>-->
@@ -60,7 +62,7 @@
 <!--    <p>CVC: <span th:text="${paso5.paso4EconomicosDTO.tarjetaCredito.cvc}"></span></p>-->
 
 
-<form th:action="@{/registro/confirmar}" method="post">
+<form th:action="@{/registro/paso5}" method="post">
     <button type="submit" class="btn btn-primary">Confirmar Registro</button>
 </form>
 </body>

@@ -1,11 +1,16 @@
 package org.grupof.administracionapp.services.Empleado;
 
 
+import org.grupof.administracionapp.dto.Empleado.Paso1PersonalDTO;
+import org.grupof.administracionapp.dto.Empleado.Paso2ContactoDTO;
+import org.grupof.administracionapp.entity.embeddable.Direccion;
 import org.grupof.administracionapp.entity.registroEmpleado.Genero;
 import org.grupof.administracionapp.entity.registroEmpleado.Pais;
+import org.grupof.administracionapp.entity.registroEmpleado.TipoDocumento;
 import org.grupof.administracionapp.repository.GeneroRepository;
 import org.grupof.administracionapp.services.Genero.GeneroService;
 import org.grupof.administracionapp.services.Pais.PaisService;
+import org.grupof.administracionapp.services.TipoDocumento.TipoDocumentoService;
 import org.modelmapper.ModelMapper;
 import org.grupof.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
@@ -36,13 +41,15 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     private final UsuarioRepository usuarioRepository;
     private final GeneroService generoService;
     private final PaisService paisService;
+    private final TipoDocumentoService tipoDocumentoService;
 
     @Autowired
-    public EmpleadoServiceImpl(EmpleadoRepository empleadoRepository, UsuarioRepository usuarioRepository, GeneroService generoService, GeneroRepository generoRepository, PaisService paisService) {
+    public EmpleadoServiceImpl(EmpleadoRepository empleadoRepository, UsuarioRepository usuarioRepository, GeneroService generoService, GeneroRepository generoRepository, PaisService paisService, TipoDocumentoService tipoDocumentoService) {
         this.empleadoRepository = empleadoRepository;
         this.usuarioRepository = usuarioRepository;
         this.generoService = generoService;
         this.paisService = paisService;
+        this.tipoDocumentoService = tipoDocumentoService;
     }
 
     /**
@@ -56,17 +63,52 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         Usuario usuario = usuarioRepository.findById(usuarioDTO.getId())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        Empleado empleado = modelMapper.map(registroEmpleadoDTO, Empleado.class);
+        Empleado empleado = new Empleado();
 
-        UUID generoId = registroEmpleadoDTO.getPaso1PersonalDTO().getGenero();
+        //he tenido que usar sets en ved de model mapper porque no sabia mapear objetos DTO
+        //paso 1 - personales
+        Paso1PersonalDTO personalDTO = registroEmpleadoDTO.getPaso1PersonalDTO();
+
+        empleado.setNombre(personalDTO.getNombre());
+        empleado.setApellido(personalDTO.getApellido());
+        empleado.setFechaNacimiento(personalDTO.getFechaNacimiento());
+        empleado.setEdad(personalDTO.getEdad());
+        empleado.setComentarios(personalDTO.getComentarios());
+
+        UUID generoId = personalDTO.getGenero();
         Genero genero = generoService.getGeneroById(generoId);
         empleado.setGenero(genero);
 
-        UUID paisId = registroEmpleadoDTO.getPaso1PersonalDTO().getPais();
+        UUID paisId = personalDTO.getPais();
         Pais pais = paisService.getPaisById(paisId);
         empleado.setPais(pais);
 
-        empleado.setFechaContratacion(LocalDateTime.now());
+        //paso 2 - contacto
+        Paso2ContactoDTO contactoDTO = registroEmpleadoDTO.getPaso2ContactoDTO();
+
+        UUID tipoDocumentoId = contactoDTO.getTipoDocumento();
+        TipoDocumento tipoDocumento = tipoDocumentoService.getTipoDocumentoById(tipoDocumentoId);
+
+        empleado.setTipoDocumento(tipoDocumento);
+        empleado.setDocumento(contactoDTO.getDocumento());
+        empleado.setPrefijoTelefono(contactoDTO.getPrefijoTelefono());
+        empleado.setTelefono(contactoDTO.getTelefono());
+
+        //dirección
+        Direccion direccionDTO = contactoDTO.getDireccion();
+        Direccion direccion = new Direccion();
+        direccion.setTipoVia(direccionDTO.getTipoVia());
+        direccion.setNombreDireccion(direccionDTO.getNombreDireccion());
+        direccion.setNumeroDireccion(direccionDTO.getNumeroDireccion());
+        direccion.setPortal(direccionDTO.getPortal());
+        direccion.setPlanta(direccionDTO.getPlanta());
+        direccion.setPuerta(direccionDTO.getPuerta());
+        direccion.setLocalidad(direccionDTO.getLocalidad());
+        direccion.setRegion(direccionDTO.getRegion());
+        direccion.setCodigoPostal(direccionDTO.getCodigoPostal());
+
+        empleado.setDireccion(direccion);
+
         empleado.setUsuario(usuario);
 
         empleadoRepository.save(empleado);

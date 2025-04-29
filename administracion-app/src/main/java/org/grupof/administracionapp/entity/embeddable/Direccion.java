@@ -5,12 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @AllArgsConstructor @NoArgsConstructor @Data
 
 @Embeddable
 public class Direccion {
 
-    //tipo via
+    private UUID tipoVia;
     private String nombreDireccion;
     private Integer numeroDireccion;
     private String portal;

@@ -7,6 +7,8 @@ import org.grupof.administracionapp.entity.embeddable.Direccion;
 import org.grupof.administracionapp.entity.embeddable.TarjetaCredito;
 import org.grupof.administracionapp.entity.registroEmpleado.Genero;
 import org.grupof.administracionapp.entity.registroEmpleado.Pais;
+import org.grupof.administracionapp.entity.registroEmpleado.TipoDocumento;
+import org.grupof.administracionapp.entity.registroEmpleado.TipoVia;
 import org.grupof.administracionapp.repository.BancoRepository;
 import org.grupof.administracionapp.services.Departamento.DepartamentoService;
 import org.grupof.administracionapp.services.Empleado.EmpleadoService;
@@ -14,6 +16,7 @@ import org.grupof.administracionapp.services.Genero.GeneroService;
 import org.grupof.administracionapp.services.Pais.PaisService;
 import org.grupof.administracionapp.services.TipoDocumento.TipoDocumentoService;
 import org.grupof.administracionapp.services.TipoTarjetaService.TipoTarjetaService;
+import org.grupof.administracionapp.services.TipoVia.TipoViaService;
 import org.grupof.administracionapp.services.banco.BancoService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,6 +40,7 @@ public class EmpleadoSignUpController {
     private final BancoService bancoService;
     private final TipoTarjetaService tipoTarjetaService;
     private final EmpleadoService empleadoService;
+    private final TipoViaService tipoViaService;
 
     public EmpleadoSignUpController(PaisService paisService,
                                     GeneroService generoService,
@@ -44,7 +48,7 @@ public class EmpleadoSignUpController {
                                     DepartamentoService departamentoService,
                                     BancoRepository bancoRepository,
                                     BancoService bancoService,
-                                    TipoTarjetaService tipoTarjetaService, EmpleadoService empleadoService) {
+                                    TipoTarjetaService tipoTarjetaService, EmpleadoService empleadoService, TipoViaService tipoViaService) {
         this.paisService = paisService;
         this.generoService = generoService;
         this.tipoDocumentoService = tipoDocumentoService;
@@ -53,6 +57,7 @@ public class EmpleadoSignUpController {
         this.bancoService = bancoService;
         this.tipoTarjetaService = tipoTarjetaService;
         this.empleadoService = empleadoService;
+        this.tipoViaService = tipoViaService;
     }
 
     //añadir un nuevo RegistroEmpleadoDTO vacio a la sesion
@@ -116,7 +121,9 @@ public class EmpleadoSignUpController {
 
         Paso2ContactoDTO paso2 = new Paso2ContactoDTO();
         paso2.setDireccion(new Direccion());
+
         modelo.addAttribute("paso2", paso2);
+        modelo.addAttribute("tiposVias", tipoViaService.getAllTipoVia());
         modelo.addAttribute("documentos", tipoDocumentoService.getAllTipoDocumento());
 
         return "empleado/auth/FormDatosContacto";
@@ -227,14 +234,29 @@ public class EmpleadoSignUpController {
             return "redirect:/registro/usuario";
         }
 
+        //paso 1 - personales
         UUID generoId = registroEmpleado.getPaso1PersonalDTO().getGenero();
         UUID paisId = registroEmpleado.getPaso1PersonalDTO().getPais();
 
         Genero genero = generoService.getGeneroById(generoId);
         Pais pais = paisService.getPaisById(paisId);
 
+        //paso 2 - contacto
+
+        UUID tipoDocumentoId = registroEmpleado.getPaso2ContactoDTO().getTipoDocumento();
+        TipoDocumento tipoDocumento = tipoDocumentoService.getTipoDocumentoById(tipoDocumentoId);
+
+        UUID tipoViaId = registroEmpleado.getPaso2ContactoDTO().getDireccion().getTipoVia();
+        TipoVia tipoVia = tipoViaService.getTipoViaById(tipoViaId);
+
+        //paso 3 -
+
+
+
         modelo.addAttribute("genero", genero);
         modelo.addAttribute("pais", pais);
+        modelo.addAttribute("tipoDocumento", tipoDocumento);
+        modelo.addAttribute("tipoVia", tipoVia);
 
         modelo.addAttribute("paso5", registroEmpleado);
         return "empleado/auth/Resumen";

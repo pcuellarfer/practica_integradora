@@ -16,7 +16,6 @@ public class GeneroServiceImpl implements GeneroService{
         this.generoRepository = generoRepository;
     }
 
-
     @Override
     public List<Genero> getAllGeneros() {
         return generoRepository.findAll();

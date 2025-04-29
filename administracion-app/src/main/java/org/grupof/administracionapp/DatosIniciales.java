@@ -1,10 +1,7 @@
 package org.grupof.administracionapp;
 
 import org.grupof.administracionapp.entity.Usuario;
-import org.grupof.administracionapp.entity.registroEmpleado.Departamento;
-import org.grupof.administracionapp.entity.registroEmpleado.Genero;
-import org.grupof.administracionapp.entity.registroEmpleado.Pais;
-import org.grupof.administracionapp.entity.registroEmpleado.TipoDocumento;
+import org.grupof.administracionapp.entity.registroEmpleado.*;
 import org.grupof.administracionapp.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -41,7 +38,8 @@ public class DatosIniciales {
                                     PaisRepository paisRepository,
                                     GeneroRepository generoRepository,
                                     TipoDocumentoRepository tipoDocumentoRepository,
-                                    DepartamentoRepository departamentoRepository) {
+                                    DepartamentoRepository departamentoRepository,
+                                    TipoViaRepository tipoViaRepository) {
         return args -> {
             Usuario usuarioInicial = new Usuario();
             usuarioInicial.setNombre("Juan");
@@ -91,6 +89,16 @@ public class DatosIniciales {
             departamentoRepository.save(informatica);
             departamentoRepository.save(RRHH);
             departamentoRepository.save(marketing);
+
+            ///  TIPOS VIA ///
+
+            TipoVia calle = new TipoVia("Calle");
+            TipoVia avenida = new TipoVia("Avenida");
+            TipoVia paseo = new TipoVia("Paseo");
+
+            tipoViaRepository.save(calle);
+            tipoViaRepository.save(avenida);
+            tipoViaRepository.save(paseo);
 
         };
     }
