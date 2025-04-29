@@ -2,13 +2,11 @@ package org.grupof.administracionapp.controller;
 
 import org.grupof.administracionapp.dto.Empleado.*;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
+import org.grupof.administracionapp.entity.TipoTarjeta;
 import org.grupof.administracionapp.entity.embeddable.CuentaCorriente;
 import org.grupof.administracionapp.entity.embeddable.Direccion;
 import org.grupof.administracionapp.entity.embeddable.TarjetaCredito;
-import org.grupof.administracionapp.entity.registroEmpleado.Genero;
-import org.grupof.administracionapp.entity.registroEmpleado.Pais;
-import org.grupof.administracionapp.entity.registroEmpleado.TipoDocumento;
-import org.grupof.administracionapp.entity.registroEmpleado.TipoVia;
+import org.grupof.administracionapp.entity.registroEmpleado.*;
 import org.grupof.administracionapp.repository.BancoRepository;
 import org.grupof.administracionapp.services.Departamento.DepartamentoService;
 import org.grupof.administracionapp.services.Empleado.EmpleadoService;
@@ -26,7 +24,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/registro")
@@ -253,14 +253,31 @@ public class EmpleadoSignUpController {
         UUID tipoViaId = registroEmpleado.getPaso2ContactoDTO().getDireccion().getTipoVia();
         TipoVia tipoVia = tipoViaService.getTipoViaById(tipoViaId);
 
-        //paso 3 -
+        //paso 3 - profesionales
+        UUID departamentoId = registroEmpleado.getPaso3ProfesionalDTO().getDepartamento();
+        Departamento departamento = departamentoService.getDepartamentoById(departamentoId);
 
+        Set<UUID> especialidadIds = registroEmpleado.getPaso3ProfesionalDTO().getEspecialidades();
+        Set<Especialidad> especialidades = especialidadIds.stream()
+                .map(especialidadesService::getEspecialidadById)
+                .collect(Collectors.toSet());
 
+        //paso 4 - economicos
+        UUID bancoId = registroEmpleado.getPaso4EconomicosDTO().getCuentaCorriente().getBanco();
+        Banco banco = bancoService.GetBancoById(bancoId);
 
+        UUID tipoTarjetaId = registroEmpleado.getPaso4EconomicosDTO().getTarjetaCredito().getTipoTarjeta();
+        TipoTarjeta tipoTarjeta = tipoTarjetaService.getTipoTarjetaById(tipoTarjetaId);
+
+        //añadir al modelo los campor para vista resumne
         modelo.addAttribute("genero", genero);
         modelo.addAttribute("pais", pais);
         modelo.addAttribute("tipoDocumento", tipoDocumento);
         modelo.addAttribute("tipoVia", tipoVia);
+        modelo.addAttribute("departamento", departamento);
+        modelo.addAttribute("especialidades", especialidades);
+        modelo.addAttribute("banco", banco);
+        modelo.addAttribute("tipoTarjeta", tipoTarjeta);
 
         modelo.addAttribute("paso5", registroEmpleado);
         return "empleado/auth/Resumen";
@@ -277,8 +294,6 @@ public class EmpleadoSignUpController {
         }
 
         empleadoService.registrarEmpleado(registroEmpleadoDTO, usuarioDTO);
-
-        sesion.setComplete();
 
         return "redirect:/dashboard/dashboard";
     }

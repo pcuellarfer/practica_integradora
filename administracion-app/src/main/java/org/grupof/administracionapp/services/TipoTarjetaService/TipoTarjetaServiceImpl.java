@@ -5,6 +5,7 @@ import org.grupof.administracionapp.repository.TipoTarjetaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class TipoTarjetaServiceImpl implements TipoTarjetaService {
@@ -18,5 +19,10 @@ public class TipoTarjetaServiceImpl implements TipoTarjetaService {
     @Override
     public List<TipoTarjeta> getAllTiposTarjetas() {
         return tipoTarjetaRepository.findAll();
+    }
+
+    @Override
+    public TipoTarjeta getTipoTarjetaById(UUID id) {
+        return tipoTarjetaRepository.findById(id).orElse(null);
     }
 }

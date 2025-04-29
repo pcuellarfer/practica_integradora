@@ -5,6 +5,7 @@ import org.grupof.administracionapp.repository.EspecialidadRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class EspecialidadesServiceImpl implements EspecialidadesService{
@@ -19,5 +20,10 @@ public class EspecialidadesServiceImpl implements EspecialidadesService{
     @Override
     public List<Especialidad> getAllEspecialidades() {
         return especialidadesRepository.findAll();
+    }
+
+    @Override
+    public Especialidad getEspecialidadById(UUID id) {
+        return especialidadesRepository.findById(id).orElse(null);
     }
 }

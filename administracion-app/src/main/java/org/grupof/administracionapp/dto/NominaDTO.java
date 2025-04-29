@@ -1,6 +1,6 @@
 package org.grupof.administracionapp.dto;
 
-import org.grupof.administracionapp.auxiliar.Periodo;
+import org.grupof.administracionapp.entity.embeddable.Periodo;
 
 import java.util.UUID;
 import java.math.BigDecimal;

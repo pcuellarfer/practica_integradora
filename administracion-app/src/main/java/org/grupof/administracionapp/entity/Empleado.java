@@ -84,7 +84,7 @@ public class Empleado {
     @Column(precision = 10, scale = 2, table = "datos_economicos")  // 10 digitos con 2 decimales, no se si pedira tanto.
     private BigDecimal salario;
     @Column(precision = 10, scale = 2, table = "datos_economicos")
-    private String comision;
+    private BigDecimal comision;
 
     @Embedded
     @AttributeOverride(name = "tipoTarjeta", column = @Column(table = "datos_economicos"))
@@ -94,11 +94,7 @@ public class Empleado {
     @AttributeOverride(name = "cvc", column = @Column(table = "datos_economicos"))
     private TarjetaCredito tarjetaCredito;
 
-    //fin de registro//
-
-    //ayuda
-
-        //paso 5 resumen
+    //fin del registro
 
     @Column(name = "fecha_contratacion")
     private LocalDateTime fechaContratacion;
