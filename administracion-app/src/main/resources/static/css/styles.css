@@ -3,13 +3,11 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
     margin: 0;
     background-color: #f8f9fa; /* Fondo simple */
 }
 
 .container {
-    max-width: 600px;
     background: white; /* Fondo blanco */
     padding: 30px;
     border-radius: 15px;

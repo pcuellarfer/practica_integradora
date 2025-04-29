@@ -7,11 +7,12 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class GeneroServiceImpl implements GeneroService{
+public class GeneroServiceImpl extends GeneroService {
 
     private final GeneroRepository generoRepository;
 
     public GeneroServiceImpl(GeneroRepository generoRepository) {
+        super(generoRepository);
         this.generoRepository = generoRepository;
     }
 
