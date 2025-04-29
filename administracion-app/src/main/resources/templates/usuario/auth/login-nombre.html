@@ -29,7 +29,8 @@
             </div>
             <button type="submit" class="btn btn-primary w-100">Introducir contraseña</button>
         </form>
-        <p th:if="${error}" th:text="${error}"></p>
+        <a href="/registro/usuario" class="btn btn-secondary w-100 mt-3">Crear Usuario</a>
+        <p th:if="${error}" th:text="${error}" class="error-message"></p>
     </div>
 </div>
 </body>

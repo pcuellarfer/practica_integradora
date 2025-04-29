@@ -1,41 +1,54 @@
 package org.grupof.administracionapp.controller;
 
 import jakarta.servlet.http.HttpSession;
-import org.grupof.administracionapp.auxiliar.TipoUsuario;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
+import org.grupof.administracionapp.services.Email.EmailService;
 import org.grupof.administracionapp.services.Usuario.UsuarioService;
+import org.grupof.administracionapp.services.Token.TokenService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
+
 /**
- * Controlador responsable de gestionar el inicio y cierre de sesión de los usuarios,
- * así como la redirección a los paneles correspondientes según su rol.
- * Proporciona formularios para introducir el nombre de usuario (email) y la contraseña,
- * validando los datos e interactuando con el servicio de usuario.
+ * Controlador responsable de gestionar el inicio y cierre de sesión de los usuarios.
+ * Proporciona formularios para introducir el email y la contraseña, validando los datos
+ * e interactuando con el servicio de usuario.
  */
 @Controller
 @RequestMapping("/login")
 public class InicioSesionController {
 
+    private final PasswordEncoder passwordEncoder;
     private final UsuarioService usuarioService;
+    private final EmailService emailService;
+    private final TokenService tokenService;
 
     /**
-     * Constructor que inyecta el servicio encargado de la lógica relacionada con usuarios.
+     * Constructor que inyecta las dependencias necesarias para la gestión de autenticación.
      *
-     * @param usuarioService servicio de gestión de usuarios.
+     * @param usuarioService servicio encargado de las operaciones con usuarios.
+     * @param passwordEncoder codificador de contraseñas utilizado para validaciones.
      */
-    public InicioSesionController(UsuarioService usuarioService) {
+    public InicioSesionController(UsuarioService usuarioService, PasswordEncoder passwordEncoder, EmailService emailService, TokenService tokenService) {
         this.usuarioService = usuarioService;
+        this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
+        this.tokenService = tokenService;
     }
 
     /**
-     * Obtiene o crea un objeto UsuarioDTO para la sesión.
-     * Se utiliza como modelo compartido en los formularios de login.
+     * Añade un objeto {@link UsuarioDTO} al modelo, reutilizando el de la sesión si existe.
+     * Este método se ejecuta antes de cada controlador con acceso al modelo "usuario".
      *
      * @param session sesión HTTP actual.
-     * @return objeto UsuarioDTO existente en sesión o uno nuevo si no existe.
+     * @return objeto UsuarioDTO existente o uno nuevo si no hay usuario en sesión.
      */
     @ModelAttribute("usuario")
     public UsuarioDTO getUsuario(HttpSession session) {
@@ -47,10 +60,10 @@ public class InicioSesionController {
     }
 
     /**
-     * Cierra la sesión actual, invalidando todos los datos de usuario.
+     * Invalida la sesión actual del usuario, cerrando la sesión.
      *
-     * @param session sesión HTTP actual.
-     * @return redirección al formulario de introducción del email.
+     * @param session sesión HTTP a invalidar.
+     * @return redirección al formulario de ingreso del email.
      */
     @GetMapping("/logout")
     public String cerrarSesion(HttpSession session) {
@@ -60,25 +73,29 @@ public class InicioSesionController {
 
     /**
      * Muestra el formulario para introducir el email del usuario.
-     * Si ya hay un usuario en sesión, continúa con el proceso normal.
      *
-     * @param usuario usuario almacenado en sesión.
-     * @return vista del formulario de email.
+     * @param usuario objeto de usuario recuperado del modelo (puede estar en sesión).
+     * @return vista del formulario de login por email.
      */
     @GetMapping("/username")
-    public String mostrarFormularioNombre(@ModelAttribute("usuario") UsuarioDTO usuario) {
+    public String mostrarFormularioNombre(@ModelAttribute("usuario") UsuarioDTO usuario,
+                                          HttpSession session) {
+        if (session.getAttribute("usuario") != null) {
+            // Si ya existe una sesión activa, redirigir al dashboard o la página principal
+            return "redirect:/dashboard/dashboard"; // O la URL de la página que quieras redirigir
+        }
         return "usuario/auth/login-nombre";
     }
 
     /**
-     * Procesa el formulario de ingreso del email.
-     * Verifica si el email existe en el sistema y guarda el usuario en sesión.
+     * Procesa el formulario de email del usuario.
+     * Si el email existe, guarda el usuario en sesión y redirige a la vista de contraseña.
      *
-     * @param usuarioDTO objeto usuario con el email ingresado.
-     * @param result resultado de la validación del objeto.
+     * @param usuarioDTO objeto que contiene el email ingresado.
+     * @param result resultado de la validación del formulario.
      * @param session sesión HTTP actual.
-     * @param model modelo para enviar mensajes de error a la vista.
-     * @return redirección al formulario de contraseña o mensaje de error si el email no existe.
+     * @param model modelo para comunicar mensajes a la vista.
+     * @return vista de contraseña o recarga del formulario de email en caso de error.
      */
     @PostMapping("/username")
     public String procesarFormularioNombre(@ModelAttribute("usuario") UsuarioDTO usuarioDTO,
@@ -97,37 +114,50 @@ public class InicioSesionController {
             return "usuario/auth/login-nombre";
         }
 
+        boolean usuarioBLoqueado = usuarioService.buscarBloqueado(usuarioDTO.getEmail());
+
+        if (usuarioBLoqueado) {
+            model.addAttribute("error", "El usuario está bloqueado.");
+            return "usuario/auth/login-nombre";
+        }
+
         session.setAttribute("usuario", usuarioExistente);
         return "usuario/auth/login-contrasena";
     }
 
     /**
-     * Muestra el formulario para introducir la contraseña del usuario.
+     * Muestra el formulario para restablecer la contraseña del usuario.
+     * Si el objeto {@link UsuarioDTO} es nulo o el correo electrónico está vacío,
+     * redirige al usuario a la página de inicio de sesión.
      *
-     * @param usuarioDTO usuario actual obtenido de la sesión.
-     * @return vista del formulario de contraseña o redirección si no hay email definido.
+     * @param usuarioDTO El objeto que contiene la información del usuario.
+     * @return El nombre de la vista a mostrar, o una redirección si el correo es inválido.
      */
     @GetMapping("/password")
     public String mostrarFormularioContrasena(@ModelAttribute("usuario") UsuarioDTO usuarioDTO) {
-        if (usuarioDTO == null || usuarioDTO.getEmail().isBlank()) {
+        // Verificamos si usuarioDTO es null o si el campo email es null o está vacío
+        if (usuarioDTO == null || usuarioDTO.getEmail() == null || usuarioDTO.getEmail().isBlank()) {
             return "redirect:/login/username";
         }
-
         return "usuario/auth/login-contrasena";
     }
 
+
     /**
-     * Procesa el formulario de ingreso de contraseña.
-     * Si la contraseña es correcta, autentica al usuario y lo redirige a su dashboard.
+     * Procesa el ingreso de la contraseña del usuario.
+     * Si es válida, guarda el usuario en sesión y redirige al dashboard.
+     * Si no, muestra mensaje de error y permite reintentar.
      *
-     * @param usuarioDTO usuario actual obtenido de la sesión.
-     * @param contrasena contraseña ingresada por el usuario.
-     * @param model modelo para enviar mensajes de error a la vista.
-     * @return redirección al panel correspondiente al tipo de usuario o mensaje de error.
+     * @param usuarioDTO usuario obtenido del modelo o sesión.
+     * @param contrasena contraseña ingresada.
+     * @param session sesión HTTP actual.
+     * @param model modelo para enviar mensajes a la vista.
+     * @return redirección al dashboard o recarga de la vista de contraseña si hay error.
      */
     @PostMapping("/password")
     public String procesarFormularioContrasena(@ModelAttribute("usuario") UsuarioDTO usuarioDTO,
                                                @RequestParam String contrasena,
+                                               HttpSession session,
                                                Model model) {
         if (usuarioDTO == null || usuarioDTO.getEmail().isBlank()) {
             return "redirect:/login/username";
@@ -138,33 +168,174 @@ public class InicioSesionController {
             return "usuario/auth/login-contrasena";
         }
 
-        usuarioDTO.setContrasena(contrasena);
-        usuarioService.iniciarSesion(usuarioDTO);
+        // Buscar en BBDD
+        UsuarioDTO usuarioBBDD = usuarioService.buscarPorEmail(usuarioDTO.getEmail());
 
-        if (usuarioDTO.getTipoUsuario() == TipoUsuario.EMPLEADO) {
-            return "empleado/main/empleado-dashboard";
+        if (usuarioBBDD.isEstadoBloqueado()) {
+            if (usuarioBBDD.getBloqueadoHasta() != null && usuarioBBDD.getBloqueadoHasta().isAfter(LocalDateTime.now())) {
+                model.addAttribute("error", "El usuario está bloqueado. Inténtelo más tarde.");
+                return "usuario/auth/login-contrasena";
+            } else {
+                usuarioService.desbloquearUsuario(usuarioDTO.getEmail());
+                usuarioBBDD.setEstadoBloqueado(false);
+                usuarioBBDD.setBloqueadoHasta(null);
+            }
         }
 
-        if (usuarioDTO.getTipoUsuario() == TipoUsuario.ADMINISTRADOR) {
-            return "admin/main/admin-dashboard";
+        // Verificación de contraseña
+        if (!passwordEncoder.matches(contrasena, usuarioBBDD.getContrasena())) {
+            model.addAttribute("error", "Contraseña incorrecta.");
+
+            Integer intentos = (Integer) session.getAttribute("intentos");
+            if (intentos == null) intentos = 0;
+            intentos++;
+
+            session.setAttribute("intentos", intentos);
+
+            if (intentos >= 3) {
+                usuarioService.bloquearUsuario(usuarioDTO.getEmail(), "Demasiados intentos fallidos");
+                usuarioService.actualizarTiempoDesbloqueo(usuarioDTO.getEmail(), LocalDateTime.now().plusSeconds(30));
+
+                model.addAttribute("error", "El usuario ha sido bloqueado por demasiados intentos fallidos.");
+                session.invalidate();
+                return "redirect:/login/username";
+            }
+
+            return "usuario/auth/login-contrasena";
         }
 
-        return "redirect:/login/dashboard";
+        // Si contraseña es correcta
+        session.setAttribute("usuario", usuarioBBDD);
+        session.removeAttribute("intentos");
+        return "redirect:/dashboard/dashboard";
+    }
+
+
+    /**
+     * Endpoint de prueba para verificar el funcionamiento del envío de correo.
+     *
+     * @return una respuesta HTTP 200 con un mensaje indicando que el correo fue enviado.
+     */
+    @GetMapping("/enviar-correo")
+    public ResponseEntity<String> enviarCorreo() {
+        return ResponseEntity.ok("Correo enviado");
     }
 
     /**
-     * Muestra un dashboard genérico para usuarios cuyo tipo no está claramente definido,
-     * o cuando se accede directamente a la ruta de dashboard.
+     * Muestra el formulario de recuperación de contraseña.
      *
-     * @param session sesión HTTP actual.
-     * @param model modelo para pasar el nombre del usuario a la vista.
-     * @return vista del panel general de usuario.
+     * @return vista del formulario de recuperación.
      */
-    @GetMapping("/dashboard")
-    public String dashboard(HttpSession session, Model model) {
-        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
-        model.addAttribute("nombre", usuario.getNombre());
-        return "usuario/main/usuario-dashboard";
+    @GetMapping("/recuperación")
+    public String mostrarFormularioRecuperacion() {
+        return "usuario/auth/recuperacion";
+    }
+
+    /**
+     * Procesa el formulario de recuperación de contraseña: genera un token y lo envía al email proporcionado.
+     *
+     * @param email dirección de correo del usuario que solicita la recuperación.
+     * @param model modelo para pasar datos a la vista.
+     * @return vista del mismo formulario con un mensaje de confirmación.
+     */
+    @PostMapping("/recuperación")
+    public String procesarFormularioRecuperacion(@RequestParam String email, Model model) {
+        String asunto = "Verifica tu cuenta";
+
+        String token = UUID.randomUUID().toString();
+        tokenService.guardarToken(email, token);
+
+        String enlace = "http://localhost:8080/login/verificacion?token=" + token;
+        emailService.enviarCorreoConEnlace(email, asunto, enlace);
+
+        model.addAttribute("mensaje", "Se ha enviado un enlace de recuperación a tu correo.");
+        return "usuario/auth/recuperacion";
+    }
+
+    /**
+     * Muestra el formulario para establecer una nueva contraseña tras verificar el token.
+     *
+     * @param token token de verificación proporcionado en el enlace.
+     * @param model modelo para pasar el email y token a la vista.
+     * @return vista del formulario para introducir la nueva contraseña, o error si el token no es válido.
+     */
+    @GetMapping("/verificacion")
+    public String mostrarFormularioNuevaContrasena(@RequestParam String token, Model model) {
+        Optional<String> email = tokenService.validarToken(token);
+        if (email.isEmpty()) {
+            return "error/token-invalido";
+        }
+
+        model.addAttribute("email", email.get());
+        model.addAttribute("token", token);
+        return "usuario/auth/nueva-contrasena";
+    }
+
+    /**
+     * Muestra el formulario para introducir una nueva contraseña.
+     * Valida que el token proporcionado sea válido y esté asociado a un usuario.
+     *
+     * @param token el token de restablecimiento recibido por correo electrónico.
+     * @param model el modelo para pasar datos a la vista.
+     * @return la vista para introducir una nueva contraseña o una vista de error si el token no es válido.
+     */
+    @GetMapping("/restablecer-contrasena")
+    public String mostrarFormularioRestablecerContrasena(@RequestParam String token, Model model) {
+        Optional<String> email = tokenService.validarToken(token);
+        if (email.isEmpty()) {
+            return "error/token-invalido";
+        }
+
+        model.addAttribute("email", email.get());
+        model.addAttribute("token", token);
+        return "usuario/auth/nueva-contrasena";
+    }
+
+    /**
+     * Procesa el formulario de restablecimiento de contraseña.
+     * Valida el token, compara las contraseñas ingresadas y, si todo es correcto,
+     * actualiza la contraseña del usuario y elimina el token.
+     *
+     * @param token el token recibido por correo.
+     * @param email el email del usuario.
+     * @param contrasena la nueva contraseña ingresada.
+     * @param contrasenaRecuperacion la confirmación de la nueva contraseña.
+     * @param model el modelo para pasar datos a la vista en caso de error.
+     * @return redirección a la pantalla de éxito o retorno a la vista del formulario si hay errores.
+     */
+    @PostMapping("/restablecer-contrasena")
+    public String restablecerContrasena(
+            @RequestParam String token,
+            @RequestParam String email,
+            @RequestParam String contrasena,
+            @RequestParam String contrasenaRecuperacion,
+            Model model
+    ) {
+        Optional<String> emailToken = tokenService.validarToken(token);
+
+        if (emailToken.isEmpty() || !emailToken.get().equals(email)) {
+            return "error/token-invalido";
+        }
+
+        if (!contrasena.equals(contrasenaRecuperacion)) {
+            model.addAttribute("email", email);
+            model.addAttribute("token", token);
+            model.addAttribute("error", "Las contraseñas no coinciden.");
+            return "usuario/auth/nueva-contrasena";
+        }
+
+        usuarioService.actualizarContrasena(email, contrasena);
+        tokenService.eliminarToken(token);
+        return "redirect:/login/contrasenaActualizada";
+    }
+
+    /**
+     * Muestra una vista de confirmación cuando la contraseña se ha actualizado con éxito.
+     *
+     * @return la vista que informa al usuario de que su contraseña ha sido actualizada.
+     */
+    @GetMapping("/contrasenaActualizada")
+    public String mostrarContrasenaActualizada() {
+        return "usuario/auth/contrasena-actualizada";
     }
 }
-

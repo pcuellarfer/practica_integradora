@@ -1,29 +1,50 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
+    <meta charset="UTF-8">
     <title>Mis detalles</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
 </head>
 <body>
+<div class="absoluto mt-5">
+    <div class="container">
+        <!-- Título -->
+        <div class="row align-items-center">
+            <div class="col-2"></div>
+            <div class="col">
+                <h1 class="text-center mb-4">Detalles del usuario</h1>
+            </div>
+            <div class="col-2"></div>
+        </div>
 
-<h1>Usuario</h1>
-<p><strong>Email:</strong> <span th:text="${usuario.email}"></span></p>
-<p><strong>contraseña:</strong> <span th:text="${usuario.contrasena}"></span></p>
+        <!-- Información del usuario -->
+        <div class="mb-3">
+            <h2>Usuario</h2>
+            <p><strong>Email:</strong> <span th:text="${usuario.email}"></span></p>
+            <p><strong>Contraseña:</strong> <span th:text="${usuario.contrasena}"></span></p>
+        </div>
 
-<h1>Empleado</h1>
-<h2>Personal</h2>
-<p><strong>Nombre:</strong> <span th:text="${empleado.nombre}"></span></p>
-<p><strong>Apellido:</strong> <span th:text="${empleado.apellido}"></span></p>
-<p><strong>Fecha de nacimiento:</strong> <span th:text="${empleado.fechaNacimiento}"></span></p>
-<p><strong>Genero:</strong> <span th:text="${empleado.genero}"></span></p>
+        <!-- Información del empleado -->
+        <div class="mb-3">
+            <h2>Empleado</h2>
+            <h3>Personal</h3>
+            <p><strong>Nombre:</strong> <span th:text="${empleado.nombre}"></span></p>
+            <p><strong>Apellido:</strong> <span th:text="${empleado.apellido}"></span></p>
+            <p><strong>Fecha de nacimiento:</strong> <span th:text="${empleado.fechaNacimiento}"></span></p>
+            <p><strong>Género:</strong> <span th:text="${empleado.genero}"></span></p>
+        </div>
 
-<h2>Empresarial</h2>
-<p><strong>Departamento:</strong> <span th:text="${empleado.departamento}"></span></p>
-<p><strong>Puesto:</strong> <span th:text="${empleado.puesto}"></span></p>
+        <div class="mb-3">
+            <h3>Empresarial</h3>
+            <p><strong>Departamento:</strong> <span th:text="${empleado.departamento}"></span></p>
+            <p><strong>Puesto:</strong> <span th:text="${empleado.puesto}"></span></p>
+        </div>
 
-
-<!--faltan mas campos-->
-
-<a href="/empleado/dashboard">Volver al dashboard</a>
+        <!-- Botón de regreso -->
+        <a href="/dashboard/dashboard" class="btn btn-secondary w-100">Volver al dashboard</a>
+    </div>
+</div>
 
 </body>
 </html>

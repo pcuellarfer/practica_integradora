@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.grupof.administracionapp.auxiliar.TipoUsuario;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -28,6 +29,7 @@ public class Usuario {
 
     private String nombre;
     private String contrasena;
+    private String contrasenaRecuperacion;
 
     @Email(message = "El email no es válido.")
     private String email;
@@ -36,11 +38,13 @@ public class Usuario {
     private TipoUsuario tipoUsuario;
 
     private boolean estadoBloqueado = false;
-    private LocalDateTime bloqueoFechaHora;
+    private LocalDateTime bloqueadoHasta;
     private String motivoBloqueo;
 
     //no lo pide José Ramon pero se podria usar  "cascade = CascadeType.ALL"
     //para que cuando borre un usuario se borre su empleado
     @OneToOne(mappedBy = "usuario")
     private Empleado empleado;
+
+    private byte[] archivo;
 }

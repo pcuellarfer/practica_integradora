@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8" />
-    <title>Registro de Usuario</title>
+    <title>Nueva contraseña</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" th:href="@{/css/styles.css}"/>
     <script th:src="@{/js/mostrarContrasena.js}"></script>
@@ -22,14 +22,22 @@
         </div>
 
         <!-- Introducir contraseña -->
-        <form th:action="@{/#}" th:object="${usuario}" method="post">
+        <form th:action="@{/login/restablecer-contrasena}" th:object="${usuario}" method="post">
             <div class="mb-3">
-                <label for="contrasena" class="form-label">Introduce la nueva contraseña</label>
-                <input type="password" id="contrasena" name="email" class="form-control" th:field="*{contrasena}">
+                <label for="contrasena1" class="form-label">Introduce la nueva contraseña</label>
+                <input type="password" id="contrasena1" name="contrasena" class="form-control" th:field="*{contrasena}">
                 <span class="error-message" th:if="${#fields.hasErrors('contrasena')}" th:errors="*{contrasena}"></span>
             </div>
-            <input type="checkbox" id="mostrarcontrasena" onclick="mostrarContrasena()"> Mostrar contraseña
+            <div class="mb-3">
+                <label for="contrasena2" class="form-label">Confirma la contraseña</label>
+                <input type="password" id="contrasena2" name="contrasena2" class="form-control" th:field="*{contrasenaRecuperacion}">
+                <span class="error-message" th:if="${#fields.hasErrors('contrasenaRecuperacion')}" th:errors="*{contrasenaRecuperacion}"></span>
+            </div>
+            <input type="hidden" name="token" th:value="${token}"/>
+            <input type="hidden" name="email" th:value="${email}"/>
+            <input type="checkbox" id="mostrarcontrasena" onclick="mostrarContrasenaRestablecer()"> Mostrar contraseña
             <button type="submit" class="btn btn-primary w-100">Enviar</button>
+            <p th:if="${error}" th:text="${error}" class=""></p>
         </form>
     </div>
 </div>
