@@ -5,6 +5,7 @@ import org.grupof.administracionapp.repository.DepartamentoRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class DepartamentoServiceImpl implements DepartamentoService {
@@ -19,5 +20,10 @@ public class DepartamentoServiceImpl implements DepartamentoService {
     @Override
     public List<Departamento> getAllDepartamentos() {
         return departamentoRepository.findAll();
+    }
+
+    @Override
+    public Departamento getDepartamentoById(UUID id) {
+        return departamentoRepository.findById(id).orElse(null);
     }
 }

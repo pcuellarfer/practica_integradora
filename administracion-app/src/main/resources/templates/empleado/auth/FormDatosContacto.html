@@ -44,7 +44,7 @@
                 <span class="error-message" th:if="${#fields.hasErrors('documento')}" th:errors="*{documento}"></span>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3"> <!-- es un select simple o un text (error en enunciado?)-->
                 <label for="prefijoTelefono" class="form-label">Prefijo telefonico:</label>
                 <input type="text" id="prefijoTelefono" name="prefijoTelefono" class="form-control" th:field="*{prefijoTelefono}">
                 <span class="error-message" th:if="${#fields.hasErrors('prefijoTelefono')}" th:errors="*{prefijoTelefono}"></span>
@@ -59,7 +59,12 @@
             <!--telefono movil opcional??-->
 
             <!--Dirección:-->
-                <!--Tipo de vía-->
+
+            <label for="direccion.tipoVia">Tipo Via:</label>
+            <select id="direccion.tipoVia" th:field="*{direccion.tipoVia}" class="form-control">
+                <option th:each="tipoVia : ${tiposVias}" th:value="${tipoVia.id}" th:text="${tipoVia.tipo}"></option>
+            </select>
+
             <div class="mb-3">
                 <label for="direccion.nombreDireccion" class="form-label">calle:</label>
                 <input type="text" id="direccion.nombreDireccion" name="direccion.nombreDireccion" class="form-control" th:field="*{direccion.nombreDireccion}">

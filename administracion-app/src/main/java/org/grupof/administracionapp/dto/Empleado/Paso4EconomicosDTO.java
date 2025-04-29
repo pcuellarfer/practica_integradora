@@ -8,7 +8,6 @@ import org.grupof.administracionapp.entity.embeddable.CuentaCorriente;
 import org.grupof.administracionapp.entity.embeddable.TarjetaCredito;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,6 +16,6 @@ import java.util.UUID;
 public class Paso4EconomicosDTO {
     private CuentaCorriente cuentaCorriente;
     private BigDecimal salario;
-    private BigDecimal Comision;
+    private BigDecimal comision;
     private TarjetaCredito tarjetaCredito;
 }

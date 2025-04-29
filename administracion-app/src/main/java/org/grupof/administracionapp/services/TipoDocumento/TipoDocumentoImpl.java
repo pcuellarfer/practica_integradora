@@ -6,6 +6,7 @@ import org.grupof.administracionapp.repository.TipoDocumentoRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class TipoDocumentoImpl implements TipoDocumentoService {
@@ -19,5 +20,10 @@ public class TipoDocumentoImpl implements TipoDocumentoService {
     @Override
     public List<TipoDocumento> getAllTipoDocumento() {
         return TipoDocumentoRepository.findAll();
+    }
+
+    @Override
+    public TipoDocumento getTipoDocumentoById(UUID id) {
+        return TipoDocumentoRepository.findById(id).orElse(null);
     }
 }

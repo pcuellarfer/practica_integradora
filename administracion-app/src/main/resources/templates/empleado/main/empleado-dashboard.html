@@ -20,7 +20,7 @@
 
         <!-- Contenido del dashboard -->
         <div class="mb-3">
-            <p>Sesión iniciada como: <strong><span th:text="${empleado.nombre}"></span></strong></p>
+            <p>Sesión iniciada como: <strong><span th:text="${empleado.getPaso1PersonalDTO.nombre}"></span></strong></p>
         </div>
 
         <form th:action="@{/empleado/logout}" method="get">

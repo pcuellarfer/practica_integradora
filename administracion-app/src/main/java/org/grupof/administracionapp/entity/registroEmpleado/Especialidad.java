@@ -1,25 +1,28 @@
-package org.grupof.administracionapp.entity;
+package org.grupof.administracionapp.entity.registroEmpleado;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.UUID;
 
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Data
 @Getter
 @Setter
+
 @Entity
-public class Banco {
+public class Especialidad {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     private String nombre;
+
+    public Especialidad(String nombre) {
+        this.nombre = nombre;
+    }
 }
