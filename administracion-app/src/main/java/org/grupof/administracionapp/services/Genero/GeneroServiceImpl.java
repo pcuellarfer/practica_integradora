@@ -8,12 +8,12 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class GeneroServiceImpl extends GeneroService {
+public class GeneroServiceImpl implements GeneroService {
 
     private final GeneroRepository generoRepository;
 
     public GeneroServiceImpl(GeneroRepository generoRepository) {
-        super(generoRepository);
+        super();
         this.generoRepository = generoRepository;
     }
 
