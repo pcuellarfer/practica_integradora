@@ -1,5 +1,11 @@
 package org.grupof.administracionapp.services.Empleado;
 
+
+import org.grupof.administracionapp.entity.registroEmpleado.Genero;
+import org.grupof.administracionapp.entity.registroEmpleado.Pais;
+import org.grupof.administracionapp.repository.GeneroRepository;
+import org.grupof.administracionapp.services.Genero.GeneroService;
+import org.grupof.administracionapp.services.Pais.PaisService;
 import org.modelmapper.ModelMapper;
 import org.grupof.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
@@ -28,11 +34,15 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     private final ModelMapper modelMapper = new ModelMapper();
     private final EmpleadoRepository empleadoRepository;
     private final UsuarioRepository usuarioRepository;
+    private final GeneroService generoService;
+    private final PaisService paisService;
 
     @Autowired
-    public EmpleadoServiceImpl(EmpleadoRepository empleadoRepository, UsuarioRepository usuarioRepository) {
+    public EmpleadoServiceImpl(EmpleadoRepository empleadoRepository, UsuarioRepository usuarioRepository, GeneroService generoService, GeneroRepository generoRepository, PaisService paisService) {
         this.empleadoRepository = empleadoRepository;
         this.usuarioRepository = usuarioRepository;
+        this.generoService = generoService;
+        this.paisService = paisService;
     }
 
     /**
@@ -47,6 +57,15 @@ public class EmpleadoServiceImpl implements EmpleadoService {
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         Empleado empleado = modelMapper.map(registroEmpleadoDTO, Empleado.class);
+
+        UUID generoId = registroEmpleadoDTO.getPaso1PersonalDTO().getGenero();
+        Genero genero = generoService.getGeneroById(generoId);
+        empleado.setGenero(genero);
+
+        UUID paisId = registroEmpleadoDTO.getPaso1PersonalDTO().getPais();
+        Pais pais = paisService.getPaisById(paisId);
+        empleado.setPais(pais);
+
         empleado.setFechaContratacion(LocalDateTime.now());
         empleado.setUsuario(usuario);
 

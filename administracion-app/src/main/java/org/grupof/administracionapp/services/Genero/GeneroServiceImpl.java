@@ -5,6 +5,7 @@ import org.grupof.administracionapp.repository.GeneroRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class GeneroServiceImpl implements GeneroService{
@@ -19,5 +20,10 @@ public class GeneroServiceImpl implements GeneroService{
     @Override
     public List<Genero> getAllGeneros() {
         return generoRepository.findAll();
+    }
+
+    @Override
+    public Genero getGeneroById(UUID id) {
+        return generoRepository.findById(id).orElse(null);
     }
 }

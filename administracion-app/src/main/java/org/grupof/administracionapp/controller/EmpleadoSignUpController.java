@@ -5,6 +5,8 @@ import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
 import org.grupof.administracionapp.entity.embeddable.CuentaCorriente;
 import org.grupof.administracionapp.entity.embeddable.Direccion;
 import org.grupof.administracionapp.entity.embeddable.TarjetaCredito;
+import org.grupof.administracionapp.entity.registroEmpleado.Genero;
+import org.grupof.administracionapp.entity.registroEmpleado.Pais;
 import org.grupof.administracionapp.repository.BancoRepository;
 import org.grupof.administracionapp.services.Departamento.DepartamentoService;
 import org.grupof.administracionapp.services.Empleado.EmpleadoService;
@@ -19,6 +21,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/registro")
@@ -213,7 +217,8 @@ public class EmpleadoSignUpController {
     // Paso 5
     @GetMapping("/paso5")
     public String mostrarPaso5(@ModelAttribute("registroEmpleado") RegistroEmpleadoDTO registroEmpleado,
-                               Model modelo, @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario,
+                               Model modelo,
+                               @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario,
                                RedirectAttributes redirectAttributes) {
 
         if (usuario == null) {
@@ -221,6 +226,15 @@ public class EmpleadoSignUpController {
             redirectAttributes.addFlashAttribute("error", "Estabas intentando registrar un empleado sin usuario. Te hemos redirigido para que registres un usuario.");
             return "redirect:/registro/usuario";
         }
+
+        UUID generoId = registroEmpleado.getPaso1PersonalDTO().getGenero();
+        UUID paisId = registroEmpleado.getPaso1PersonalDTO().getPais();
+
+        Genero genero = generoService.getGeneroById(generoId);
+        Pais pais = paisService.getPaisById(paisId);
+
+        modelo.addAttribute("genero", genero);
+        modelo.addAttribute("pais", pais);
 
         modelo.addAttribute("paso5", registroEmpleado);
         return "empleado/auth/Resumen";

@@ -69,9 +69,9 @@ public class Empleado {
     @JoinColumn(name = "departamento_id")
     private Departamento departamento;
 
-//    @ManyToOne
-//    @JoinColumn(name = "especialida")
-//    private String especialidades;
+//    @onetomany
+//    @JoinColumn(name = "especialides")
+//    private Collection<Especialidad> especialidades;
 
     //paso 4 datos economicos - en secondary tablke
     @AttributeOverride(name = "banco", column = @Column(table = "datos_economicos"))

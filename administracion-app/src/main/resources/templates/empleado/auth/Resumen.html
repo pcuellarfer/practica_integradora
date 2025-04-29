@@ -15,49 +15,49 @@
     <p>Nombre: <span th:text="${paso5.paso1PersonalDTO.nombre}"></span></p>
     <p>Apellido: <span th:text="${paso5.paso1PersonalDTO.apellido}"></span></p>
 <!--    foto-->
-    <p>Género: <span th:text="${paso5.paso1PersonalDTO.genero.nombre}"></span></p>
+    <p>Género: <span th:text="${genero.getIdentidad()}"></span></p>
     <p>Fecha de Nacimiento: <span th:text="${paso5.paso1PersonalDTO.fechaNacimiento}"></span></p>
     <p>Edad: <span th:text="${paso5.paso1PersonalDTO.edad}"></span></p>
-    <p>País: <span th:text="${paso5.paso1PersonalDTO.pais.nombre}"></span></p>
+    <p>País: <span th:text="${pais.getNombre()}"></span></p>
     <p>Comentarios: <span th:text="${paso5.paso1PersonalDTO.comentarios}"></span></p>
 
-    <h2>Datos de Contacto</h2>
+<!--    <h2>Datos de Contacto</h2>-->
 
-    <p>Tipo de documento: <span th:text="${paso5.paso2ContactoDTO.tipoDocumento.tipo}"></span></p>
-    <p>Documento: <span th:text="${paso5.paso2ContactoDTO.documento}"></span></p>
-    <p>Prefijo Telefónico: <span th:text="${paso5.paso2ContactoDTO.prefijoTelefono}"></span></p>
-    <p>Teléfono: <span th:text="${paso5.paso2ContactoDTO.telefono}"></span></p>
+<!--    <p>Tipo de documento: <span th:text="${paso5.paso2ContactoDTO.tipoDocumento.tipo}"></span></p>-->
+<!--    <p>Documento: <span th:text="${paso5.paso2ContactoDTO.documento}"></span></p>-->
+<!--    <p>Prefijo Telefónico: <span th:text="${paso5.paso2ContactoDTO.prefijoTelefono}"></span></p>-->
+<!--    <p>Teléfono: <span th:text="${paso5.paso2ContactoDTO.telefono}"></span></p>-->
 
-    <h3>Dirección</h3>
-    <p>Nombre de la calle: <span th:text="${paso5.paso2ContactoDTO.direccion.nombreDireccion}"></span></p>
-    <p>Número: <span th:text="${paso5.paso2ContactoDTO.direccion.numeroDireccion}"></span></p>
-    <p>Portal: <span th:text="${paso5.paso2ContactoDTO.direccion.portal}"></span></p>
-    <p>Planta: <span th:text="${paso5.paso2ContactoDTO.direccion.planta}"></span></p>
-    <p>Puerta: <span th:text="${paso5.paso2ContactoDTO.direccion.puerta}"></span></p>
-    <p>Localidad: <span th:text="${paso5.paso2ContactoDTO.direccion.localidad}"></span></p>
-    <p>Región: <span th:text="${paso5.paso2ContactoDTO.direccion.region}"></span></p>
-    <p>Código Postal: <span th:text="${paso5.paso2ContactoDTO.direccion.codigoPostal}"></span></p>
+<!--    <h3>Dirección</h3>-->
+<!--    <p>Nombre de la calle: <span th:text="${paso5.paso2ContactoDTO.direccion.nombreDireccion}"></span></p>-->
+<!--    <p>Número: <span th:text="${paso5.paso2ContactoDTO.direccion.numeroDireccion}"></span></p>-->
+<!--    <p>Portal: <span th:text="${paso5.paso2ContactoDTO.direccion.portal}"></span></p>-->
+<!--    <p>Planta: <span th:text="${paso5.paso2ContactoDTO.direccion.planta}"></span></p>-->
+<!--    <p>Puerta: <span th:text="${paso5.paso2ContactoDTO.direccion.puerta}"></span></p>-->
+<!--    <p>Localidad: <span th:text="${paso5.paso2ContactoDTO.direccion.localidad}"></span></p>-->
+<!--    <p>Región: <span th:text="${paso5.paso2ContactoDTO.direccion.region}"></span></p>-->
+<!--    <p>Código Postal: <span th:text="${paso5.paso2ContactoDTO.direccion.codigoPostal}"></span></p>-->
 
 
-    <h2>Datos Profesionales</h2>
-    <p>Departamento: <span th:text="${paso5.paso3ProfesionalDTO.departamento.nombre}"></span></p>
-<!--    especialidades-->
+<!--    <h2>Datos Profesionales</h2>-->
+<!--    <p>Departamento: <span th:text="${paso5.paso3ProfesionalDTO.departamento.nombre}"></span></p>-->
+<!--&lt;!&ndash;    especialidades&ndash;&gt;-->
 
-    <h2>Datos Económicos</h2>
+<!--    <h2>Datos Económicos</h2>-->
 
-    <p>Banco: <span th:text="${paso5.paso4EconomicosDTO.cuentaCorriente.banco.nombre}"></span></p>
-    <p>Número de Cuenta: <span th:text="${paso5.paso4EconomicosDTO.cuentaCorriente.numCuenta}"></span></p>
+<!--    <p>Banco: <span th:text="${paso5.paso4EconomicosDTO.cuentaCorriente.banco.nombre}"></span></p>-->
+<!--    <p>Número de Cuenta: <span th:text="${paso5.paso4EconomicosDTO.cuentaCorriente.numCuenta}"></span></p>-->
 
-    <p>Salario: <span th:text="${paso5.paso4EconomicosDTO.salario}"></span> €</p>
-    <p>Comisión: <span th:text="${paso5.paso4EconomicosDTO.comision}"></span> €</p>
+<!--    <p>Salario: <span th:text="${paso5.paso4EconomicosDTO.salario}"></span> €</p>-->
+<!--    <p>Comisión: <span th:text="${paso5.paso4EconomicosDTO.comision}"></span> €</p>-->
 
-    <h3>Tarjeta de Crédito</h3>
+<!--    <h3>Tarjeta de Crédito</h3>-->
 
-    <p>Tipo de Tarjeta: <span th:text="${paso5.paso4EconomicosDTO.tarjetaCredito.tipoTarjeta.nombre}"></span></p>
-    <p>Número de Tarjeta: <span th:text="${paso5.paso4EconomicosDTO.tarjetaCredito.numTarjeta}"></span></p>
-<!--    <p>Mes de Caducidad: <span th:text="${paso5.paso4EconomicosDTO.tarjetaCredito.mesCaducidad}"></span></p>-->
-<!--    <p>Año de Caducidad: <span th:text="${paso5.paso4EconomicosDTO.tarjetaCredito.anoCaducidad}"></span></p>-->
-    <p>CVC: <span th:text="${paso5.paso4EconomicosDTO.tarjetaCredito.cvc}"></span></p>
+<!--    <p>Tipo de Tarjeta: <span th:text="${paso5.paso4EconomicosDTO.tarjetaCredito.tipoTarjeta.nombre}"></span></p>-->
+<!--    <p>Número de Tarjeta: <span th:text="${paso5.paso4EconomicosDTO.tarjetaCredito.numTarjeta}"></span></p>-->
+<!--&lt;!&ndash;    <p>Mes de Caducidad: <span th:text="${paso5.paso4EconomicosDTO.tarjetaCredito.mesCaducidad}"></span></p>&ndash;&gt;-->
+<!--&lt;!&ndash;    <p>Año de Caducidad: <span th:text="${paso5.paso4EconomicosDTO.tarjetaCredito.anoCaducidad}"></span></p>&ndash;&gt;-->
+<!--    <p>CVC: <span th:text="${paso5.paso4EconomicosDTO.tarjetaCredito.cvc}"></span></p>-->
 
 
 <form th:action="@{/registro/confirmar}" method="post">
