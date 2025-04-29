@@ -15,7 +15,7 @@ import java.util.UUID;
 @Setter
 
 @Entity
-public class especialidad {
+public class Especialidad {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;

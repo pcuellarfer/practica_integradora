@@ -12,5 +12,5 @@ import java.util.UUID;
 
 public class Paso3ProfesionalDTO {
     private UUID departamento;
-//  private String especialidades;
+    private UUID especialidades;
 }

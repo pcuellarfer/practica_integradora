@@ -8,14 +8,12 @@ import lombok.Setter;
 import org.grupof.administracionapp.entity.embeddable.CuentaCorriente;
 import org.grupof.administracionapp.entity.embeddable.Direccion;
 import org.grupof.administracionapp.entity.embeddable.TarjetaCredito;
-import org.grupof.administracionapp.entity.registroEmpleado.Departamento;
-import org.grupof.administracionapp.entity.registroEmpleado.Genero;
-import org.grupof.administracionapp.entity.registroEmpleado.Pais;
-import org.grupof.administracionapp.entity.registroEmpleado.TipoDocumento;
+import org.grupof.administracionapp.entity.registroEmpleado.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -69,9 +67,13 @@ public class Empleado {
     @JoinColumn(name = "departamento_id")
     private Departamento departamento;
 
-//    @onetomany
-//    @JoinColumn(name = "especialides")
-//    private Collection<Especialidad> especialidades;
+    @ManyToMany
+    @JoinTable(
+            name = "empleado_especialidad",
+            joinColumns = @JoinColumn(name = "empleado_id"),
+            inverseJoinColumns = @JoinColumn(name = "especialidad_id")
+    )
+    private Set<Especialidad> especialidades;
 
     //paso 4 datos economicos - en secondary tablke
     @AttributeOverride(name = "banco", column = @Column(table = "datos_economicos"))
