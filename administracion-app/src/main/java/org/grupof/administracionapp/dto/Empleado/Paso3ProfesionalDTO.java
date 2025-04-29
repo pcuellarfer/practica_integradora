@@ -2,6 +2,7 @@ package org.grupof.administracionapp.dto.Empleado;
 
 import lombok.*;
 
+import java.util.Set;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -12,5 +13,5 @@ import java.util.UUID;
 
 public class Paso3ProfesionalDTO {
     private UUID departamento;
-    private UUID especialidades;
+    private Set<UUID> especialidades;
 }

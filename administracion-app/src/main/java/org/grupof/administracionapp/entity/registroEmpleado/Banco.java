@@ -1,4 +1,4 @@
-package org.grupof.administracionapp.entity;
+package org.grupof.administracionapp.entity.registroEmpleado;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -22,4 +22,8 @@ public class Banco {
     private UUID id;
 
     private String nombre;
+
+    public Banco(String nombre) {
+        this.nombre = nombre;
+    }
 }

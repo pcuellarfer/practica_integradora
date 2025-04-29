@@ -20,4 +20,8 @@ public class TipoTarjeta {
     private UUID id;
 
     private String nombre;
+
+    public TipoTarjeta(String nombre) {
+        this.nombre = nombre;
+    }
 }

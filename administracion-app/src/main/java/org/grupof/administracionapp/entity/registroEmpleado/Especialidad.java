@@ -21,4 +21,8 @@ public class Especialidad {
     private UUID id;
 
     private String nombre;
+
+    public Especialidad(String nombre) {
+        this.nombre = nombre;
+    }
 }

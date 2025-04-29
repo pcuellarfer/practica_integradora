@@ -12,6 +12,7 @@ import org.grupof.administracionapp.entity.registroEmpleado.TipoVia;
 import org.grupof.administracionapp.repository.BancoRepository;
 import org.grupof.administracionapp.services.Departamento.DepartamentoService;
 import org.grupof.administracionapp.services.Empleado.EmpleadoService;
+import org.grupof.administracionapp.services.Especialidades.EspecialidadesService;
 import org.grupof.administracionapp.services.Genero.GeneroService;
 import org.grupof.administracionapp.services.Pais.PaisService;
 import org.grupof.administracionapp.services.TipoDocumento.TipoDocumentoService;
@@ -41,6 +42,7 @@ public class EmpleadoSignUpController {
     private final TipoTarjetaService tipoTarjetaService;
     private final EmpleadoService empleadoService;
     private final TipoViaService tipoViaService;
+    private final EspecialidadesService especialidadesService;
 
     public EmpleadoSignUpController(PaisService paisService,
                                     GeneroService generoService,
@@ -48,7 +50,7 @@ public class EmpleadoSignUpController {
                                     DepartamentoService departamentoService,
                                     BancoRepository bancoRepository,
                                     BancoService bancoService,
-                                    TipoTarjetaService tipoTarjetaService, EmpleadoService empleadoService, TipoViaService tipoViaService) {
+                                    TipoTarjetaService tipoTarjetaService, EmpleadoService empleadoService, TipoViaService tipoViaService, EspecialidadesService especialidadesService) {
         this.paisService = paisService;
         this.generoService = generoService;
         this.tipoDocumentoService = tipoDocumentoService;
@@ -58,6 +60,7 @@ public class EmpleadoSignUpController {
         this.tipoTarjetaService = tipoTarjetaService;
         this.empleadoService = empleadoService;
         this.tipoViaService = tipoViaService;
+        this.especialidadesService = especialidadesService;
     }
 
     //añadir un nuevo RegistroEmpleadoDTO vacio a la sesion
@@ -160,6 +163,7 @@ public class EmpleadoSignUpController {
 
         modelo.addAttribute("paso3", new Paso3ProfesionalDTO());
         modelo.addAttribute("departamentos", departamentoService.getAllDepartamentos());
+        modelo.addAttribute("especialidades", especialidadesService.getAllEspecialidades());
 
         return "empleado/auth/FormDatosProfesionales";
     }
