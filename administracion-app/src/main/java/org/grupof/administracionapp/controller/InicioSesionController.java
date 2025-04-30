@@ -80,7 +80,7 @@ public class InicioSesionController {
     @GetMapping("/username")
     public String mostrarFormularioNombre(@ModelAttribute("usuario") UsuarioDTO usuario,
                                           HttpSession session) {
-        if (session.getAttribute("usuario") != null) {
+        if (session.getAttribute("usuario") != null && session.getAttribute("contraseña") != null) {
             // Si ya existe una sesión activa, redirigir al dashboard o la página principal
             return "redirect:/dashboard/dashboard"; // O la URL de la página que quieras redirigir
         }
