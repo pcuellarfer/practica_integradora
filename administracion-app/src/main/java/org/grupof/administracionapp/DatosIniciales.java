@@ -1,10 +1,9 @@
 package org.grupof.administracionapp;
 
+import org.grupof.administracionapp.entity.TipoTarjeta;
 import org.grupof.administracionapp.entity.Usuario;
-import org.grupof.administracionapp.entity.registroEmpleado.Departamento;
-import org.grupof.administracionapp.entity.registroEmpleado.Genero;
-import org.grupof.administracionapp.entity.registroEmpleado.Pais;
-import org.grupof.administracionapp.entity.registroEmpleado.TipoDocumento;
+import org.grupof.administracionapp.entity.embeddable.TarjetaCredito;
+import org.grupof.administracionapp.entity.registroEmpleado.*;
 import org.grupof.administracionapp.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -41,7 +40,8 @@ public class DatosIniciales {
                                     PaisRepository paisRepository,
                                     GeneroRepository generoRepository,
                                     TipoDocumentoRepository tipoDocumentoRepository,
-                                    DepartamentoRepository departamentoRepository) {
+                                    DepartamentoRepository departamentoRepository,
+                                    TipoViaRepository tipoViaRepository, EspecialidadRepository especialidadRepository, BancoRepository bancoRepository, TipoTarjetaRepository tipoTarjetaRepository) {
         return args -> {
             Usuario usuarioInicial = new Usuario();
             usuarioInicial.setNombre("Juan");
@@ -91,6 +91,46 @@ public class DatosIniciales {
             departamentoRepository.save(informatica);
             departamentoRepository.save(RRHH);
             departamentoRepository.save(marketing);
+
+            ///  TIPOS VIA ///
+
+            TipoVia calle = new TipoVia("Calle");
+            TipoVia avenida = new TipoVia("Avenida");
+            TipoVia paseo = new TipoVia("Paseo");
+
+            tipoViaRepository.save(calle);
+            tipoViaRepository.save(avenida);
+            tipoViaRepository.save(paseo);
+
+            ///  ESPECIALIDADES ///
+
+            Especialidad creativo = new Especialidad("Creativo");
+            Especialidad trabajoEquipo = new Especialidad("Trabajo en equipo");
+            Especialidad rapido = new Especialidad("Rapido");
+
+            especialidadRepository.save(creativo);
+            especialidadRepository.save(trabajoEquipo);
+            especialidadRepository.save(rapido);
+
+            /// BANCOS ///
+
+            Banco bbva = new Banco("BBVA");
+            Banco caixa = new Banco("Caixa");
+            Banco sabadell = new Banco("Sabadell");
+
+            bancoRepository.save(bbva);
+            bancoRepository.save(caixa);
+            bancoRepository.save(sabadell);
+
+            ///  TIPO TARJETA ///
+
+            TipoTarjeta debito = new TipoTarjeta("Debito");
+            TipoTarjeta credito = new TipoTarjeta("Credito");
+            TipoTarjeta prepago = new TipoTarjeta("Prepago");
+
+            tipoTarjetaRepository.save(debito);
+            tipoTarjetaRepository.save(credito);
+            tipoTarjetaRepository.save(prepago);
 
         };
     }

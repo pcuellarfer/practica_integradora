@@ -10,6 +10,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
+
 public class Paso2ContactoDTO {
 
     @NotNull(message = "Este campo es obligatorio y no puede estar vacío")
@@ -23,9 +24,6 @@ public class Paso2ContactoDTO {
 
     @NotBlank(message = "Este campo es obligatorio y no puede estar vacío")
     private Integer telefono;
-
-    //telefono opcional?
-
 
     private Direccion direccion;
 }

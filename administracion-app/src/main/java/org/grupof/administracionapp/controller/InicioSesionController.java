@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -79,7 +80,7 @@ public class InicioSesionController {
     @GetMapping("/username")
     public String mostrarFormularioNombre(@ModelAttribute("usuario") UsuarioDTO usuario,
                                           HttpSession session) {
-        if (session.getAttribute("usuario") != null) {
+        if (session.getAttribute("usuario") != null && session.getAttribute("contraseña") != null) {
             // Si ya existe una sesión activa, redirigir al dashboard o la página principal
             return "redirect:/dashboard/dashboard"; // O la URL de la página que quieras redirigir
         }
@@ -170,11 +171,21 @@ public class InicioSesionController {
         // Buscar en BBDD
         UsuarioDTO usuarioBBDD = usuarioService.buscarPorEmail(usuarioDTO.getEmail());
 
+        if (usuarioBBDD.isEstadoBloqueado()) {
+            if (usuarioBBDD.getBloqueadoHasta() != null && usuarioBBDD.getBloqueadoHasta().isAfter(LocalDateTime.now())) {
+                model.addAttribute("error", "El usuario está bloqueado. Inténtelo más tarde.");
+                return "usuario/auth/login-contrasena";
+            } else {
+                usuarioService.desbloquearUsuario(usuarioDTO.getEmail());
+                usuarioBBDD.setEstadoBloqueado(false);
+                usuarioBBDD.setBloqueadoHasta(null);
+            }
+        }
+
         // Verificación de contraseña
         if (!passwordEncoder.matches(contrasena, usuarioBBDD.getContrasena())) {
             model.addAttribute("error", "Contraseña incorrecta.");
 
-            // Manejar contador de intentos fallidos en sesión
             Integer intentos = (Integer) session.getAttribute("intentos");
             if (intentos == null) intentos = 0;
             intentos++;
@@ -182,9 +193,10 @@ public class InicioSesionController {
             session.setAttribute("intentos", intentos);
 
             if (intentos >= 3) {
-                // Bloquear el usuario en la base de datos
                 usuarioService.bloquearUsuario(usuarioDTO.getEmail(), "Demasiados intentos fallidos");
-                model.addAttribute("error", "El usuario bloqueado por demasiados intentos fallidos.");
+                usuarioService.actualizarTiempoDesbloqueo(usuarioDTO.getEmail(), LocalDateTime.now().plusSeconds(30));
+
+                model.addAttribute("error", "El usuario ha sido bloqueado por demasiados intentos fallidos.");
                 session.invalidate();
                 return "redirect:/login/username";
             }
@@ -194,9 +206,10 @@ public class InicioSesionController {
 
         // Si contraseña es correcta
         session.setAttribute("usuario", usuarioBBDD);
-        session.removeAttribute("intentos"); // Reiniciar contador
+        session.removeAttribute("intentos");
         return "redirect:/dashboard/dashboard";
     }
+
 
     /**
      * Endpoint de prueba para verificar el funcionamiento del envío de correo.

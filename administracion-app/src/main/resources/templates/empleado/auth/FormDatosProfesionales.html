@@ -23,7 +23,21 @@
         <option value="">Seleccione un departamento</option>
         <option th:each="departamento : ${departamentos}" th:value="${departamento.id}" th:text="${departamento.nombre}"></option>
     </select>
-    <!--o Especialidades-->
+
+    <label>Especialidades:</label>
+    <div th:each="especialidad : ${especialidades}">
+        <div class="form-check">
+            <input class="form-check-input"
+                   type="checkbox"
+                   th:value="${especialidad.id}"
+                   th:field="*{especialidades}"
+                   th:id="${'especialidad_' + especialidad.id}" />
+            <!--generar un id unico para cada checkbox-->
+            <label class="form-check-label"
+                   th:for="${'especialidad_' + especialidad.id}"
+                   th:text="${especialidad.nombre}"></label>
+        </div>
+    </div>
 
     <button type="submit" class="btn btn-primary w-100">Paso 4 - Datos economicos</button>
 </form>

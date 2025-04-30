@@ -1,4 +1,4 @@
-package org.grupof.administracionapp.auxiliar;
+package org.grupof.administracionapp.entity.embeddable;
 
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;

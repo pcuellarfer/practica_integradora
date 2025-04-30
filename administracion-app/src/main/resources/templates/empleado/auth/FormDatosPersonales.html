@@ -22,7 +22,7 @@
         <form th:action="@{/registro/paso1}" th:object="${paso1}" method="post" enctype="multipart/form-data">
 
             <div class="mb-3">
-                <label for="nombre" class="form-label">Usuario:</label>
+                <label for="nombre" class="form-label">Nombre:</label>
                 <input type="text" id="nombre" name="nombre" class="form-control" th:field="*{nombre}">
                 <span class="error-message" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></span>
             </div>

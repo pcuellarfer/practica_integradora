@@ -11,7 +11,6 @@ import java.util.UUID;
 
 @Embeddable
 public class CuentaCorriente {
-
     private UUID banco;
     private String numCuenta;
 }

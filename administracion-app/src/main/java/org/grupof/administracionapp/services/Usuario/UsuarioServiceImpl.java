@@ -1,5 +1,6 @@
 package org.grupof.administracionapp.services.Usuario;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.grupof.administracionapp.dto.Usuario.RegistroUsuarioDTO;
 import org.modelmapper.ModelMapper;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
@@ -8,6 +9,7 @@ import org.grupof.administracionapp.repository.UsuarioRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -257,4 +259,23 @@ public class UsuarioServiceImpl implements UsuarioService {
         }
     }
 
+    @Override
+    public void desbloquearUsuario(String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        usuario.setBloqueadoHasta(null);
+        usuario.setEstadoBloqueado(false);
+        usuarioRepository.save(usuario);
+    }
+
+    @Override
+    public void actualizarTiempoDesbloqueo(String email, LocalDateTime localDateTime) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con email: " + email));
+
+        // Sumar 30 segundos desde ahora
+        usuario.setBloqueadoHasta(LocalDateTime.now().plusSeconds(30));
+        usuarioRepository.save(usuario);
+    }
 }

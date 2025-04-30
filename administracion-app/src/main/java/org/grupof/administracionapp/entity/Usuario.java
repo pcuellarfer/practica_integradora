@@ -38,7 +38,7 @@ public class Usuario {
     private TipoUsuario tipoUsuario;
 
     private boolean estadoBloqueado = false;
-    private LocalDateTime bloqueoFechaHora;
+    private LocalDateTime bloqueadoHasta;
     private String motivoBloqueo;
 
     //no lo pide José Ramon pero se podria usar  "cascade = CascadeType.ALL"

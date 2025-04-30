@@ -6,6 +6,7 @@ import org.grupof.administracionapp.dto.Usuario.RegistroUsuarioDTO;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
 import org.grupof.administracionapp.entity.Usuario;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -157,4 +158,7 @@ public interface UsuarioService {
      */
     void actualizarContrasena(String email, String nuevaContrasena);
 
+    void desbloquearUsuario(String email);
+
+    void actualizarTiempoDesbloqueo(String email, LocalDateTime localDateTime);
 }

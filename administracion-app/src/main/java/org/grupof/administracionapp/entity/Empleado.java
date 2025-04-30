@@ -8,15 +8,12 @@ import lombok.Setter;
 import org.grupof.administracionapp.entity.embeddable.CuentaCorriente;
 import org.grupof.administracionapp.entity.embeddable.Direccion;
 import org.grupof.administracionapp.entity.embeddable.TarjetaCredito;
-import org.grupof.administracionapp.entity.registroEmpleado.Departamento;
-import org.grupof.administracionapp.entity.registroEmpleado.Genero;
-import org.grupof.administracionapp.entity.registroEmpleado.Pais;
-import org.grupof.administracionapp.entity.registroEmpleado.TipoDocumento;
-import org.grupof.administracionapp.validations.FechaPasada;
+import org.grupof.administracionapp.entity.registroEmpleado.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -70,9 +67,13 @@ public class Empleado {
     @JoinColumn(name = "departamento_id")
     private Departamento departamento;
 
-//    @ManyToOne
-//    @JoinColumn(name = "especialida")
-//    private String especialidades;
+    @ManyToMany
+    @JoinTable(
+            name = "empleado_especialidad",
+            joinColumns = @JoinColumn(name = "empleado_id"),
+            inverseJoinColumns = @JoinColumn(name = "especialidad_id")
+    )
+    private Set<Especialidad> especialidades;
 
     //paso 4 datos economicos - en secondary tablke
     @AttributeOverride(name = "banco", column = @Column(table = "datos_economicos"))
@@ -83,7 +84,7 @@ public class Empleado {
     @Column(precision = 10, scale = 2, table = "datos_economicos")  // 10 digitos con 2 decimales, no se si pedira tanto.
     private BigDecimal salario;
     @Column(precision = 10, scale = 2, table = "datos_economicos")
-    private String comision;
+    private BigDecimal comision;
 
     @Embedded
     @AttributeOverride(name = "tipoTarjeta", column = @Column(table = "datos_economicos"))
@@ -93,12 +94,8 @@ public class Empleado {
     @AttributeOverride(name = "cvc", column = @Column(table = "datos_economicos"))
     private TarjetaCredito tarjetaCredito;
 
-    //fin de registro//
+    //fin del registro
 
-    //ayuda
-
-        //paso 5 resumen
-    //@FechaPasada
     @Column(name = "fecha_contratacion")
     private LocalDateTime fechaContratacion;
 

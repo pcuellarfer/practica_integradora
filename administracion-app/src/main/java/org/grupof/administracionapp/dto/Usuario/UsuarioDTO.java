@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -29,4 +31,6 @@ public class UsuarioDTO {
             message = "La contraseña debe tener entre 8 y 12 caracteres, incluyendo una mayúscula, una minúscula, un número y un signo de puntuación."
     )
     private String contrasenaRecuperacion;
+    private boolean estadoBloqueado;
+    private LocalDateTime bloqueadoHasta;
 }
