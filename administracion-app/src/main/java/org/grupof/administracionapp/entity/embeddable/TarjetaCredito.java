@@ -36,6 +36,7 @@ public class TarjetaCredito {
 //válido, es decir, del 01 al 12
     private String mesCaducidad;
 
+    @NotBlank
 //    Debe tener una longitud de 4 caracteres,
 //    siendo todos dígitos, y representando un año
 //    válido a partir del año actual y hasta 20 años en

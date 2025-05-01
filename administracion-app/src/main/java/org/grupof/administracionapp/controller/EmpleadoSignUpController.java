@@ -224,6 +224,7 @@ public class EmpleadoSignUpController {
             @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario) {
 
         if (errores.hasErrors()) {
+            System.err.println(errores.toString());
             modelo.addAttribute("bancos", bancoService.getAllBancos());
             modelo.addAttribute("tiposTarjeta", tipoTarjetaService.getAllTiposTarjetas());
             return "empleado/auth/FormDatosEconomicos";
