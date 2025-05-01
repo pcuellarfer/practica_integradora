@@ -124,13 +124,13 @@ public class DatosIniciales {
 
             ///  TIPO TARJETA ///
 
-            TipoTarjeta debito = new TipoTarjeta("Debito");
-            TipoTarjeta credito = new TipoTarjeta("Credito");
-            TipoTarjeta prepago = new TipoTarjeta("Prepago");
+            TipoTarjeta visa = new TipoTarjeta("Visa");
+            TipoTarjeta masterCard = new TipoTarjeta("Master Card");
+            TipoTarjeta americanExpress = new TipoTarjeta("American express");
 
-            tipoTarjetaRepository.save(debito);
-            tipoTarjetaRepository.save(credito);
-            tipoTarjetaRepository.save(prepago);
+            tipoTarjetaRepository.save(visa);
+            tipoTarjetaRepository.save(masterCard);
+            tipoTarjetaRepository.save(americanExpress);
 
         };
     }

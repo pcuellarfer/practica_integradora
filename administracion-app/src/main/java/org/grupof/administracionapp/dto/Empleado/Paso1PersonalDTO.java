@@ -28,7 +28,8 @@ public class Paso1PersonalDTO {
     @NotNull(message = "Este campo es obligatorio y no puede estar vacío")
 //    Si se recibe unas siglas de género que no se
 //    encuentren entre las que aparecen en el
-//    dominio de géneros
+//    dominio de géneros se
+//    producirá un Error de la aplicación.
     private UUID genero;
 
     @NotNull(message = "Este campo es obligatorio y no puede estar vacío")
@@ -41,12 +42,13 @@ public class Paso1PersonalDTO {
 //    trascurridos desde la fecha de nacimiento.
     private Integer edad;
 
-    @NotBlank(message = "Este campo es obligatorio y no puede estar vacío")
+    @NotNull(message = "Este campo es obligatorio y no puede estar vacío")
 //    Si se recibe un código de país que no se
 //    encuentra entre los que aparecen en la tabla
 //    de países, se producirá un Error de la aplicación
     private UUID pais;
 
-    @NotBlank(message = "Este campo es obligatorio y no puede estar vacío")
+    @NotBlank(message = "Este campo es obligatorio")
+    //puede estar vacio? notNull?
     private String comentarios;
 }

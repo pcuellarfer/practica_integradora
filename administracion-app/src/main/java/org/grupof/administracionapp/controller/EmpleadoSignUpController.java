@@ -1,5 +1,6 @@
 package org.grupof.administracionapp.controller;
 
+import jakarta.validation.Valid;
 import org.grupof.administracionapp.dto.Empleado.*;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
 import org.grupof.administracionapp.entity.TipoTarjeta;
@@ -95,13 +96,15 @@ public class EmpleadoSignUpController {
 
     @PostMapping("/paso1")
     public String procesarPaso2(
-            @ModelAttribute("paso1") Paso1PersonalDTO paso1,
-            @ModelAttribute("registroEmpleado") RegistroEmpleadoDTO registroEmpleado,
+            @ModelAttribute("paso1") @Valid Paso1PersonalDTO paso1,
             BindingResult errores,
+            @ModelAttribute("registroEmpleado") RegistroEmpleadoDTO registroEmpleado,
             Model modelo,
             @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuarioDTO) {
 
         if (errores.hasErrors()) {
+            modelo.addAttribute("paises", paisService.getAllPaises());
+            modelo.addAttribute("generos", generoService.getAllGeneros());
             return "empleado/auth/FormDatosPersonales";
         }
 
@@ -134,13 +137,15 @@ public class EmpleadoSignUpController {
 
     @PostMapping("/paso2")
     public String procesarPaso2(
-            @ModelAttribute("paso2") Paso2ContactoDTO paso2,
-            @ModelAttribute("registroEmpleado") RegistroEmpleadoDTO registroEmpleado,
+            @ModelAttribute("paso2") @Valid Paso2ContactoDTO paso2,
             BindingResult errores,
+            @ModelAttribute("registroEmpleado") RegistroEmpleadoDTO registroEmpleado,
             Model modelo,
             @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario) {
 
         if (errores.hasErrors()) {
+            modelo.addAttribute("tiposVias", tipoViaService.getAllTipoVia());
+            modelo.addAttribute("documentos", tipoDocumentoService.getAllTipoDocumento());
             return "empleado/auth/FormDatosContacto";
         }
 
@@ -170,13 +175,15 @@ public class EmpleadoSignUpController {
 
     @PostMapping("/paso3")
     public String procesarPaso3(
-            @ModelAttribute("paso3") Paso3ProfesionalDTO paso3,
-            @ModelAttribute("registroEmpleado") RegistroEmpleadoDTO registroEmpleado,
+            @ModelAttribute("paso3") @Valid Paso3ProfesionalDTO paso3,
             BindingResult errores,
+            @ModelAttribute("registroEmpleado") RegistroEmpleadoDTO registroEmpleado,
             Model modelo,
             @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario) {
 
         if (errores.hasErrors()) {
+            modelo.addAttribute("departamentos", departamentoService.getAllDepartamentos());
+            modelo.addAttribute("especialidades", especialidadesService.getAllEspecialidades());
             return "empleado/auth/FormDatosProfesionales";
         }
 
@@ -210,13 +217,15 @@ public class EmpleadoSignUpController {
 
     @PostMapping("/paso4")
     public String procesarPaso4(
-            @ModelAttribute("paso4") Paso4EconomicosDTO paso4,
-            @ModelAttribute("registroEmpleado") RegistroEmpleadoDTO registroEmpleado,
+            @ModelAttribute("paso4") @Valid Paso4EconomicosDTO paso4,
             BindingResult errores,
+            @ModelAttribute("registroEmpleado") RegistroEmpleadoDTO registroEmpleado,
             Model modelo,
             @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario) {
 
         if (errores.hasErrors()) {
+            modelo.addAttribute("bancos", bancoService.getAllBancos());
+            modelo.addAttribute("tiposTarjeta", tipoTarjetaService.getAllTiposTarjetas());
             return "empleado/auth/FormDatosEconomicos";
         }
 
