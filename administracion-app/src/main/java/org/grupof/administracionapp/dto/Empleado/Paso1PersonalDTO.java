@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import org.grupof.administracionapp.validaciones.archivo.FotoTipoTamano;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,8 +22,7 @@ public class Paso1PersonalDTO {
     private String apellido;
 
     @NotNull(message = "Este campo es obligatorio y no puede estar vacío")
-//    imagen debe ser obligatoriamente gif o jpg
-//    peso maximo 200kb
+    @FotoTipoTamano(message = "La extension del archivo tiene que ser png o gif y debe pesar menos de 200kb")
     private MultipartFile foto;
 
     @NotNull(message = "Este campo es obligatorio y no puede estar vacío")
