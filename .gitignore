@@ -7,7 +7,7 @@ build/
 gradle
 gradlew.bat
 gradlew
-/logs
+logs/
 ### STS ###
 .apt_generated
 .classpath
