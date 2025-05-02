@@ -80,4 +80,6 @@ public class DashboardController {
         model.addAttribute("empleado", empleado);
         return "empleado/main/empleadoDetalle";
     }
+
+
 }

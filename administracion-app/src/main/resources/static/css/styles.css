@@ -1,28 +1,30 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    background-color: #f4f4f4; /* Un gris claro de fondo */
-    color: #333; /* Texto principal oscuro */
+    margin: 20px; /* Añadimos un margen alrededor del cuerpo para que no esté pegado a los bordes */
+    background-color: #f4f4f4;
+    color: #333;
+    /* Eliminamos flexbox que forzaba la disposición horizontal y el centrado */
+    /* display: flex; */
+    /* justify-content: center; */
+    /* align-items: center; */
+    /* min-height: 100vh; */ /* Ya no es necesario forzar la altura mínima */
 }
 
 .container {
-    max-width: 600px;
-    background-color: #fff; /* Fondo blanco para el contenedor */
+    max-width: 600px; /* Mantenemos un ancho máximo para que el contenido no se extienda demasiado */
+    background-color: #fff;
     padding: 20px;
     border-radius: 5px;
-    border: 1px solid #ddd; /* Borde sutil */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 20px auto; /* Centramos el contenedor horizontalmente y añadimos margen vertical */
 }
 
 h2 {
     color: #222;
     text-align: center;
     margin-bottom: 15px;
-    font-weight: normal; /* Menos llamativo que bold */
+    font-weight: normal;
 }
 
 .form-control, .form-select {
@@ -30,15 +32,15 @@ h2 {
     border: 1px solid #ccc;
     padding: 8px;
     margin-bottom: 10px;
-    width: 100%; /* Ocupar todo el ancho disponible */
-    box-sizing: border-box; /* Incluir padding y border en el ancho */
+    width: calc(100% - 16px); /* Ocupar todo el ancho restando el padding */
+    box-sizing: border-box;
     font-size: 1em;
 }
 
 .form-control:focus, .form-select:focus {
-    outline: none; /* Eliminar el borde de enfoque predeterminado */
-    border-color: #007bff; /* Un azul sutil para el enfoque */
-    box-shadow: 0 0 3px rgba(0, 123, 255, 0.5); /* Sombra de enfoque suave */
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 3px rgba(0, 123, 255, 0.5);
 }
 
 .btn-primary {
@@ -50,6 +52,10 @@ h2 {
     font-size: 1em;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    display: block; /* Para que ocupe todo el ancho y se vea como un bloque */
+    margin-top: 10px; /* Espacio superior */
+    width: 100%; /* Ocupar todo el ancho del contenedor */
+    box-sizing: border-box; /* Incluir padding y border en el ancho */
 }
 
 .btn-primary:hover {
@@ -85,7 +91,7 @@ h2 {
 }
 
 .error-message {
-    color: #dc3545; /* Rojo para errores */
+    color: #dc3545;
     font-size: 0.85em;
     margin-top: 5px;
 }
@@ -93,21 +99,21 @@ h2 {
 .table {
     width: 100%;
     background-color: #fff;
-    border-collapse: collapse; /* Unir los bordes de las celdas */
+    border-collapse: collapse;
     margin-top: 20px;
     border-radius: 5px;
-    overflow: hidden; /* Para que el border-radius funcione correctamente */
+    overflow: hidden;
     border: 1px solid #ddd;
 }
 
 .table th, .table td {
     padding: 10px;
-    border: 1px solid #eee; /* Bordes más claros para las celdas */
+    border: 1px solid #eee;
     text-align: left;
 }
 
 .table th {
-    background-color: #f8f9fa; /* Un gris muy claro para los encabezados */
+    background-color: #f8f9fa;
     color: #333;
     font-weight: bold;
 }
@@ -123,19 +129,101 @@ button {
     font-size: 1em;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    width: 100%; /* Para que los botones también se extiendan */
+    box-sizing: border-box; /* Incluir padding y border en el ancho */
 }
 
 button:hover {
     background-color: #ddd;
 }
 
-/* styles.css para la navegación */
+/* styles.css para la navegación - Estos estilos deberían funcionar bien en vertical */
 
+/*
 .header {
-    background-color: #f8f9fa; /* Gris claro para el encabezado */
+    background-color: #f8f9fa;
     padding: 10px 0;
     border-bottom: 1px solid #ddd;
+    margin-bottom: 20px;
 }
+*/
+
+.header {
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 20px;
+    background-color: #f8f9fa;
+    display: flex; /* Convierte el div.header en un contenedor Flexbox */
+    justify-content: space-between; /* Espacia los elementos internos a los extremos */
+    align-items: center; /* Alinea verticalmente los elementos al centro */
+    /* Puedes añadir más estilos al header si lo necesitas, como padding, background-color, etc. */
+}
+
+.header h3 {
+    margin: 0; /* Elimina el margen predeterminado del h3 si es necesario */
+}
+
+.header p {
+    margin: 0; /* Elimina el margen predeterminado del p si es necesario */
+}
+
+html, body {
+    height: 100%; /* Asegura que html y body ocupen toda la altura de la ventana */
+    margin: 0; /* Elimina los márgenes predeterminados del body */
+    display: flex; /* Convierte el body en un contenedor Flexbox */
+    flex-direction: column; /* Organiza los elementos en columna */
+}
+
+main {
+    flex-grow: 1; /* Permite que el main content crezca para ocupar el espacio restante */
+    padding-bottom: 70px;
+}
+
+footer {
+    /* Los estilos que ya definiste para el pie de página (pequeño y comprimido) */
+    background-color: #d7d7d7;
+    color: #555;
+    padding: 5px 10px;
+    text-align: center;
+    font-size: 0.8em;
+    border-top: 1px solid #eee;
+    /* Evita que el footer crezca */
+    flex-shrink: 0;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%; /* Asegura que ocupe todo el ancho */
+    z-index: 10; /* Asegura que esté por encima de otros elementos si es necesario */
+}
+
+.footer-content {
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+.footer-content p {
+    margin: 5px 0;
+}
+
+.footer-content nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 5px 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.footer-content nav li a {
+    color: #777;
+    text-decoration: none;
+    font-size: 0.9em;
+}
+
+.footer-content nav li a:hover {
+    color: #333;
+}
+
 
 .navbar {
     display: flex;
@@ -164,5 +252,10 @@ button:hover {
 }
 
 .nav-links a:hover {
-    background-color: #e9ecef; /* Un gris aún más claro al pasar el ratón */
+    background-color: #e9ecef;
+}
+
+#cuentatras {
+    display: flex;
+    gap: 1em;
 }

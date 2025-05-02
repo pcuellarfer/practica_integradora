@@ -8,40 +8,49 @@
     <script th:src="@{/js/mostrarContrasena.js}"></script>
 </head>
 <body>
-<form th:action="@{/registro/paso3}" th:object="${paso3}" method="post">
+<div th:replace="/fragments/cabecera"></div>
+<main>
+<div th:replace="/fragments/cuentaatras"></div>
+<div class="absoluto mt-5">
+    <div class="container">
+    <form th:action="@{/registro/paso3}" th:object="${paso3}" method="post">
 
-    <div class="row align-items-center">
-        <div class="col-2"></div>
-        <div class="col">
-            <h1 class="text-center mb-2">Paso 3 - Datos Profesionales</h1>
+        <div class="row align-items-center">
+            <div class="col-2"></div>
+            <div class="col">
+                <h1 class="text-center mb-2">Paso 3 - Datos Profesionales</h1>
+            </div>
+            <div class="col-2"></div>
         </div>
-        <div class="col-2"></div>
-    </div>
 
-    <label for="departamento">Departamento:</label>
-    <select id="departamento" th:field="*{departamento}" class="form-control">
-        <option value="">Seleccione un departamento</option>
-        <option th:each="departamento : ${departamentos}" th:value="${departamento.id}" th:text="${departamento.nombre}"></option>
-    </select>
+        <label for="departamento">Departamento:</label>
+        <select id="departamento" th:field="*{departamento}" class="form-control">
+            <option value="">Seleccione un departamento</option>
+            <option th:each="departamento : ${departamentos}" th:value="${departamento.id}" th:text="${departamento.nombre}"></option>
+        </select>
 
-    <label>Especialidades:</label>
-    <div th:each="especialidad : ${especialidades}">
-        <div class="form-check">
-            <input class="form-check-input"
-                   type="checkbox"
-                   th:value="${especialidad.id}"
-                   th:field="*{especialidades}"
-                   th:id="${'especialidad_' + especialidad.id}" />
-            <!--generar un id unico para cada checkbox-->
-            <label class="form-check-label"
-                   th:for="${'especialidad_' + especialidad.id}"
-                   th:text="${especialidad.nombre}"></label>
+        <label>Especialidades:</label>
+        <div th:each="especialidad : ${especialidades}">
+            <div class="form-check">
+                <input class="form-check-input"
+                       type="checkbox"
+                       th:value="${especialidad.id}"
+                       th:field="*{especialidades}"
+                       th:id="${'especialidad_' + especialidad.id}" />
+                <!--generar un id unico para cada checkbox-->
+                <label class="form-check-label"
+                       th:for="${'especialidad_' + especialidad.id}"
+                       th:text="${especialidad.nombre}"></label>
+            </div>
         </div>
-    </div>
 
-    <button type="submit" class="btn btn-primary w-100">Paso 4 - Datos economicos</button>
-</form>
-<!-- Mensaje de error (si existe) -->
-<p th:if="${error}" th:text="${error}" style="color: red;"></p>
+        <button type="submit" class="btn btn-primary w-100">Paso 4 - Datos economicos</button>
+    </form>
+    <!-- Mensaje de error (si existe) -->
+    <p th:if="${error}" th:text="${error}" style="color: red;"></p>
+    </div>
+</div>
+</main>
+<div th:replace="/fragments/pie"></div>
 </body>
 </html>
