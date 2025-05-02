@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Asignar subordinados</title>
+</head>
+<body>
+<h2 th:text="'Asignar subordinados a: ' + ${jefe.nombre}"></h2>
+
+<form th:action="@{/dashboard/asignar}" method="post">
+    <label for="empleados">Selecciona empleados:</label><br>
+    <select id="empleados" name="subordinadoIds" multiple size="4">
+        <th:block th:each="empleado : ${empleados}">
+            <option th:value="${empleado.id}" th:text="${empleado.apellido + ', ' + empleado.nombre}"></option>
+        </th:block>
+    </select>
+    <br><br>
+    <button type="submit">Asignar</button>
+</form>
+</body>
+</html>

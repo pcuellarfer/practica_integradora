@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpSession;
 import org.grupof.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
 import org.grupof.administracionapp.entity.Empleado;
-import org.grupof.administracionapp.entity.registroEmpleado.Genero;
 import org.grupof.administracionapp.repository.EmpleadoRepository;
 import org.grupof.administracionapp.repository.GeneroRepository;
 import org.grupof.administracionapp.services.Empleado.EmpleadoService;
@@ -147,6 +146,46 @@ public class DashboardController {
         modelo.addAttribute("generos", generoService.getAllGeneros());
         modelo.addAttribute("resultados", resultados);
         return "empleado/main/empleado-buscar";
+    }
+
+    @GetMapping("/asignar")
+    public String asignarSubordinados(HttpSession session, Model modelo) {
+        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
+
+        if (usuario == null) {
+            return "redirect:/login/username";
+        }
+
+        Empleado jefe = empleadoRepository.findByUsuarioId(usuario.getId()).orElse(null);
+
+        List<Empleado> posiblesSubordinados = empleadoRepository.findByIdNot(jefe.getId());
+
+        modelo.addAttribute("jefe", jefe);
+        modelo.addAttribute("empleados", posiblesSubordinados);
+        return "empleado/main/empleado-asignacionSubordinados";
+    }
+
+
+    @PostMapping("/asignar")
+    public String procesarAsignacion(@RequestParam List<UUID> subordinadoIds, HttpSession session) {
+        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
+
+        if (usuario == null) {
+            return "redirect:/login";
+        }
+
+        Empleado jefe = empleadoRepository.findByUsuarioId(usuario.getId())
+                .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
+
+        List<Empleado> subordinados = empleadoRepository.findAllById(subordinadoIds);
+
+        for (Empleado subordinado : subordinados) {
+            subordinado.setJefe(jefe);
+        }
+
+        empleadoRepository.saveAll(subordinados);
+
+        return "redirect:/dashboard/dashboard";
     }
 
     @GetMapping("/etiquetado")

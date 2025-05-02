@@ -20,5 +20,8 @@ public interface EmpleadoRepository extends JpaRepository<Empleado, UUID> {
 
     //para buscar las dos de arriba jajjaj
     List<Empleado> findByNombreContainingIgnoreCaseAndGeneroId(String nombre, UUID generoId);
+
+    //buscar todos los empleados menos el que se mande como parametron
+    List<Empleado> findByIdNot(UUID id);
 }
 
