@@ -15,6 +15,6 @@ public class FotoValidator implements ConstraintValidator<FotoTipoTamano, Multip
         String contentType = file.getContentType();
         long size = file.getSize();
 
-        return (("image/jpeg".equals(contentType) || "image/gif".equals(contentType)) && size <= 200 * 1024);
+        return (("image/png".equals(contentType) || "image/gif".equals(contentType)) && size <= 200 * 1024);
     }
 }

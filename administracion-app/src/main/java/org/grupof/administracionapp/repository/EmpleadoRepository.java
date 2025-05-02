@@ -14,5 +14,11 @@ public interface EmpleadoRepository extends JpaRepository<Empleado, UUID> {
 
     //para buscar por cadenas de caracteres para la busqueda parametrizada por nome
     List<Empleado> findByNombreContainingIgnoreCase(String nombre);
+
+    //para buscar por genero
+    List<Empleado> findByGeneroId(UUID generoId);
+
+    //para buscar las dos de arriba jajjaj
+    List<Empleado> findByNombreContainingIgnoreCaseAndGeneroId(String nombre, UUID generoId);
 }
 

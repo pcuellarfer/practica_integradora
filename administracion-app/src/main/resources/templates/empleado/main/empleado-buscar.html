@@ -13,6 +13,17 @@
             <label for="nombre" class="form-label">Nombre:</label>
             <input type="text" id="nombre" name="nombre" th:value="${nombre}" class="form-control"/>
         </div>
+
+        <div class="mb-3">
+            <label for="genero" class="form-label">Género:</label>
+            <select id="genero" name="genero" class="form-control">
+                <option value="">Seleccione un género</option>
+                <option th:each="genero : ${generos}" th:value="${genero.id}"
+                        th:text="${genero.identidad}"
+                        th:selected="${genero.id == selectedGeneroId}"></option>
+            </select>
+        </div>
+
         <button type="submit" class="btn btn-primary">Buscar</button>
     </form>
 

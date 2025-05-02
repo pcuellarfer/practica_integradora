@@ -4,8 +4,11 @@ import jakarta.servlet.http.HttpSession;
 import org.grupof.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
 import org.grupof.administracionapp.entity.Empleado;
+import org.grupof.administracionapp.entity.registroEmpleado.Genero;
 import org.grupof.administracionapp.repository.EmpleadoRepository;
+import org.grupof.administracionapp.repository.GeneroRepository;
 import org.grupof.administracionapp.services.Empleado.EmpleadoService;
+import org.grupof.administracionapp.services.Genero.GeneroService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Controlador para gestionar las vistas del panel principal (dashboard)
@@ -29,16 +33,19 @@ public class DashboardController {
     private static final Logger logger = LoggerFactory.getLogger(DashboardController.class);
 
     private final EmpleadoService empleadoService;
+    private final GeneroService generoService;
     private final EmpleadoRepository empleadoRepository;
+
 
     /**
      * Constructor que inyecta el servicio de empleado.
      *
      * @param empleadoService servicio para gestionar empleados
      */
-    public DashboardController(EmpleadoService empleadoService, EmpleadoRepository empleadoRepository) {
+    public DashboardController(EmpleadoService empleadoService, EmpleadoRepository empleadoRepository, GeneroRepository generoRepository, GeneroService generoService) {
         this.empleadoService = empleadoService;
         this.empleadoRepository = empleadoRepository;
+        this.generoService = generoService;
     }
 
     /**
@@ -82,11 +89,11 @@ public class DashboardController {
      * Si el usuario no ha iniciado sesión, se redirige al login.
      *
      * @param session sesión HTTP actual
-     * @param model   modelo de atributos para la vista
+     * @param modelo   modelo de atributos para la vista
      * @return vista con los detalles del empleado
      */
     @GetMapping("/detalle")
-    public String verDetalles(HttpSession session, Model model) {
+    public String verDetalles(HttpSession session, Model modelo) {
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
 
         if (usuario == null) {
@@ -98,24 +105,47 @@ public class DashboardController {
 
         RegistroEmpleadoDTO empleado = empleadoService.buscarEmpleadoPorUsuarioId(usuario.getId());
 
-        model.addAttribute("usuario", usuario);
-        model.addAttribute("empleado", empleado);
+        modelo.addAttribute("usuario", usuario);
+        modelo.addAttribute("empleado", empleado);
         return "empleado/main/empleadoDetalle";
     }
 
 
     @GetMapping("/buscar")
-    public String mostrarFormularioBusqueda(Model model) {
-        model.addAttribute("nombre", "");
-        model.addAttribute("resultados", Collections.emptyList());
+    public String mostrarFormularioBusqueda(Model modelo) {
+        modelo.addAttribute("generos", generoService.getAllGeneros());
+        modelo.addAttribute("genero", null);
+        modelo.addAttribute("nombre", "");
+        modelo.addAttribute("resultados", Collections.emptyList());
         return "empleado/main/empleado-buscar";
     }
 
     @PostMapping("/buscar")
-    public String procesarBusqueda(@RequestParam String nombre, Model model) {
-        List<Empleado> resultados = empleadoRepository.findByNombreContainingIgnoreCase(nombre);
-        model.addAttribute("nombre", nombre);
-        model.addAttribute("resultados", resultados);
+    //required en false para genero para que no salte excepcion
+    public String procesarBusqueda(@RequestParam String nombre, @RequestParam(required = false) UUID genero, Model modelo) {
+
+        List<Empleado> resultados;
+
+        //nombre+genero
+        if (nombre != null && !nombre.trim().isEmpty() && genero != null) {
+            resultados = empleadoRepository.findByNombreContainingIgnoreCaseAndGeneroId(nombre, genero);
+        }
+        //nombre
+        else if (nombre != null && !nombre.trim().isEmpty()) {
+            resultados = empleadoRepository.findByNombreContainingIgnoreCase(nombre);
+        }
+        //genero
+        else if (genero != null) {
+            resultados = empleadoRepository.findByGeneroId(genero);
+        } else {
+            //NINGUNOOOO, es decir, se muestran todos los empleados
+            resultados = empleadoRepository.findAll();
+        }
+
+        modelo.addAttribute("nombre", nombre);
+        modelo.addAttribute("genero", genero);
+        modelo.addAttribute("generos", generoService.getAllGeneros());
+        modelo.addAttribute("resultados", resultados);
         return "empleado/main/empleado-buscar";
     }
 
