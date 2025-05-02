@@ -1,5 +1,5 @@
 //funcion para mostrar u ocultar la contraseña
-function mostrarContrasena() {
+function script() {
     let campocontrasena = document.getElementById("contrasena");
     let campocontrasena2 = document.getElementById("contrasena1");
     let campocontrasena3 = document.getElementById("contrasena2");
@@ -60,3 +60,38 @@ function deseleccionarGenero() {
         radios[i].checked = false;
     }
 }
+
+// Configuración de la cuenta atrás (en segundos)
+let countdownTime = 300; // 5 minutos (300 segundos)
+
+// Función que actualiza la cuenta atrás y redirige al logout
+function startCountdown() {
+    let countdownElement = document.getElementById('countdown');
+    let timer = setInterval(function() {
+        let minutes = Math.floor(countdownTime / 60);
+        let seconds = countdownTime % 60;
+
+        // Formato de tiempo "mm:ss"
+        countdownElement.innerHTML = minutes + ":" + (seconds < 10 ? "0" + seconds : seconds);
+
+        if (countdownTime <= 0) {
+            clearInterval(timer);
+            // Redirigir al servidor para cerrar la sesión
+            window.location.href = '/login/logout';
+        } else {
+            countdownTime--;
+        }
+    }, 1000); // Actualiza cada segundo
+}
+
+// Reinicia la cuenta atrás si el usuario realiza alguna acción
+function resetCountdown() {
+    countdownTime = 300; // Reinicia el contador a 5 minutos
+}
+
+// Escuchar eventos para reiniciar el contador cuando el usuario hace clic, mueve el ratón o pulsa una tecla
+document.addEventListener('mousemove', resetCountdown);
+document.addEventListener('click', resetCountdown);
+
+// Iniciar la cuenta atrás cuando se carga la página
+window.onload = startCountdown;

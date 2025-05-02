@@ -4,6 +4,8 @@ import jakarta.servlet.http.HttpSession;
 import org.grupof.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
 import org.grupof.administracionapp.services.Empleado.EmpleadoService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/dashboard")
 public class DashboardController {
+
+    private static final Logger logger = LoggerFactory.getLogger(DashboardController.class);
 
     private final EmpleadoService empleadoService;
 
@@ -42,15 +46,21 @@ public class DashboardController {
         UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
 
         if (usuarioDTO == null) {
+            logger.warn("Intento de acceso al dashboard sin usuario en sesión");
             return "redirect:/login/username";
         }
+
+        logger.info("Accediendo al dashboard con usuario ID: {}", usuarioDTO.getId());
 
         RegistroEmpleadoDTO empleadoDTO = empleadoService.buscarEmpleadoPorUsuarioId(usuarioDTO.getId());
 
         if (empleadoDTO == null) {
+            logger.info("Usuario ID {} no tiene empleado asociado. Mostrando dashboard de usuario.", usuarioDTO.getId());
             modelo.addAttribute("usuario", usuarioDTO);
             return "usuario/main/usuario-dashboard";
         }
+
+        logger.info("Usuario ID {} es también empleado. Mostrando dashboard de empleado.", usuarioDTO.getId());
 
         modelo.addAttribute("usuario", usuarioDTO);
         modelo.addAttribute("empleado", empleadoDTO);
@@ -71,8 +81,11 @@ public class DashboardController {
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
 
         if (usuario == null) {
+            logger.warn("Intento de acceso a detalles de empleado sin sesión iniciada");
             return "redirect:/login";
         }
+
+        logger.info("Accediendo a los detalles del empleado para usuario ID: {}", usuario.getId());
 
         RegistroEmpleadoDTO empleado = empleadoService.buscarEmpleadoPorUsuarioId(usuario.getId());
 

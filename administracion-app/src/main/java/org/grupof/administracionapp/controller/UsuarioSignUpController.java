@@ -10,6 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Controlador que gestiona el registro de nuevos usuarios de tipo USUARIO,
@@ -19,22 +21,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/registro")
 public class UsuarioSignUpController {
 
-    /**
-     * Codificador de contraseñas para almacenar las contraseñas de forma segura.
-     */
     private final PasswordEncoder passwordEncoder;
-
-    /**
-     * Servicio que gestiona la lógica de negocio relacionada con usuarios.
-     */
     private final UsuarioService usuarioService;
+    private final Logger logger = LoggerFactory.getLogger(UsuarioSignUpController.class);
 
-    /**
-     * Constructor que inyecta las dependencias necesarias para la gestión de usuarios.
-     *
-     * @param usuarioService  servicio para gestionar operaciones relacionadas con usuarios.
-     * @param passwordEncoder codificador para cifrar contraseñas antes de guardarlas.
-     */
     public UsuarioSignUpController(UsuarioService usuarioService, PasswordEncoder passwordEncoder) {
         this.usuarioService = usuarioService;
         this.passwordEncoder = passwordEncoder;
@@ -48,7 +38,9 @@ public class UsuarioSignUpController {
      */
     @GetMapping("/logout")
     public String cerrarSesion(HttpSession session) {
+        logger.info("Cerrando sesión para el usuario.");
         session.invalidate();
+        logger.info("Sesión cerrada exitosamente.");
         return "redirect:/login/username";
     }
 
@@ -60,6 +52,7 @@ public class UsuarioSignUpController {
      */
     @GetMapping("/usuario")
     public String mostrarFormularioRegistro(Model modelo) {
+        logger.info("Mostrando formulario de registro de usuario.");
         modelo.addAttribute("registroUsuarioDTO", new RegistroUsuarioDTO());
         return "usuario/auth/signUp-usuario";
     }
@@ -82,23 +75,28 @@ public class UsuarioSignUpController {
             HttpSession session,
             Model modelo) {
 
+        logger.info("Iniciando proceso de registro para usuario con email: {}", registroUsuarioDTO.getEmail());
+
         if (usuarioService.existePorEmail(registroUsuarioDTO.getEmail())) {
+            logger.warn("Intento de registro con email ya registrado: {}", registroUsuarioDTO.getEmail());
             modelo.addAttribute("error", "Ya existe un usuario con ese email.");
             return "usuario/auth/signUp-usuario";
         }
 
         if (errores.hasErrors()) {
+            logger.warn("Errores de validación en el formulario de registro para el email: {}", registroUsuarioDTO.getEmail());
             return "usuario/auth/signUp-usuario";
         }
 
+        logger.info("Contraseña cifrada y registro de usuario en proceso.");
         registroUsuarioDTO.setContrasena(passwordEncoder.encode(registroUsuarioDTO.getContrasena()));
 
         UsuarioDTO usuarioDTO = usuarioService.registrarUsuario(registroUsuarioDTO);
+        logger.info("Usuario registrado exitosamente con ID: {}", usuarioDTO.getId());
+
         session.setAttribute("usuario", usuarioDTO);
+        logger.info("Usuario almacenado en sesión con ID: {}", usuarioDTO.getId());
 
         return "redirect:/dashboard/dashboard";
     }
 }
-
-
-

@@ -11,6 +11,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -29,6 +32,8 @@ public class InicioSesionController {
     private final UsuarioService usuarioService;
     private final EmailService emailService;
     private final TokenService tokenService;
+    private static final Logger logger = LoggerFactory.getLogger(InicioSesionController.class);
+
 
     /**
      * Constructor que inyecta las dependencias necesarias para la gestión de autenticación.
@@ -67,6 +72,7 @@ public class InicioSesionController {
      */
     @GetMapping("/logout")
     public String cerrarSesion(HttpSession session) {
+        logger.info("Cerrando sesión para el usuario: {}", session.getAttribute("usuario"));
         session.invalidate();
         return "redirect:/login/username";
     }
@@ -81,9 +87,10 @@ public class InicioSesionController {
     public String mostrarFormularioNombre(@ModelAttribute("usuario") UsuarioDTO usuario,
                                           HttpSession session) {
         if (session.getAttribute("usuario") != null && session.getAttribute("contraseña") != null) {
-            // Si ya existe una sesión activa, redirigir al dashboard o la página principal
+            logger.info("Sesión activa detectada. Redirigiendo al dashboard.");
             return "redirect:/dashboard/dashboard"; // O la URL de la página que quieras redirigir
         }
+        logger.info("Mostrando formulario para ingresar email.");
         return "usuario/auth/login-nombre";
     }
 
@@ -103,24 +110,26 @@ public class InicioSesionController {
                                            HttpSession session,
                                            Model model) {
         if (result.hasErrors()) {
+            logger.warn("Errores en el formulario de email.");
             model.addAttribute("error", "Corrige los errores del formulario.");
             return "usuario/auth/login-nombre";
         }
 
         UsuarioDTO usuarioExistente = usuarioService.buscarPorEmail(usuarioDTO.getEmail());
-
         if (usuarioExistente == null) {
+            logger.warn("Email no encontrado: {}", usuarioDTO.getEmail());
             model.addAttribute("error", "No existe ese email.");
             return "usuario/auth/login-nombre";
         }
 
         boolean usuarioBLoqueado = usuarioService.buscarBloqueado(usuarioDTO.getEmail());
-
         if (usuarioBLoqueado) {
+            logger.warn("Usuario bloqueado: {}", usuarioDTO.getEmail());
             model.addAttribute("error", "El usuario está bloqueado.");
             return "usuario/auth/login-nombre";
         }
 
+        logger.info("Usuario encontrado y no bloqueado: {}", usuarioExistente.getEmail());
         session.setAttribute("usuario", usuarioExistente);
         return "usuario/auth/login-contrasena";
     }
@@ -160,43 +169,43 @@ public class InicioSesionController {
                                                HttpSession session,
                                                Model model) {
         if (usuarioDTO == null || usuarioDTO.getEmail().isBlank()) {
+            logger.warn("Intento de acceso sin email en sesión.");
             return "redirect:/login/username";
         }
 
         if (contrasena == null || contrasena.isBlank()) {
+            logger.warn("Contraseña vacía recibida.");
             model.addAttribute("error", "La contraseña no puede estar vacía.");
             return "usuario/auth/login-contrasena";
         }
 
-        // Buscar en BBDD
         UsuarioDTO usuarioBBDD = usuarioService.buscarPorEmail(usuarioDTO.getEmail());
 
         if (usuarioBBDD.isEstadoBloqueado()) {
             if (usuarioBBDD.getBloqueadoHasta() != null && usuarioBBDD.getBloqueadoHasta().isAfter(LocalDateTime.now())) {
+                logger.warn("Acceso bloqueado para usuario: {}", usuarioDTO.getEmail());
                 model.addAttribute("error", "El usuario está bloqueado. Inténtelo más tarde.");
                 return "usuario/auth/login-contrasena";
             } else {
                 usuarioService.desbloquearUsuario(usuarioDTO.getEmail());
+                logger.info("Desbloqueando usuario: {}", usuarioDTO.getEmail());
                 usuarioBBDD.setEstadoBloqueado(false);
                 usuarioBBDD.setBloqueadoHasta(null);
             }
         }
 
-        // Verificación de contraseña
         if (!passwordEncoder.matches(contrasena, usuarioBBDD.getContrasena())) {
-            model.addAttribute("error", "Contraseña incorrecta.");
-
+            logger.warn("Contraseña incorrecta para el usuario: {}", usuarioDTO.getEmail());
+            model.addAttribute("error", "La contraseña no es correcta.");
             Integer intentos = (Integer) session.getAttribute("intentos");
             if (intentos == null) intentos = 0;
             intentos++;
-
             session.setAttribute("intentos", intentos);
 
             if (intentos >= 3) {
+                logger.error("Usuario bloqueado por múltiples intentos fallidos: {}", usuarioDTO.getEmail());
                 usuarioService.bloquearUsuario(usuarioDTO.getEmail(), "Demasiados intentos fallidos");
                 usuarioService.actualizarTiempoDesbloqueo(usuarioDTO.getEmail(), LocalDateTime.now().plusSeconds(30));
-
-                model.addAttribute("error", "El usuario ha sido bloqueado por demasiados intentos fallidos.");
                 session.invalidate();
                 return "redirect:/login/username";
             }
@@ -204,12 +213,11 @@ public class InicioSesionController {
             return "usuario/auth/login-contrasena";
         }
 
-        // Si contraseña es correcta
+        logger.info("Inicio de sesión exitoso para: {}", usuarioDTO.getEmail());
         session.setAttribute("usuario", usuarioBBDD);
         session.removeAttribute("intentos");
         return "redirect:/dashboard/dashboard";
     }
-
 
     /**
      * Endpoint de prueba para verificar el funcionamiento del envío de correo.
@@ -240,6 +248,7 @@ public class InicioSesionController {
      */
     @PostMapping("/recuperación")
     public String procesarFormularioRecuperacion(@RequestParam String email, Model model) {
+        logger.info("Solicitud de recuperación de contraseña para: {}", email);
         String asunto = "Verifica tu cuenta";
 
         String token = UUID.randomUUID().toString();
@@ -248,6 +257,7 @@ public class InicioSesionController {
         String enlace = "http://localhost:8080/login/verificacion?token=" + token;
         emailService.enviarCorreoConEnlace(email, asunto, enlace);
 
+        logger.info("Enlace de recuperación enviado a: {}", email);
         model.addAttribute("mensaje", "Se ha enviado un enlace de recuperación a tu correo.");
         return "usuario/auth/recuperacion";
     }
@@ -314,16 +324,19 @@ public class InicioSesionController {
         Optional<String> emailToken = tokenService.validarToken(token);
 
         if (emailToken.isEmpty() || !emailToken.get().equals(email)) {
+            logger.error("Token inválido o email no coincide para restablecer contraseña.");
             return "error/token-invalido";
         }
 
         if (!contrasena.equals(contrasenaRecuperacion)) {
+            logger.warn("Las contraseñas no coinciden para email: {}", email);
             model.addAttribute("email", email);
             model.addAttribute("token", token);
             model.addAttribute("error", "Las contraseñas no coinciden.");
             return "usuario/auth/nueva-contrasena";
         }
 
+        logger.info("Actualizando contraseña para usuario: {}", email);
         usuarioService.actualizarContrasena(email, contrasena);
         tokenService.eliminarToken(token);
         return "redirect:/login/contrasenaActualizada";
