@@ -1,7 +1,10 @@
 package org.grupof.administracionapp;
 
+import org.grupof.administracionapp.entity.Empleado;
 import org.grupof.administracionapp.entity.TipoTarjeta;
 import org.grupof.administracionapp.entity.Usuario;
+import org.grupof.administracionapp.entity.embeddable.CuentaCorriente;
+import org.grupof.administracionapp.entity.embeddable.Direccion;
 import org.grupof.administracionapp.entity.embeddable.TarjetaCredito;
 import org.grupof.administracionapp.entity.registroEmpleado.*;
 import org.grupof.administracionapp.repository.*;
@@ -9,6 +12,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.time.LocalDate;
+import java.util.UUID;
 
 /**
  * Clase de configuración que se encarga de insertar datos iniciales en la base de datos al inicio de la aplicación.
@@ -37,16 +43,21 @@ public class DatosIniciales {
      */
     @Bean
     CommandLineRunner insertarDatos(UsuarioRepository usuarioRepository,
+                                    EmpleadoRepository empleadoRepository,
                                     PaisRepository paisRepository,
                                     GeneroRepository generoRepository,
                                     TipoDocumentoRepository tipoDocumentoRepository,
                                     DepartamentoRepository departamentoRepository,
-                                    TipoViaRepository tipoViaRepository, EspecialidadRepository especialidadRepository, BancoRepository bancoRepository, TipoTarjetaRepository tipoTarjetaRepository) {
+                                    TipoViaRepository tipoViaRepository,
+                                    EspecialidadRepository especialidadRepository,
+                                    BancoRepository bancoRepository,
+                                    TipoTarjetaRepository tipoTarjetaRepository) {
         return args -> {
             Usuario usuarioInicial = new Usuario();
             usuarioInicial.setNombre("Juan");
             usuarioInicial.setContrasena(passwordEncoder.encode("Contraseña@-"));
             usuarioInicial.setEmail("davidsmh23@gmail.com");
+
 
             usuarioRepository.save(usuarioInicial);
 
@@ -124,14 +135,47 @@ public class DatosIniciales {
 
             ///  TIPO TARJETA ///
 
-            TipoTarjeta debito = new TipoTarjeta("Debito");
-            TipoTarjeta credito = new TipoTarjeta("Credito");
-            TipoTarjeta prepago = new TipoTarjeta("Prepago");
+            TipoTarjeta visa = new TipoTarjeta("Visa");
+            TipoTarjeta masterCard = new TipoTarjeta("Master Card");
+            TipoTarjeta americanExpress = new TipoTarjeta("American express");
 
-            tipoTarjetaRepository.save(debito);
-            tipoTarjetaRepository.save(credito);
-            tipoTarjetaRepository.save(prepago);
+            tipoTarjetaRepository.save(visa);
+            tipoTarjetaRepository.save(masterCard);
+            tipoTarjetaRepository.save(americanExpress);
 
+            /// DPARTAMENTO ///
+
+            Departamento departamento = new Departamento("Departamento");
+            departamentoRepository.save(departamento);
+
+
+            /// EMPLEADO ///
+
+            //usando el usuario inicial
+            Empleado empleado = new Empleado();
+            empleado.setNombre("Juan");
+            empleado.setUsuario(usuarioInicial);
+            empleado.setGenero(masculino);
+            empleado.setPais(espana);
+            empleado.setTipoDocumento(DNI);
+            empleado.setApellido("Lopez");
+            empleado.setFechaNacimiento(LocalDate.parse("1990-01-01"));
+
+            Direccion direccion = new Direccion();
+            direccion.setTipoVia(UUID.randomUUID());
+            empleado.setDireccion(direccion);
+
+            empleado.setDepartamento(departamento);
+
+            CuentaCorriente cuentaCorriente = new CuentaCorriente();
+            cuentaCorriente.setBanco(UUID.randomUUID());
+            empleado.setCuentaCorriente(cuentaCorriente);
+
+            TarjetaCredito tarjetaCredito = new TarjetaCredito();
+            tarjetaCredito.setTipoTarjeta(UUID.randomUUID());
+            empleado.setTarjetaCredito(tarjetaCredito);
+
+            empleadoRepository.save(empleado);
         };
     }
 }

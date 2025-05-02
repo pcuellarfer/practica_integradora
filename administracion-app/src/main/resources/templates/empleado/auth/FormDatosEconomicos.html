@@ -30,6 +30,7 @@
                 <option value="">Seleccione un Banco</option>
                 <option th:each="banco : ${bancos}" th:value="${banco.id}" th:text="${banco.nombre}"></option>
             </select>
+            <span class="error-message" th:if="${#fields.hasErrors('cuentaCorriente.banco')}" th:errors="*{cuentaCorriente.banco}"></span>
 
             <div class="mb-3">
                 <label for="cuentaCorriente.numCuenta" class="form-label">Numero de cuenta:</label>
@@ -49,6 +50,7 @@
                 <span class="error-message" th:if="${#fields.hasErrors('comision')}" th:errors="*{comision}"></span>
             </div>
 
+
             <h1> Tarjeta credito </h1>
 
             <label for="TipoTarjeta">Tipo de tarjeta:</label>
@@ -56,6 +58,7 @@
                 <option value="">Seleccione un tipo de tarjeta de credito</option>
                 <option th:each="tipo : ${tiposTarjeta}" th:value="${tipo.id}" th:text="${tipo.nombre}"></option>
             </select>
+            <span class="error-message" th:if="${#fields.hasErrors('tarjetaCredito.tipoTarjeta')}" th:errors="*{tarjetaCredito.tipoTarjeta}"></span>
 
             <div class="mb-3">
                 <label for="tarjetaCredito.numTarjeta" class="form-label">Numero de la tarjeta:</label>
@@ -66,10 +69,22 @@
 <!--            MES Y AÑO CON SELECTS???-->
 
             <div class="mb-3">
-            <label for="tarjetaCredito.cvc" class="form-label">CVC:</label>
-            <input type="text" id="tarjetaCredito.cvc" name="tarjetaCredito.cvc" class="form-control" th:field="*{tarjetaCredito.cvc}">
-            <span class="error-message" th:if="${#fields.hasErrors('tarjetaCredito.cvc')}" th:errors="*{tarjetaCredito.cvc}"></span>
-        </div>
+                <label for="tarjetaCredito.anoCaducidad" class="form-label">Año caducidad:</label>
+                <input type="text" id="tarjetaCredito.anoCaducidad" name="tarjetaCredito.anoCaducidad" class="form-control" th:field="*{tarjetaCredito.anoCaducidad}">
+                <span class="error-message" th:if="${#fields.hasErrors('tarjetaCredito.anoCaducidad')}" th:errors="*{tarjetaCredito.anoCaducidad}"></span>
+            </div>
+
+            <div class="mb-3">
+                <label for="tarjetaCredito.mesCaducidad" class="form-label">Mes caducidad:</label>
+                <input type="text" id="tarjetaCredito.mesCaducidad" name="tarjetaCredito.mesCaducidad" class="form-control" th:field="*{tarjetaCredito.mesCaducidad}">
+                <span class="error-message" th:if="${#fields.hasErrors('tarjetaCredito.mesCaducidad')}" th:errors="*{tarjetaCredito.mesCaducidad}"></span>
+            </div>
+
+            <div class="mb-3">
+                <label for="tarjetaCredito.cvc" class="form-label">CVC:</label>
+                <input type="text" id="tarjetaCredito.cvc" name="tarjetaCredito.cvc" class="form-control" th:field="*{tarjetaCredito.cvc}">
+                <span class="error-message" th:if="${#fields.hasErrors('tarjetaCredito.cvc')}" th:errors="*{tarjetaCredito.cvc}"></span>
+            </div>
 
             <button type="submit" class="btn btn-primary w-100">pasar al resumen</button>
         </form>
