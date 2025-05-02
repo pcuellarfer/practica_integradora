@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Controlador para gestionar las vistas del panel principal (dashboard)
@@ -115,8 +117,8 @@ public class DashboardController {
      */
     @GetMapping("/buscar")
     public String mostrarFormularioBusqueda(Model model) {
-        model.addAttribute("nombre", "");
-        model.addAttribute("resultados", Collections.emptyList());
+        List<Empleado> empleados = empleadoRepository.findAll();
+        model.addAttribute("empleados", empleados);
         return "empleado/main/empleado-buscar";
     }
 
@@ -136,6 +138,62 @@ public class DashboardController {
         model.addAttribute("nombre", nombre);
         model.addAttribute("resultados", resultados);
         return "empleado/main/empleado-buscar";
+    }
+
+    /**
+     * Bloquea un empleado y registra la acción en los logs.
+     * <p>
+     * Este método se encarga de bloquear al empleado especificado por su ID. Antes de
+     * proceder, verifica que haya un usuario autenticado en la sesión y registra la
+     * acción en los logs. Después de bloquear al empleado, se agrega un mensaje flash
+     * al modelo para ser mostrado en la siguiente solicitud.
+     *
+     * @param empleadoId el identificador único del empleado que se desea bloquear
+     * @param session la sesión HTTP que contiene la información del usuario autenticado
+     * @param redirectAttributes los atributos de redirección que permiten enviar el mensaje
+     *        flash al modelo para ser mostrado después de la redirección
+     * @return la vista de redirección a la página de búsqueda de empleados
+     */
+    @PostMapping("/bloquear")
+    public String bloquearUsuario(@RequestParam("empleadoId") UUID empleadoId, HttpSession session, RedirectAttributes redirectAttributes) {
+        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");  // Recuperar usuario autenticado
+        if (usuario != null) {
+            logger.info("Bloqueando empleado ID: {} por usuario ID: {}", empleadoId, usuario.getId());
+        } else {
+            logger.warn("Usuario no identificado intentando bloquear empleado ID: {}", empleadoId);
+        }
+
+        empleadoService.bloquearEmpleado(empleadoId);
+        redirectAttributes.addFlashAttribute("mensaje", "Empleado bloqueado correctamente");
+        return "redirect:/dashboard/buscar";
+    }
+
+    /**
+     * Desbloquea un empleado y registra la acción en los logs.
+     * <p>
+     * Este método se encarga de desbloquear al empleado especificado por su ID. Antes de
+     * proceder, verifica que haya un usuario autenticado en la sesión y registra la
+     * acción en los logs. Después de desbloquear al empleado, se agrega un mensaje flash
+     * al modelo para ser mostrado en la siguiente solicitud.
+     *
+     * @param empleadoId el identificador único del empleado que se desea desbloquear
+     * @param session la sesión HTTP que contiene la información del usuario autenticado
+     * @param redirectAttributes los atributos de redirección que permiten enviar el mensaje
+     *        flash al modelo para ser mostrado después de la redirección
+     * @return la vista de redirección a la página de búsqueda de empleados
+     */
+    @PostMapping("/desbloquear")
+    public String desbloquearUsuario(@RequestParam("empleadoId") UUID empleadoId, HttpSession session, RedirectAttributes redirectAttributes) {
+        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
+        if (usuario != null) {
+            logger.info("Desbloqueando empleado ID: {} por usuario ID: {}", empleadoId, usuario.getId());
+        } else {
+            logger.warn("Usuario no identificado intentando desbloquear empleado ID: {}", empleadoId);
+        }
+
+        empleadoService.desbloquearEmpleado(empleadoId);
+        redirectAttributes.addFlashAttribute("mensaje", "Empleado desbloqueado correctamente");
+        return "redirect:/dashboard/buscar";
     }
 
 

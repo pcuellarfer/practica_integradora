@@ -52,7 +52,7 @@ public class DatosIniciales {
                                     EspecialidadRepository especialidadRepository,
                                     BancoRepository bancoRepository,
                                     TipoTarjetaRepository tipoTarjetaRepository) {
-        return args -> {
+        return _ -> {
             Usuario usuarioInicial = new Usuario();
             usuarioInicial.setNombre("Juan");
             usuarioInicial.setContrasena(passwordEncoder.encode("Contraseña@-"));
@@ -83,7 +83,7 @@ public class DatosIniciales {
             generoRepository.save(noBinarie);
             generoRepository.save(paco);
 
-            /// TIPOS DE DOCUMENTOS ///
+            // TIPOS DE DOCUMENTOS ///
 
             TipoDocumento DNI = new TipoDocumento("DNI");
             TipoDocumento NIE = new TipoDocumento("NIE");
@@ -93,7 +93,7 @@ public class DatosIniciales {
             tipoDocumentoRepository.save(NIE);
             tipoDocumentoRepository.save(pasaporte);
 
-            /// DEPARTAMENTOS ///
+            // DEPARTAMENTOS ///
 
             Departamento informatica = new Departamento("Informatica");
             Departamento RRHH = new Departamento("Universidad");
@@ -103,7 +103,7 @@ public class DatosIniciales {
             departamentoRepository.save(RRHH);
             departamentoRepository.save(marketing);
 
-            ///  TIPOS VIA ///
+            //  TIPOS VIA ///
 
             TipoVia calle = new TipoVia("Calle");
             TipoVia avenida = new TipoVia("Avenida");
@@ -113,7 +113,7 @@ public class DatosIniciales {
             tipoViaRepository.save(avenida);
             tipoViaRepository.save(paseo);
 
-            ///  ESPECIALIDADES ///
+            //  ESPECIALIDADES ///
 
             Especialidad creativo = new Especialidad("Creativo");
             Especialidad trabajoEquipo = new Especialidad("Trabajo en equipo");
@@ -123,7 +123,7 @@ public class DatosIniciales {
             especialidadRepository.save(trabajoEquipo);
             especialidadRepository.save(rapido);
 
-            /// BANCOS ///
+            // BANCOS ///
 
             Banco bbva = new Banco("BBVA");
             Banco caixa = new Banco("Caixa");
@@ -133,7 +133,7 @@ public class DatosIniciales {
             bancoRepository.save(caixa);
             bancoRepository.save(sabadell);
 
-            ///  TIPO TARJETA ///
+            //  TIPO TARJETA ///
 
             TipoTarjeta visa = new TipoTarjeta("Visa");
             TipoTarjeta masterCard = new TipoTarjeta("Master Card");
@@ -143,13 +143,13 @@ public class DatosIniciales {
             tipoTarjetaRepository.save(masterCard);
             tipoTarjetaRepository.save(americanExpress);
 
-            /// DPARTAMENTO ///
+            // DPARTAMENTO ///
 
             Departamento departamento = new Departamento("Departamento");
             departamentoRepository.save(departamento);
 
 
-            /// EMPLEADO ///
+            // EMPLEADO ///
 
             //usando el usuario inicial
             Empleado empleado = new Empleado();
@@ -176,6 +176,40 @@ public class DatosIniciales {
             empleado.setTarjetaCredito(tarjetaCredito);
 
             empleadoRepository.save(empleado);
+
+            // Usuario secundario
+            Usuario usuarioSecundario = new Usuario();
+            usuarioSecundario.setNombre("Maria");
+            usuarioSecundario.setContrasena(passwordEncoder.encode("ClaveSegura123"));
+            usuarioSecundario.setEmail("maria@example.com");
+            usuarioRepository.save(usuarioSecundario);
+
+            // Empleado asociado al usuario secundario
+            Empleado empleado2 = new Empleado();
+            empleado2.setNombre("Maria");
+            empleado2.setApellido("Gomez");
+            empleado2.setUsuario(usuarioSecundario);
+            empleado2.setGenero(femenino);
+            empleado2.setPais(francia);
+            empleado2.setTipoDocumento(pasaporte);
+            empleado2.setFechaNacimiento(LocalDate.parse("1985-06-15"));
+
+            Direccion direccion2 = new Direccion();
+            direccion2.setTipoVia(avenida.getId()); // usa ID válido ya guardado
+            empleado2.setDireccion(direccion2);
+
+            empleado2.setDepartamento(marketing); // Usa un departamento existente
+
+            CuentaCorriente cuenta2 = new CuentaCorriente();
+            cuenta2.setBanco(caixa.getId()); // usa ID válido ya guardado
+            empleado2.setCuentaCorriente(cuenta2);
+
+            TarjetaCredito tarjeta2 = new TarjetaCredito();
+            tarjeta2.setTipoTarjeta(visa.getId()); // usa ID válido ya guardado
+            empleado2.setTarjetaCredito(tarjeta2);
+
+            empleadoRepository.save(empleado2);
+
         };
     }
 }
