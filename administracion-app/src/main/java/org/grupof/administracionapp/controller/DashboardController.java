@@ -71,6 +71,7 @@ public class DashboardController {
 
         logger.info("Usuario ID {} es también empleado. Mostrando dashboard de empleado.", usuarioDTO.getId());
 
+        modelo.addAttribute("contador", session.getAttribute("contador"));
         modelo.addAttribute("usuario", usuarioDTO);
         modelo.addAttribute("empleado", empleadoDTO);
 
@@ -104,6 +105,14 @@ public class DashboardController {
     }
 
 
+    /**
+     * Muestra el formulario de búsqueda de empleados.
+     * Este método maneja las solicitudes GET a la ruta "/buscar".
+     * Inicializa el modelo con un nombre vacío y una lista vacía de resultados.
+     *
+     * @param model el modelo que se pasa a la vista
+     * @return la vista del formulario de búsqueda de empleados
+     */
     @GetMapping("/buscar")
     public String mostrarFormularioBusqueda(Model model) {
         model.addAttribute("nombre", "");
@@ -111,6 +120,16 @@ public class DashboardController {
         return "empleado/main/empleado-buscar";
     }
 
+    /**
+     * Procesa la búsqueda de empleados por nombre.
+     * Este método maneja las solicitudes POST a la ruta "/buscar".
+     * Utiliza el nombre proporcionado para buscar coincidencias en el repositorio,
+     * y añade los resultados al modelo para mostrarlos en la vista.
+     *
+     * @param nombre el nombre o parte del nombre del empleado a buscar
+     * @param model el modelo que se pasa a la vista
+     * @return la vista con los resultados de la búsqueda de empleados
+     */
     @PostMapping("/buscar")
     public String procesarBusqueda(@RequestParam String nombre, Model model) {
         List<Empleado> resultados = empleadoRepository.findByNombreContainingIgnoreCase(nombre);
@@ -118,5 +137,6 @@ public class DashboardController {
         model.addAttribute("resultados", resultados);
         return "empleado/main/empleado-buscar";
     }
+
 
 }

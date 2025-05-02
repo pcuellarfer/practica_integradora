@@ -214,6 +214,19 @@ public class InicioSesionController {
         }
 
         logger.info("Inicio de sesión exitoso para: {}", usuarioDTO.getEmail());
+
+        // Obtener o inicializar contador de inicios de sesión
+        Integer contador = (Integer) session.getAttribute("contadorSesiones");
+        if (contador == null) {
+            contador = 1;
+        } else {
+            contador++;
+        }
+        session.setAttribute("contador", contador);
+
+        logger.info("Número de accesos al dashboard en esta sesión: {}", contador);
+        model.addAttribute("contadorSesiones", contador);
+
         session.setAttribute("usuario", usuarioBBDD);
         session.removeAttribute("intentos");
         return "redirect:/dashboard/dashboard";
