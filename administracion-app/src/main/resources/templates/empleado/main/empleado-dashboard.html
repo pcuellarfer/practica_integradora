@@ -25,7 +25,7 @@
             <p>Sesión iniciada como: <strong><span th:text="${empleado.getPaso1PersonalDTO.nombre}"></span></strong></p>
         </div>
 
-        <form th:action="@{/empleado/logout}" method="get">
+        <form th:action="@{/login/logout}" method="get">
             <div class="d-grid gap-2 mb-3">
                 <a href="/dashboard/detalle" class="btn btn-primary">Ver mis detalles</a>
                 <a href="/dashboard/buscar" class="btn btn-primary">Buscar</a>

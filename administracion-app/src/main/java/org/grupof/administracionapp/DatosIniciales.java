@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 /**
@@ -56,6 +57,7 @@ public class DatosIniciales {
             usuarioInicial.setNombre("Juan");
             usuarioInicial.setContrasena(passwordEncoder.encode("Contraseña@-"));
             usuarioInicial.setEmail("davidsmh23@gmail.com");
+
 
             usuarioRepository.save(usuarioInicial);
 
@@ -156,6 +158,8 @@ public class DatosIniciales {
             empleado.setGenero(masculino);
             empleado.setPais(espana);
             empleado.setTipoDocumento(DNI);
+            empleado.setApellido("Lopez");
+            empleado.setFechaNacimiento(LocalDate.parse("1990-01-01"));
 
             Direccion direccion = new Direccion();
             direccion.setTipoVia(UUID.randomUUID());
