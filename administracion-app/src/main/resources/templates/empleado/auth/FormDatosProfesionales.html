@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Paso 3 - Datos profesionales</title>
@@ -8,40 +8,50 @@
     <script th:src="@{/js/script.js}"></script>
 </head>
 <body>
-<form th:action="@{/registro/paso3}" th:object="${paso3}" method="post">
+<form th:action="@{/registro/paso3}" th:object="${paso3}" method="post" class="container mt-4">
 
-    <div class="row align-items-center">
-        <div class="col-2"></div>
-        <div class="col">
-            <h1 class="text-center mb-2">Paso 3 - Datos Profesionales</h1>
-        </div>
-        <div class="col-2"></div>
-    </div>
-
-    <label for="departamento">Departamento:</label>
-    <select id="departamento" th:field="*{departamento}" class="form-control">
-        <option value="">Seleccione un departamento</option>
-        <option th:each="departamento : ${departamentos}" th:value="${departamento.id}" th:text="${departamento.nombre}"></option>
-    </select>
-
-    <label>Especialidades:</label>
-    <div th:each="especialidad : ${especialidades}">
-        <div class="form-check">
-            <input class="form-check-input"
-                   type="checkbox"
-                   th:value="${especialidad.id}"
-                   th:field="*{especialidades}"
-                   th:id="${'especialidad_' + especialidad.id}" />
-            <!--generar un id unico para cada checkbox-->
-            <label class="form-check-label"
-                   th:for="${'especialidad_' + especialidad.id}"
-                   th:text="${especialidad.nombre}"></label>
+    <div class="row align-items-center mb-3">
+        <div class="col text-center">
+            <h1>Paso 3 - Datos Profesionales</h1>
         </div>
     </div>
 
-    <button type="submit" class="btn btn-primary w-100">Paso 4 - Datos economicos</button>
+    <!-- Departamento -->
+    <div class="mb-3">
+        <label for="departamento">Departamento:</label>
+        <select id="departamento" th:field="*{departamento}" class="form-control"
+                th:classappend="${#fields.hasErrors('departamento')} ? 'is-invalid'">
+            <option value="">Seleccione un departamento</option>
+            <option th:each="departamento : ${departamentos}"
+                    th:value="${departamento.id}"
+                    th:text="${departamento.nombre}"></option>
+        </select>
+
+        <span class="error-message" th:if="${#fields.hasErrors('departamento')}" th:errors="*{departamento}"></span>
+    </div>
+
+    <!-- Especialidades -->
+    <div class="mb-3">
+        <label>Especialidades:</label>
+        <div th:each="especialidad : ${especialidades}">
+            <div class="form-check">
+                <input class="form-check-input"
+                       type="checkbox"
+                       th:value="${especialidad.id}"
+                       th:field="*{especialidades}"
+                       th:id="${'especialidad_' + especialidad.id}" />
+                <label class="form-check-label"
+                       th:for="${'especialidad_' + especialidad.id}"
+                       th:text="${especialidad.nombre}"></label>
+            </div>
+        </div>
+        <span class="error-message" th:if="${#fields.hasErrors('especialidades')}" th:errors="*{especialidades}"></span>
+    </div>
+    <button type="submit" class="btn btn-primary w-100">Paso 4 - Datos económicos</button>
 </form>
-<!-- Mensaje de error (si existe) -->
-<p th:if="${error}" th:text="${error}" style="color: red;"></p>
+
+<!-- Mensaje de error general (si existe) -->
+<p th:if="${error}" th:text="${error}" class="text-danger text-center mt-3"></p>
+
 </body>
 </html>

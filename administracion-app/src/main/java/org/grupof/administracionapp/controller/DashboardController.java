@@ -3,13 +3,20 @@ package org.grupof.administracionapp.controller;
 import jakarta.servlet.http.HttpSession;
 import org.grupof.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
+import org.grupof.administracionapp.entity.Empleado;
+import org.grupof.administracionapp.repository.EmpleadoRepository;
 import org.grupof.administracionapp.services.Empleado.EmpleadoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Controlador para gestionar las vistas del panel principal (dashboard)
@@ -22,14 +29,16 @@ public class DashboardController {
     private static final Logger logger = LoggerFactory.getLogger(DashboardController.class);
 
     private final EmpleadoService empleadoService;
+    private final EmpleadoRepository empleadoRepository;
 
     /**
      * Constructor que inyecta el servicio de empleado.
      *
      * @param empleadoService servicio para gestionar empleados
      */
-    public DashboardController(EmpleadoService empleadoService) {
+    public DashboardController(EmpleadoService empleadoService, EmpleadoRepository empleadoRepository) {
         this.empleadoService = empleadoService;
+        this.empleadoRepository = empleadoRepository;
     }
 
     /**
@@ -93,4 +102,21 @@ public class DashboardController {
         model.addAttribute("empleado", empleado);
         return "empleado/main/empleadoDetalle";
     }
+
+
+    @GetMapping("/buscar")
+    public String mostrarFormularioBusqueda(Model model) {
+        model.addAttribute("nombre", "");
+        model.addAttribute("resultados", Collections.emptyList());
+        return "empleado/main/empleado-buscar";
+    }
+
+    @PostMapping("/buscar")
+    public String procesarBusqueda(@RequestParam String nombre, Model model) {
+        List<Empleado> resultados = empleadoRepository.findByNombreContainingIgnoreCase(nombre);
+        model.addAttribute("nombre", nombre);
+        model.addAttribute("resultados", resultados);
+        return "empleado/main/empleado-buscar";
+    }
+
 }

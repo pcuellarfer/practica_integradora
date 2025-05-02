@@ -13,6 +13,8 @@ import org.grupof.administracionapp.entity.registroEmpleado.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -95,6 +97,27 @@ public class Empleado {
     private TarjetaCredito tarjetaCredito;
 
     //fin del registro
+
+    //etiquetado
+    @ManyToOne
+    @JoinColumn(name = "jefe_id")
+    private Empleado jefe;
+
+    @OneToMany(mappedBy = "jefe")
+    private List<Empleado> subordinados;
+
+    @OneToMany(mappedBy = "jefe", cascade = CascadeType.ALL)
+    private List<Etiqueta> etiquetasCreadas;
+
+    @ManyToMany
+    @JoinTable(
+            name = "empleado_etiqueta",
+            joinColumns = @JoinColumn(name = "empleado_id"),
+            inverseJoinColumns = @JoinColumn(name = "etiqueta_id")
+    )
+    private List<Etiqueta> etiquetas;
+
+    /////////////
 
     @Column(name = "fecha_contratacion")
     private LocalDateTime fechaContratacion;
