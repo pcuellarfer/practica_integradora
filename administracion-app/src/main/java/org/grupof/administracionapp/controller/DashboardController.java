@@ -149,4 +149,18 @@ public class DashboardController {
         return "empleado/main/empleado-buscar";
     }
 
+    @GetMapping("/etiquetado")
+    public String mostrarEtiquetado(Model modelo) {
+
+        List<Empleado> empleados = empleadoService.getEmpleadosOrdenados();
+        modelo.addAttribute("empleados", empleados);
+
+        return "empleado/main/empleado-etiquetado";
+    }
+
+    @PostMapping("/etiquetado")
+    public String procesarEtiquetado(Model modelo) {
+        return "empleado/main/empleado-etiquetado";
+    }
+
 }

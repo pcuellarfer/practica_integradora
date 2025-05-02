@@ -106,16 +106,8 @@ public class Empleado {
     @OneToMany(mappedBy = "jefe")
     private List<Empleado> subordinados;
 
-    @OneToMany(mappedBy = "jefe", cascade = CascadeType.ALL)
-    private List<Etiqueta> etiquetasCreadas;
-
-    @ManyToMany
-    @JoinTable(
-            name = "empleado_etiqueta",
-            joinColumns = @JoinColumn(name = "empleado_id"),
-            inverseJoinColumns = @JoinColumn(name = "etiqueta_id")
-    )
-    private List<Etiqueta> etiquetas;
+    @OneToMany(mappedBy = "jefe")
+    private List<Etiqueta> etiquetasDefinidas;
 
     /////////////
 

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>etiquetado empleado</h1>
+
+  <label for="empleados">Selecciona empleados:</label><br>
+  <select id="empleados" name="empleados" multiple size="4">
+    <th:block th:each="empleado : ${empleados}">
+      <option th:value="${empleado.id}" th:text="${empleado.apellido + ', ' + empleado.nombre}"></option>
+    </th:block>
+  </select>
+
+</body>
+</html>
