@@ -11,6 +11,8 @@
 </head>
 
 <body>
+<div th:replace="/fragments/cabecera"></div>
+<main>
 <div class="absoluto mt-5">
     <div class="container">
         <!-- Título -->
@@ -36,5 +38,7 @@
         <a href="/login/username" class="btn btn-secondary w-100 mt-3">Volver al inicio</a>
     </div>
 </div>
+</main>
+<div th:replace="/fragments/pie"></div>
 </body>
 </html>
