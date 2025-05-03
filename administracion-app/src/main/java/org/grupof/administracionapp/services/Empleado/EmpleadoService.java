@@ -88,5 +88,12 @@ public interface EmpleadoService {
      */
     void desbloquearEmpleado(UUID empleadoId);
 
+    /**
+     * Obtiene una lista de todos los empleados ordenados por los criterios definidos
+     * en la implementación del servicio. El criterio de orden puede ser por nombre,
+     * fecha de incorporación, cargo, etc., según lo implementado.
+     *
+     * @return una lista ordenada de empleados.
+     */
     List<Empleado> getEmpleadosOrdenados();
 }

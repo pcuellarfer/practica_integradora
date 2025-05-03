@@ -6,9 +6,6 @@ import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.grupof.administracionapp.auxiliar.TipoUsuario;
-
-import java.time.LocalDateTime;
 
 @AllArgsConstructor @NoArgsConstructor  @Data
 public class RegistroUsuarioDTO {

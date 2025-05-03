@@ -5,7 +5,6 @@ import org.grupof.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
 import org.grupof.administracionapp.entity.Empleado;
 import org.grupof.administracionapp.repository.EmpleadoRepository;
-import org.grupof.administracionapp.repository.GeneroRepository;
 import org.grupof.administracionapp.services.Empleado.EmpleadoService;
 import org.grupof.administracionapp.services.Genero.GeneroService;
 import org.slf4j.Logger;
@@ -42,7 +41,7 @@ public class DashboardController {
      *
      * @param empleadoService servicio para gestionar empleados
      */
-    public DashboardController(EmpleadoService empleadoService, EmpleadoRepository empleadoRepository) {
+    public DashboardController(EmpleadoService empleadoService, EmpleadoRepository empleadoRepository, GeneroService generoService) {
         this.empleadoService = empleadoService;
         this.empleadoRepository = empleadoRepository;
         this.generoService = generoService;
@@ -117,7 +116,7 @@ public class DashboardController {
      * Este método maneja las solicitudes GET a la ruta "/buscar".
      * Inicializa el modelo con un nombre vacío y una lista vacía de resultados.
      *
-     * @param model el modelo que se pasa a la vista
+     * @param modelo el modelo que se pasa a la vista
      * @return la vista del formulario de búsqueda de empleados
      */
     @GetMapping("/buscar")
@@ -136,7 +135,7 @@ public class DashboardController {
      * y añade los resultados al modelo para mostrarlos en la vista.
      *
      * @param nombre el nombre o parte del nombre del empleado a buscar
-     * @param model el modelo que se pasa a la vista
+     * @param modelo el modelo que se pasa a la vista
      * @return la vista con los resultados de la búsqueda de empleados
      */
     @PostMapping("/buscar")
@@ -224,58 +223,95 @@ public class DashboardController {
         return "redirect:/dashboard/buscar";
     }
 
-
+    /**
+     * Muestra la vista para asignar subordinados a un jefe.
+     *
+     * @param session sesión HTTP para obtener el usuario autenticado.
+     * @param modelo  modelo de la vista para incluir jefe y empleados disponibles.
+     * @return la plantilla de asignación de subordinados o redirección al login si no hay sesión.
+     */
     @GetMapping("/asignar")
     public String asignarSubordinados(HttpSession session, Model modelo) {
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
 
         if (usuario == null) {
+            logger.warn("Intento de acceso sin sesión activa. Redirigiendo a login.");
             return "redirect:/login/username";
         }
 
         Empleado jefe = empleadoRepository.findByUsuarioId(usuario.getId()).orElse(null);
 
+        if (jefe == null) {
+            logger.error("No se encontró el empleado asociado al usuario con ID: {}", usuario.getId());
+            return "redirect:/login/username";
+        }
+
         List<Empleado> posiblesSubordinados = empleadoRepository.findByIdNot(jefe.getId());
 
+        logger.info("Mostrando vista de asignación de subordinados para el jefe: {}", jefe.getNombre());
         modelo.addAttribute("jefe", jefe);
         modelo.addAttribute("empleados", posiblesSubordinados);
+
         return "empleado/main/empleado-asignacionSubordinados";
     }
 
-
+    /**
+     * Procesa la asignación de subordinados seleccionados a un jefe.
+     *
+     * @param subordinadoIds lista de IDs de empleados seleccionados como subordinados.
+     * @param session        sesión HTTP para identificar al jefe actual.
+     * @return redirección al dashboard tras asignar subordinados.
+     */
     @PostMapping("/asignar")
     public String procesarAsignacion(@RequestParam List<UUID> subordinadoIds, HttpSession session) {
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
 
         if (usuario == null) {
+            logger.warn("Intento de asignación sin usuario en sesión. Redirigiendo.");
             return "redirect:/login";
         }
 
         Empleado jefe = empleadoRepository.findByUsuarioId(usuario.getId())
-                .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
+                .orElseThrow(() -> {
+                    logger.error("Empleado no encontrado para el usuario con ID: {}", usuario.getId());
+                    return new RuntimeException("Empleado no encontrado");
+                });
 
         List<Empleado> subordinados = empleadoRepository.findAllById(subordinadoIds);
-
         for (Empleado subordinado : subordinados) {
             subordinado.setJefe(jefe);
+            logger.info("Asignado subordinado {} al jefe {}", subordinado.getNombre(), jefe.getNombre());
         }
 
         empleadoRepository.saveAll(subordinados);
+        logger.info("Asignación de subordinados completada para el jefe: {}", jefe.getNombre());
 
         return "redirect:/dashboard/dashboard";
     }
 
+    /**
+     * Muestra la vista de empleados ordenados para su etiquetado.
+     *
+     * @param modelo modelo de la vista para incluir la lista de empleados.
+     * @return vista del etiquetado de empleados.
+     */
     @GetMapping("/etiquetado")
     public String mostrarEtiquetado(Model modelo) {
-
         List<Empleado> empleados = empleadoService.getEmpleadosOrdenados();
         modelo.addAttribute("empleados", empleados);
 
+        logger.info("Vista de etiquetado mostrada con {} empleados.", empleados.size());
         return "empleado/main/empleado-etiquetado";
     }
 
+    /**
+     * Procesa el etiquetado de empleados (a completar según funcionalidad futura).
+     *
+     * @return vista del etiquetado sin cambios aún definidos.
+     */
     @PostMapping("/etiquetado")
-    public String procesarEtiquetado(Model modelo) {
+    public String procesarEtiquetado() {
+        logger.info("Formulario de etiquetado procesado (aún sin lógica definida).");
         return "empleado/main/empleado-etiquetado";
     }
 

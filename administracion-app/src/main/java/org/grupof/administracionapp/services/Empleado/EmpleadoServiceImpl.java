@@ -71,7 +71,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
      * Registra un nuevo empleado en el sistema y lo asocia a un usuario existente.
      *
      * @param registroEmpleadoDTO Objeto que contiene los datos del nuevo empleado.
-     * @param usuarioDTO Objeto del usuario con el que se asociará el empleado.
+     * @param usuarioDTO          Objeto del usuario con el que se asociará el empleado.
      */
     @Override
     public void registrarEmpleado(RegistroEmpleadoDTO registroEmpleadoDTO, UsuarioDTO usuarioDTO) {
@@ -175,7 +175,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     /**
      * Edita los datos de un empleado existente.
      *
-     * @param id Identificador del empleado a editar.
+     * @param id  Identificador del empleado a editar.
      * @param dto Objeto con los nuevos datos del empleado.
      * @return DTO del empleado actualizado, o null si no se encontró.
      */
@@ -359,7 +359,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
      *
      * @param empleadoId el identificador único del empleado que se desea bloquear
      * @throws RuntimeException si el empleado no se encuentra en la base de datos
-     *         o si el empleado no tiene un usuario asociado
+     *                          o si el empleado no tiene un usuario asociado
      */
     @Override
     public void bloquearEmpleado(UUID empleadoId) {
@@ -395,7 +395,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
      *
      * @param empleadoId el identificador único del empleado que se desea desbloquear
      * @throws RuntimeException si el empleado no se encuentra en la base de datos
-     *         o si el empleado no tiene un usuario asociado
+     *                          o si el empleado no tiene un usuario asociado
      */
     @Override
     public void desbloquearEmpleado(UUID empleadoId) {
@@ -422,8 +422,18 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         }
     }
 
+    /**
+     * Recupera todos los empleados ordenados por apellido y, en caso de apellidos iguales,
+     * por nombre en orden ascendente.
+     *
+     * @return una lista de empleados ordenados alfabéticamente por apellido y nombre.
+     */
     @Override
     public List<Empleado> getEmpleadosOrdenados() {
-        return empleadoRepository.findAll(Sort.by("apellido").ascending().and(Sort.by("nombre").ascending()));
+        logger.info("Obteniendo lista de empleados ordenada por apellido y nombre...");
+        List<Empleado> empleadosOrdenados = empleadoRepository.findAll(
+                Sort.by("apellido").ascending().and(Sort.by("nombre").ascending()));
+        logger.debug("Se han recuperado {} empleados.", empleadosOrdenados.size());
+        return empleadosOrdenados;
     }
 }
