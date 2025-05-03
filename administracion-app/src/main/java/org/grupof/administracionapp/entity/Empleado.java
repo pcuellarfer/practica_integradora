@@ -13,7 +13,6 @@ import org.grupof.administracionapp.entity.registroEmpleado.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -37,7 +36,7 @@ public class Empleado {
     private String nombre;
     private String apellido;
 
-    private String foto; // tipo multipart?
+    private byte[] foto; // tipo multipart?
 
     @ManyToOne
     @JoinColumn(name = "genero_id")

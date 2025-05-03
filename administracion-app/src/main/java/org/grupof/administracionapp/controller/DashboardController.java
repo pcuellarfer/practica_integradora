@@ -11,10 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Collections;
@@ -110,7 +107,6 @@ public class DashboardController {
         return "empleado/main/empleadoDetalle";
     }
 
-
     /**
      * Muestra el formulario de búsqueda de empleados.
      * Este método maneja las solicitudes GET a la ruta "/buscar".
@@ -120,7 +116,14 @@ public class DashboardController {
      * @return la vista del formulario de búsqueda de empleados
      */
     @GetMapping("/buscar")
-    public String mostrarFormularioBusqueda(Model modelo) {
+    public String mostrarFormularioBusqueda(Model modelo, HttpSession session) {
+        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
+
+        if (usuarioDTO == null) {
+            logger.warn("Intento de acceso al dashboard sin usuario en sesión");
+            return "redirect:/login/username";
+        }
+
         modelo.addAttribute("generos", generoService.getAllGeneros());
         modelo.addAttribute("genero", null);
         modelo.addAttribute("nombre", "");
@@ -140,7 +143,16 @@ public class DashboardController {
      */
     @PostMapping("/buscar")
     //required en false para genero para que no salte excepcion
-    public String procesarBusqueda(@RequestParam String nombre, @RequestParam(required = false) UUID genero, Model modelo) {
+    public String procesarBusqueda(@RequestParam String nombre, @RequestParam(required = false) UUID genero,
+                                   Model modelo,
+                                   HttpSession session) {
+
+        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
+
+        if (usuarioDTO == null) {
+            logger.warn("Intento de acceso al dashboard sin usuario en sesión");
+            return "redirect:/login/username";
+        }
 
         List<Empleado> resultados;
 
