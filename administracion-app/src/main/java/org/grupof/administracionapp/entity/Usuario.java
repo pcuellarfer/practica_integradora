@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.grupof.administracionapp.auxiliar.TipoUsuario;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -33,9 +32,6 @@ public class Usuario {
 
     @Email(message = "El email no es válido.")
     private String email;
-
-    @Enumerated(EnumType.STRING)
-    private TipoUsuario tipoUsuario;
 
     private boolean estadoBloqueado = false;
     private LocalDateTime bloqueadoHasta;

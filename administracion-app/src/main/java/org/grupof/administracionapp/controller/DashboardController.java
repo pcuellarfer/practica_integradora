@@ -5,7 +5,9 @@ import org.grupof.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
 import org.grupof.administracionapp.entity.Empleado;
 import org.grupof.administracionapp.repository.EmpleadoRepository;
+import org.grupof.administracionapp.repository.GeneroRepository;
 import org.grupof.administracionapp.services.Empleado.EmpleadoService;
+import org.grupof.administracionapp.services.Genero.GeneroService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -31,7 +33,9 @@ public class DashboardController {
     private static final Logger logger = LoggerFactory.getLogger(DashboardController.class);
 
     private final EmpleadoService empleadoService;
+    private final GeneroService generoService;
     private final EmpleadoRepository empleadoRepository;
+
 
     /**
      * Constructor que inyecta el servicio de empleado.
@@ -41,6 +45,7 @@ public class DashboardController {
     public DashboardController(EmpleadoService empleadoService, EmpleadoRepository empleadoRepository) {
         this.empleadoService = empleadoService;
         this.empleadoRepository = empleadoRepository;
+        this.generoService = generoService;
     }
 
     /**
@@ -85,11 +90,11 @@ public class DashboardController {
      * Si el usuario no ha iniciado sesión, se redirige al login.
      *
      * @param session sesión HTTP actual
-     * @param model   modelo de atributos para la vista
+     * @param modelo   modelo de atributos para la vista
      * @return vista con los detalles del empleado
      */
     @GetMapping("/detalle")
-    public String verDetalles(HttpSession session, Model model) {
+    public String verDetalles(HttpSession session, Model modelo) {
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
 
         if (usuario == null) {
@@ -101,8 +106,8 @@ public class DashboardController {
 
         RegistroEmpleadoDTO empleado = empleadoService.buscarEmpleadoPorUsuarioId(usuario.getId());
 
-        model.addAttribute("usuario", usuario);
-        model.addAttribute("empleado", empleado);
+        modelo.addAttribute("usuario", usuario);
+        modelo.addAttribute("empleado", empleado);
         return "empleado/main/empleadoDetalle";
     }
 
@@ -116,9 +121,11 @@ public class DashboardController {
      * @return la vista del formulario de búsqueda de empleados
      */
     @GetMapping("/buscar")
-    public String mostrarFormularioBusqueda(Model model) {
-        List<Empleado> empleados = empleadoRepository.findAll();
-        model.addAttribute("empleados", empleados);
+    public String mostrarFormularioBusqueda(Model modelo) {
+        modelo.addAttribute("generos", generoService.getAllGeneros());
+        modelo.addAttribute("genero", null);
+        modelo.addAttribute("nombre", "");
+        modelo.addAttribute("resultados", Collections.emptyList());
         return "empleado/main/empleado-buscar";
     }
 
@@ -133,10 +140,31 @@ public class DashboardController {
      * @return la vista con los resultados de la búsqueda de empleados
      */
     @PostMapping("/buscar")
-    public String procesarBusqueda(@RequestParam String nombre, Model model) {
-        List<Empleado> resultados = empleadoRepository.findByNombreContainingIgnoreCase(nombre);
-        model.addAttribute("nombre", nombre);
-        model.addAttribute("resultados", resultados);
+    //required en false para genero para que no salte excepcion
+    public String procesarBusqueda(@RequestParam String nombre, @RequestParam(required = false) UUID genero, Model modelo) {
+
+        List<Empleado> resultados;
+
+        //nombre+genero
+        if (nombre != null && !nombre.trim().isEmpty() && genero != null) {
+            resultados = empleadoRepository.findByNombreContainingIgnoreCaseAndGeneroId(nombre, genero);
+        }
+        //nombre
+        else if (nombre != null && !nombre.trim().isEmpty()) {
+            resultados = empleadoRepository.findByNombreContainingIgnoreCase(nombre);
+        }
+        //genero
+        else if (genero != null) {
+            resultados = empleadoRepository.findByGeneroId(genero);
+        } else {
+            //NINGUNOOOO, es decir, se muestran todos los empleados
+            resultados = empleadoRepository.findAll();
+        }
+
+        modelo.addAttribute("nombre", nombre);
+        modelo.addAttribute("genero", genero);
+        modelo.addAttribute("generos", generoService.getAllGeneros());
+        modelo.addAttribute("resultados", resultados);
         return "empleado/main/empleado-buscar";
     }
 
@@ -196,5 +224,59 @@ public class DashboardController {
         return "redirect:/dashboard/buscar";
     }
 
+
+    @GetMapping("/asignar")
+    public String asignarSubordinados(HttpSession session, Model modelo) {
+        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
+
+        if (usuario == null) {
+            return "redirect:/login/username";
+        }
+
+        Empleado jefe = empleadoRepository.findByUsuarioId(usuario.getId()).orElse(null);
+
+        List<Empleado> posiblesSubordinados = empleadoRepository.findByIdNot(jefe.getId());
+
+        modelo.addAttribute("jefe", jefe);
+        modelo.addAttribute("empleados", posiblesSubordinados);
+        return "empleado/main/empleado-asignacionSubordinados";
+    }
+
+
+    @PostMapping("/asignar")
+    public String procesarAsignacion(@RequestParam List<UUID> subordinadoIds, HttpSession session) {
+        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
+
+        if (usuario == null) {
+            return "redirect:/login";
+        }
+
+        Empleado jefe = empleadoRepository.findByUsuarioId(usuario.getId())
+                .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
+
+        List<Empleado> subordinados = empleadoRepository.findAllById(subordinadoIds);
+
+        for (Empleado subordinado : subordinados) {
+            subordinado.setJefe(jefe);
+        }
+
+        empleadoRepository.saveAll(subordinados);
+
+        return "redirect:/dashboard/dashboard";
+    }
+
+    @GetMapping("/etiquetado")
+    public String mostrarEtiquetado(Model modelo) {
+
+        List<Empleado> empleados = empleadoService.getEmpleadosOrdenados();
+        modelo.addAttribute("empleados", empleados);
+
+        return "empleado/main/empleado-etiquetado";
+    }
+
+    @PostMapping("/etiquetado")
+    public String procesarEtiquetado(Model modelo) {
+        return "empleado/main/empleado-etiquetado";
+    }
 
 }

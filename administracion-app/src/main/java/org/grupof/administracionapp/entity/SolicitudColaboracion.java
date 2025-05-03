@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.grupof.administracionapp.auxiliar.Status;
+
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -29,8 +29,8 @@ public class SolicitudColaboracion {
     @JoinColumn(name = "empleado_receptor_id")
     private Empleado receptor;
 
-    @Enumerated(EnumType.STRING)
-    private Status status;
+//    @Enumerated(EnumType.STRING)
+//    private Status status;
 
     private LocalDateTime fechaSolicitud;
 }

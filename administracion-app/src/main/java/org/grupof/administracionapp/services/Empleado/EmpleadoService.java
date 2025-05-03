@@ -3,6 +3,7 @@ package org.grupof.administracionapp.services.Empleado;
 import java.util.UUID;
 import org.grupof.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
+import org.grupof.administracionapp.entity.Empleado;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -87,4 +88,5 @@ public interface EmpleadoService {
      */
     void desbloquearEmpleado(UUID empleadoId);
 
+    List<Empleado> getEmpleadosOrdenados();
 }

@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -419,5 +420,10 @@ public class EmpleadoServiceImpl implements EmpleadoService {
             logger.error("Empleado con ID: {} no encontrado", empleadoId);
             throw new RuntimeException("Empleado no encontrado");
         }
+    }
+
+    @Override
+    public List<Empleado> getEmpleadosOrdenados() {
+        return empleadoRepository.findAll(Sort.by("apellido").ascending().and(Sort.by("nombre").ascending()));
     }
 }

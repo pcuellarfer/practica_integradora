@@ -58,8 +58,14 @@ public class DatosIniciales {
             usuarioInicial.setContrasena(passwordEncoder.encode("Contraseña@-"));
             usuarioInicial.setEmail("davidsmh23@gmail.com");
 
+            Usuario paco = new Usuario();
+            paco.setNombre("Paco");
+            paco.setContrasena(passwordEncoder.encode("Aaaaaaaa-1"));
+            paco.setEmail("Paco@paco.paco");
+
 
             usuarioRepository.save(usuarioInicial);
+            usuarioRepository.save(paco);
 
 
             ///// PAISES //////
@@ -76,12 +82,10 @@ public class DatosIniciales {
             Genero femenino = new Genero("Femenino");
             Genero masculino = new Genero("Masculino");
             Genero noBinarie = new Genero("No Binarie");
-            Genero paco = new Genero("Paco");
 
             generoRepository.save(femenino);
             generoRepository.save(masculino);
             generoRepository.save(noBinarie);
-            generoRepository.save(paco);
 
             // TIPOS DE DOCUMENTOS ///
 
@@ -175,6 +179,30 @@ public class DatosIniciales {
             tarjetaCredito.setTipoTarjeta(UUID.randomUUID());
             empleado.setTarjetaCredito(tarjetaCredito);
 
+            //para paco
+            Empleado pacoE = new Empleado();
+            pacoE.setNombre("Paco");
+            pacoE.setUsuario(paco);
+            pacoE.setGenero(masculino);
+            pacoE.setPais(espana);
+            pacoE.setTipoDocumento(DNI);
+            pacoE.setApellido("Paquito");
+            pacoE.setFechaNacimiento(LocalDate.parse("1990-01-02"));
+
+            Direccion direccion1 = new Direccion();
+            direccion1.setTipoVia(UUID.randomUUID());
+            pacoE.setDireccion(direccion1);
+
+            pacoE.setDepartamento(departamento);
+
+            CuentaCorriente cuentaCorriente1 = new CuentaCorriente();
+            cuentaCorriente1.setBanco(UUID.randomUUID());
+            pacoE.setCuentaCorriente(cuentaCorriente1);
+
+            TarjetaCredito tarjetaCredito1 = new TarjetaCredito();
+            tarjetaCredito1.setTipoTarjeta(UUID.randomUUID());
+            pacoE.setTarjetaCredito(tarjetaCredito1);
+
             empleadoRepository.save(empleado);
 
             // Usuario secundario
@@ -210,6 +238,7 @@ public class DatosIniciales {
 
             empleadoRepository.save(empleado2);
 
+            empleadoRepository.save(pacoE);
         };
     }
 }
