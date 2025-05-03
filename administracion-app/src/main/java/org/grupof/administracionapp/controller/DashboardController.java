@@ -289,18 +289,25 @@ public class DashboardController {
         return "redirect:/dashboard/dashboard";
     }
 
-    /**
-     * Muestra la vista de empleados ordenados para su etiquetado.
-     *
-     * @param modelo modelo de la vista para incluir la lista de empleados.
-     * @return vista del etiquetado de empleados.
-     */
     @GetMapping("/etiquetado")
-    public String mostrarEtiquetado(Model modelo) {
-        List<Empleado> empleados = empleadoService.getEmpleadosOrdenados();
-        modelo.addAttribute("empleados", empleados);
+    public String mostrarEtiquetado(HttpSession session, Model modelo) {
+        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
 
-        logger.info("Vista de etiquetado mostrada con {} empleados.", empleados.size());
+        if (usuario == null) {
+            logger.warn("Intento de acceso sin sesión activa en /etiquetado. Redirigiendo a login.");
+            return "redirect:/login/username";
+        }
+
+        Empleado jefe = empleadoRepository.findByUsuarioId(usuario.getId()).orElse(null);
+        if (jefe == null) {
+            logger.error("no hay un empleado con usuario_id: {}", usuario.getId());
+            return "redirect:/login/username";
+        }
+
+        List<Empleado> subordinados = empleadoRepository.findByJefe(jefe);
+        modelo.addAttribute("empleados", subordinados);
+
+        logger.info("Vista de etiquetado mostrada para el jefe {} con {} subordinados.", jefe.getNombre(), subordinados.size());
         return "empleado/main/empleado-etiquetado";
     }
 
