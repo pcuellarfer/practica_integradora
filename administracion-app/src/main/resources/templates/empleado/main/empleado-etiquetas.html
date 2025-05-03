@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+  <h2>Gestión de Etiquetas</h2>
+
+  <form th:action="@{crearEtiquetas}" method="post" th:object="${nuevaEtiqueta}">
+    <label for="texto">Nombre de la Etiqueta:</label>
+    <input type="text" id="texto" th:field="*{texto}" required />
+    <button type="submit">Crear</button>
+  </form>
+
+  <div th:if="${error}" style="color: red;" th:text="${error}"></div>
+
+  <h3>Etiquetas Definidas:</h3>
+  <ul>
+    <li th:each="etiqueta : ${etiquetas}">
+      <span th:text="${etiqueta.texto}"></span>
+    </li>
+  </ul>
+</body>
+</html>
