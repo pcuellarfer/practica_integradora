@@ -37,7 +37,7 @@ public class Empleado {
     private String nombre;
     private String apellido;
 
-    private String foto; // tipo multipart?
+    private String foto; //guarda la ruta
 
     @ManyToOne
     @JoinColumn(name = "genero_id")

@@ -23,11 +23,14 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -91,6 +94,40 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 
         empleado.setNombre(personalDTO.getNombre());
         empleado.setApellido(personalDTO.getApellido());
+
+//        NO FUNCIONA NI SE POR QUE
+//        MultipartFile foto = personalDTO.getFoto();
+//
+//        if (foto != null && !foto.isEmpty()) {
+//            try {
+//
+//                //donde se va a guardar la imagen
+//                String uploadDir = "imagenes/";
+//                //limpiar el nombre original del archivo por si viene con espacios raros o rutas
+//                String originalFilename = StringUtils.cleanPath(foto.getOriginalFilename());
+//                //cambiarle el nombre para que no haya duplicados
+//                String uniqueFilename = UUID.randomUUID() + "_" + originalFilename;
+//
+//                //crear la carpeta si no existe
+//                Path uploadPath = Paths.get(uploadDir);
+//                if (!Files.exists(uploadPath)) {
+//                    Files.createDirectories(uploadPath);
+//                }
+//
+//                //guardar el la foto en la carpeta
+//                Path filePath = uploadPath.resolve(uniqueFilename);
+//                foto.transferTo(filePath.toFile());
+//
+//                // Guarda solo el nombre del archivo (o ruta relativa) en el empleado
+//                empleado.setFoto(uniqueFilename);
+//
+//            } catch (IOException e) {
+//                logger.error("Error al guardar la foto: {}", e.getMessage());
+//                // Aquí puedes lanzar excepción o guardar null, según lo que quieras
+//            }
+//        }
+
+
         empleado.setFechaNacimiento(personalDTO.getFechaNacimiento());
         empleado.setEdad(personalDTO.getEdad());
         empleado.setComentarios(personalDTO.getComentarios());
