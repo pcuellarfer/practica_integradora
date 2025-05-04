@@ -6,6 +6,7 @@ import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
 import org.grupof.administracionapp.entity.Empleado;
 import org.grupof.administracionapp.entity.Etiqueta;
 import org.grupof.administracionapp.repository.EmpleadoRepository;
+import org.grupof.administracionapp.repository.EtiquetaRepository;
 import org.grupof.administracionapp.services.Empleado.EmpleadoService;
 import org.grupof.administracionapp.services.Genero.GeneroService;
 import org.grupof.administracionapp.services.etiqueta.EtiquetaService;
@@ -34,6 +35,7 @@ public class DashboardController {
     private final GeneroService generoService;
     private final EmpleadoRepository empleadoRepository;
     private final EtiquetaService etiquetaService;
+    private final EtiquetaRepository etiquetaRepository;
 
 
     /**
@@ -41,11 +43,16 @@ public class DashboardController {
      *
      * @param empleadoService servicio para gestionar empleados
      */
-    public DashboardController(EmpleadoService empleadoService, EmpleadoRepository empleadoRepository, GeneroService generoService, EtiquetaService etiquetaService) {
+    public DashboardController(EmpleadoService empleadoService,
+                               EmpleadoRepository empleadoRepository,
+                               GeneroService generoService,
+                               EtiquetaService etiquetaService,
+                               EtiquetaRepository etiquetaRepository) {
         this.empleadoService = empleadoService;
         this.empleadoRepository = empleadoRepository;
         this.generoService = generoService;
         this.etiquetaService = etiquetaService;
+        this.etiquetaRepository = etiquetaRepository;
     }
 
     /**
@@ -359,20 +366,40 @@ public class DashboardController {
         }
 
         List<Empleado> subordinados = empleadoRepository.findByJefe(jefe);
+        List<Etiqueta> etiquetas = jefe.getEtiquetasDefinidas();
+
         modelo.addAttribute("empleados", subordinados);
+        modelo.addAttribute("etiquetas", etiquetas);
 
         logger.info("Vista de etiquetado mostrada para el jefe {} con {} subordinados.", jefe.getNombre(), subordinados.size());
         return "empleado/main/empleado-etiquetado";
     }
 
-    /**
-     * Procesa el etiquetado de empleados (a completar según funcionalidad futura).
-     *
-     * @return vista del etiquetado sin cambios aún definidos.
-     */
+
     @PostMapping("/etiquetado")
-    public String procesarEtiquetado() {
-        logger.info("Formulario de etiquetado procesado (aún sin lógica definida).");
+    public String procesarEtiquetado(@RequestParam("empleados") List<UUID> empleadosIds,
+                                     @RequestParam("etiquetas") List<UUID> etiquetasIds,
+                                     HttpSession session) {
+
+        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
+        if (usuario == null) {
+            return "redirect:/login/username";
+        }
+
+        Empleado jefe = empleadoRepository.findByUsuarioId(usuario.getId()).orElse(null);
+        if (jefe == null) {
+            return "redirect:/login/username";
+        }
+
+        List<Empleado> empleados = empleadoRepository.findAllById(empleadosIds);
+        List<Etiqueta> etiquetas = etiquetaRepository.findAllById(etiquetasIds);
+
+        for (Etiqueta etiqueta : etiquetas) {
+            etiqueta.getEmpleadosEtiquetados().addAll(empleados);
+            etiquetaRepository.save(etiqueta);
+        }
+
+        logger.info("Etiquetas {} asignadas a empleados {}", etiquetasIds, empleadosIds);
         return "empleado/main/empleado-etiquetado";
     }
 
