@@ -34,6 +34,14 @@
         <div class="mb-3">
             <h2>Empleado</h2>
             <h3>Personal</h3>
+
+            <!--imagen-->
+<!--            <div class="mb-3">-->
+<!--                <h3>Foto</h3>-->
+<!--                <img th:src="@{'/imagenes/' + ${empleado.paso1PersonalDTO.foto}}" alt="Foto del empleado" class="img-thumbnail" style="max-width: 200px;" />-->
+<!--            </div>-->
+
+
             <p><strong>Nombre:</strong> <span th:text="${empleado.paso1PersonalDTO.nombre}"></span></p>
             <!-- NO TENEMOS APELLIDO EN LA BASE DE DATOS
             <p><strong>Apellido:</strong> <span th:text="${empleado.paso1PersonalDTO.apellido}"></span></p> -->
@@ -44,7 +52,6 @@
         <div class="mb-3">
             <h3>Empresarial</h3>
             <p><strong>Departamento:</strong> <span th:text="${empleado.paso3ProfesionalDTO.departamento}"></span></p>
-            <!--<p><strong>Puesto:</strong> <span th:text="${empleado.paso3ProfesionalDTO.puesto}"></span></p>-->
         </div>
 
         <!-- Botón de regreso -->

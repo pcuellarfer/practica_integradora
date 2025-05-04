@@ -4,9 +4,11 @@ import jakarta.servlet.http.HttpSession;
 import org.grupof.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
 import org.grupof.administracionapp.entity.Empleado;
+import org.grupof.administracionapp.entity.Etiqueta;
 import org.grupof.administracionapp.repository.EmpleadoRepository;
 import org.grupof.administracionapp.services.Empleado.EmpleadoService;
 import org.grupof.administracionapp.services.Genero.GeneroService;
+import org.grupof.administracionapp.services.etiqueta.EtiquetaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -31,6 +33,7 @@ public class DashboardController {
     private final EmpleadoService empleadoService;
     private final GeneroService generoService;
     private final EmpleadoRepository empleadoRepository;
+    private final EtiquetaService etiquetaService;
 
 
     /**
@@ -38,10 +41,11 @@ public class DashboardController {
      *
      * @param empleadoService servicio para gestionar empleados
      */
-    public DashboardController(EmpleadoService empleadoService, EmpleadoRepository empleadoRepository, GeneroService generoService) {
+    public DashboardController(EmpleadoService empleadoService, EmpleadoRepository empleadoRepository, GeneroService generoService, EtiquetaService etiquetaService) {
         this.empleadoService = empleadoService;
         this.empleadoRepository = empleadoRepository;
         this.generoService = generoService;
+        this.etiquetaService = etiquetaService;
     }
 
     /**
@@ -301,18 +305,78 @@ public class DashboardController {
         return "redirect:/dashboard/dashboard";
     }
 
-    /**
-     * Muestra la vista de empleados ordenados para su etiquetado.
-     *
-     * @param modelo modelo de la vista para incluir la lista de empleados.
-     * @return vista del etiquetado de empleados.
-     */
-    @GetMapping("/etiquetado")
-    public String mostrarEtiquetado(Model modelo) {
-        List<Empleado> empleados = empleadoService.getEmpleadosOrdenados();
-        modelo.addAttribute("empleados", empleados);
+    @GetMapping("/crearEtiquetas")
+    public String crearEtiquetas(HttpSession session, Model modelo) {
+        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
 
-        logger.info("Vista de etiquetado mostrada con {} empleados.", empleados.size());
+        if (usuario == null) {
+            logger.warn("Intento de acceso sin sesión activa en /etiquetas. Redirigiendo a login.");
+            return "redirect:/login/username";
+        }
+
+        Empleado jefe = empleadoRepository.findByUsuarioId(usuario.getId()).orElse(null);
+        if (jefe == null) {
+            logger.error("no hay un empleado con usuario_id en crearEtiquetas: {}", usuario.getId());
+            return "redirect:/login/username";
+        }
+
+        modelo.addAttribute("jefe", jefe);
+        modelo.addAttribute("etiquetas", jefe.getEtiquetasDefinidas());
+        //mandarle el objeto vacio para la vista
+        modelo.addAttribute("nuevaEtiqueta", new Etiqueta());
+
+        logger.info("Mostrando vista de gestión de etiquetas para el jefe {}", jefe.getNombre());
+        return "empleado/main/empleado-etiquetas";
+    }
+
+    @PostMapping("/crearEtiquetas")
+    public String crearEtiqueta(@ModelAttribute("nuevaEtiqueta") Etiqueta etiqueta,
+                                HttpSession session,
+                                RedirectAttributes redirectAttributes) {
+        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
+
+        if (usuario == null) {
+            logger.warn("Intento de crear etiqueta sin sesión activa");
+            return "redirect:/login/username";
+        }
+
+        Empleado jefe = empleadoRepository.findByUsuarioId(usuario.getId()).orElse(null);
+        if (jefe == null) {
+            logger.error("No se encontró el jefe para usuario ID: {}", usuario.getId());
+            return "redirect:/login/username";
+        }
+
+        etiqueta.setJefe(jefe);
+        try {
+            etiquetaService.guardarEtiqueta(etiqueta);
+        } catch (Exception e) {
+            logger.error("Error al crear etiqueta: {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Ya has has puesto esta etiqueta crack");
+        }
+
+        return "redirect:/dashboard/crearEtiquetas";
+    }
+
+
+    @GetMapping("/etiquetado")
+    public String mostrarEtiquetado(HttpSession session, Model modelo) {
+        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
+
+        if (usuario == null) {
+            logger.warn("Intento de acceso sin sesión activa en /etiquetado. Redirigiendo a login.");
+            return "redirect:/login/username";
+        }
+
+        Empleado jefe = empleadoRepository.findByUsuarioId(usuario.getId()).orElse(null);
+        if (jefe == null) {
+            logger.error("no hay un empleado con usuario_id: {}", usuario.getId());
+            return "redirect:/login/username";
+        }
+
+        List<Empleado> subordinados = empleadoRepository.findByJefe(jefe);
+        modelo.addAttribute("empleados", subordinados);
+
+        logger.info("Vista de etiquetado mostrada para el jefe {} con {} subordinados.", jefe.getNombre(), subordinados.size());
         return "empleado/main/empleado-etiquetado";
     }
 

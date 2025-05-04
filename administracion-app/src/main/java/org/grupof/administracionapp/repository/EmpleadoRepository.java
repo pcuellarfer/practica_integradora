@@ -56,6 +56,8 @@ public interface EmpleadoRepository extends JpaRepository<Empleado, UUID> {
      * @return lista de empleados excluyendo al empleado con ese ID.
      */
     List<Empleado> findByIdNot(UUID id);
+
+    List<Empleado> findByJefe(Empleado jefe);
 }
 
 
