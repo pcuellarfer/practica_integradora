@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Paso 5 - Resumen</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" th:href="@{/css/styles.css}"/>
     <script th:src="@{/js/script.js}"></script>
 </head>
 <body>
-<div th:replace="/fragments/cabecera"></div>
+<div th:replace="~{/fragments/cabecera::cabecera}"></div>
 <main>
-<div th:replace="/fragments/cuentaatras"></div>
+    <div th:replace="~{/fragments/cuentaatras::cuentaatras}"></div>
 <div class="absoluto mt-5">
     <div class="container">
         <h1 class="mb-4">Resumen de tu registro</h1>
@@ -27,7 +26,8 @@
             <tr><th>Comentarios</th><td th:text="${paso5.paso1PersonalDTO.comentarios}"></td></tr>
             </tbody>
         </table>
-
+        &nbsp;
+        &nbsp;
         <h2>Datos de Contacto</h2>
         <table class="table table-bordered">
             <tbody>
@@ -37,7 +37,6 @@
             <tr><th>Teléfono</th><td th:text="${paso5.paso2ContactoDTO.telefono}"></td></tr>
             </tbody>
         </table>
-
         <h3>Dirección</h3>
         <table class="table table-bordered">
             <tbody>
@@ -52,7 +51,8 @@
             <tr><th>Código Postal</th><td th:text="${paso5.paso2ContactoDTO.direccion.codigoPostal}"></td></tr>
             </tbody>
         </table>
-
+        &nbsp;
+        &nbsp;
         <h2>Datos Profesionales</h2>
         <table class="table table-bordered">
             <tbody>
@@ -67,7 +67,8 @@
             </tr>
             </tbody>
         </table>
-
+        &nbsp;
+        &nbsp;
         <h2>Datos Económicos</h2>
         <table class="table table-bordered">
             <tbody>
@@ -97,7 +98,7 @@
     </div>
 </div>
 </main>
-<div th:replace="/fragments/pie"></div>
+<div th:replace="~{/fragments/pie::pie}"></div>
 </body>
 </html>
 

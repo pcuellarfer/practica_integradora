@@ -4,8 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import org.grupof.administracionapp.validaciones.archivo.FotoTipoTamano;
-import org.grupof.administracionapp.validaciones.fechaNaz.MayorDeEdad;
+import org.grupof.administracionapp.validations.archivo.FotoTipoTamano;
+import org.grupof.administracionapp.validations.fechaNaz.MayorDeEdad;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 

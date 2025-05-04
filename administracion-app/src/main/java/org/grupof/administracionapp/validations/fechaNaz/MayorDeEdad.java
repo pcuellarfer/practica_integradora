@@ -1,8 +1,7 @@
-package org.grupof.administracionapp.validaciones.fechaNaz;
+package org.grupof.administracionapp.validations.fechaNaz;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
-import org.grupof.administracionapp.validaciones.fechaNaz.MayorDeEdadValidator;
 
 import java.lang.annotation.*;
 

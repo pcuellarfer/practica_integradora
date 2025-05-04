@@ -1,4 +1,4 @@
-package org.grupof.administracionapp.validaciones.fechaNaz;
+package org.grupof.administracionapp.validations.fechaNaz;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
