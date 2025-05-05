@@ -6,6 +6,7 @@
 </head>
 <body>
 <h1>etiquetado empleado</h1>
+<!--select de empleados-->
 <form th:action="@{/dashboard/etiquetado}" method="post">
   <label for="empleados">Selecciona empleados:</label><br>
   <select id="empleados" name="empleados" multiple size="4">
@@ -16,7 +17,7 @@
 
 <br><br>
 
-<!-- BARRA DE BUSQUEDA Y MULTISELECT DE ETIQUETAS -->
+<!--barra para buscar la etiqueta-->
 <label for="etiquetas">Selecciona etiquetas:</label><br>
 <input type="text" id="buscador" placeholder="Buscar etiqueta..." onkeyup="filtrarEtiquetas()"><br>
 

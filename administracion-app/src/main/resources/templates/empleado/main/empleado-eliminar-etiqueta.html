@@ -7,8 +7,8 @@
 
 <h1>Eliminar etiquetas a un subordinado</h1>
 
-<!-- 🟢 Formulario 1: Seleccionar empleado (GET) -->
-<form th:action="@{/etiquetado/eliminar}" method="get">
+<!--Formulario 1: Seleccionar empleado (GET) -->
+<form th:action="@{/dashboard/etiquetado/eliminar}" method="get">
     <label for="empleado">Empleado:</label>
     <select id="empleado" name="empleadoId" onchange="this.form.submit()">
         <option disabled selected value="">Selecciona un empleado</option>
@@ -23,8 +23,8 @@
 
 <br><br>
 
-<!-- 🟡 Formulario 2: Eliminar etiquetas (POST) -->
-<form th:action="@{/etiquetado/eliminar}" method="post" th:if="${empleadoSeleccionado != null}">
+<!--Formulario 2: Eliminar etiquetas (POST) -->
+<form th:action="@{/dashboard/etiquetado/eliminar}" method="post" th:if="${empleadoSeleccionado != null}">
     <!-- Campo oculto para saber a qué empleado quitarle las etiquetas -->
     <input type="hidden" name="empleadoId" th:value="${empleadoSeleccionado.id}" />
 

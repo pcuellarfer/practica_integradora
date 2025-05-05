@@ -106,7 +106,13 @@ public class DashboardController {
 
         if (usuario == null) {
             logger.warn("Intento de acceso a detalles de empleado sin sesión iniciada");
-            return "redirect:/login";
+            return "redirect:/login/username";
+        }
+
+        Empleado enmpleado = empleadoRepository.findByUsuarioId(usuario.getId()).orElse(null);
+        if (enmpleado == null) {
+            logger.error("no hay un empleado con usuario_id en detalle: {}", usuario.getId());
+            return "redirect:/login/username";
         }
 
         logger.info("Accediendo a los detalles del empleado para usuario ID: {}", usuario.getId());
@@ -230,6 +236,12 @@ public class DashboardController {
         redirectAttributes.addFlashAttribute("mensaje", "Empleado desbloqueado correctamente");
         return "redirect:/dashboard/buscar";
     }
+
+    @GetMapping("/submenu-etiquetado")
+    public String mostrarSubmenuSubordinados() {
+        return "empleado/main/empleado-submenu-etiquetado";
+    }
+
 
     /**
      * Muestra la vista para asignar subordinados a un jefe.
@@ -442,7 +454,7 @@ public class DashboardController {
         if (jefe == null) return "redirect:/login/username";
 
         Empleado empleado = empleadoRepository.findById(empleadoId).orElse(null);
-        if (empleado == null) return "redirect:/etiquetado/eliminar";
+        if (empleado == null) return "redirect:/dashboard/etiquetado/eliminar";
 
         for (UUID etiquetaId : etiquetasIds) {
             Etiqueta etiqueta = etiquetaRepository.findById(etiquetaId).orElse(null);
@@ -452,7 +464,7 @@ public class DashboardController {
             }
         }
 
-        return "redirect:/etiquetado/eliminar?empleadoId=" + empleadoId;
+        return "redirect:/dashboard/etiquetado/eliminar?empleadoId=" + empleadoId;
     }
 
 }

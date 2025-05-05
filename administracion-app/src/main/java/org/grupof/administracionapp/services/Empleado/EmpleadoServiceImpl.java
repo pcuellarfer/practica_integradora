@@ -118,7 +118,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 //                Path filePath = uploadPath.resolve(uniqueFilename);
 //                foto.transferTo(filePath.toFile());
 //
-//                // Guarda solo el nombre del archivo (o ruta relativa) en el empleado
+//                //garda solo el nombre del archivo (o ruta relativa) en el empleado
 //                empleado.setFoto(uniqueFilename);
 //
 //            } catch (IOException e) {
