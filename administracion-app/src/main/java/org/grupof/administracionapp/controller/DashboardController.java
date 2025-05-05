@@ -403,4 +403,56 @@ public class DashboardController {
         return "empleado/main/empleado-etiquetado";
     }
 
+    @GetMapping("/etiquetado/eliminar")
+    public String mostrarFormularioEliminacion(@RequestParam(name = "empleadoId", required = false) UUID empleadoId,
+                                               HttpSession session, Model modelo) {
+        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
+        if (usuario == null) {
+            return "redirect:/login/username";
+        }
+
+        Empleado jefe = empleadoRepository.findByUsuarioId(usuario.getId()).orElse(null);
+        if (jefe == null) {
+            return "redirect:/login/username";
+        }
+
+        List<Empleado> subordinados = empleadoRepository.findByJefe(jefe);
+        modelo.addAttribute("empleados", subordinados);
+
+        if (empleadoId != null) {
+            Empleado empleadoSeleccionado = empleadoRepository.findById(empleadoId).orElse(null);
+            if (empleadoSeleccionado != null) {
+                modelo.addAttribute("empleadoSeleccionado", empleadoSeleccionado);
+                List<Etiqueta> etiquetasAsignadas = etiquetaRepository.findByEmpleadosEtiquetados_Id(empleadoId);
+                modelo.addAttribute("etiquetasAsignadas", etiquetasAsignadas);
+            }
+        }
+
+        return "empleado/main/empleado-eliminar-etiqueta";
+    }
+
+    @PostMapping("/etiquetado/eliminar")
+    public String eliminarEtiquetas(@RequestParam UUID empleadoId,
+                                    @RequestParam List<UUID> etiquetasIds,
+                                    HttpSession session) {
+        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
+        if (usuario == null) return "redirect:/login/username";
+
+        Empleado jefe = empleadoRepository.findByUsuarioId(usuario.getId()).orElse(null);
+        if (jefe == null) return "redirect:/login/username";
+
+        Empleado empleado = empleadoRepository.findById(empleadoId).orElse(null);
+        if (empleado == null) return "redirect:/etiquetado/eliminar";
+
+        for (UUID etiquetaId : etiquetasIds) {
+            Etiqueta etiqueta = etiquetaRepository.findById(etiquetaId).orElse(null);
+            if (etiqueta != null && etiqueta.getJefe().equals(jefe)) {
+                etiqueta.getEmpleadosEtiquetados().remove(empleado);
+                etiquetaRepository.save(etiqueta);
+            }
+        }
+
+        return "redirect:/etiquetado/eliminar?empleadoId=" + empleadoId;
+    }
+
 }
