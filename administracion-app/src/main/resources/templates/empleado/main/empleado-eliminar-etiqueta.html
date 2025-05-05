@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Eliminar Etiquetas</title>
+</head>
+<body>
+
+<h1>Eliminar etiquetas a un subordinado</h1>
+
+<!--Formulario 1: Seleccionar empleado (GET) -->
+<form th:action="@{/dashboard/etiquetado/eliminar}" method="get">
+    <label for="empleado">Empleado:</label>
+    <select id="empleado" name="empleadoId" onchange="this.form.submit()">
+        <option disabled selected value="">Selecciona un empleado</option>
+        <th:block th:each="empleado : ${empleados}">
+            <option th:value="${empleado.id}"
+                    th:text="${empleado.apellido + ', ' + empleado.nombre}"
+                    th:selected="${empleado.id == empleadoSeleccionado?.id}">
+            </option>
+        </th:block>
+    </select>
+</form>
+
+<br><br>
+
+<!--Formulario 2: Eliminar etiquetas (POST) -->
+<form th:action="@{/dashboard/etiquetado/eliminar}" method="post" th:if="${empleadoSeleccionado != null}">
+    <!-- Campo oculto para saber a qué empleado quitarle las etiquetas -->
+    <input type="hidden" name="empleadoId" th:value="${empleadoSeleccionado.id}" />
+
+    <label for="etiquetas">Etiquetas asignadas al empleado:</label><br>
+    <select id="etiquetas" name="etiquetasIds" multiple size="5">
+        <th:block th:each="etiqueta : ${etiquetasAsignadas}">
+            <option th:value="${etiqueta.id}" th:text="${etiqueta.texto}"></option>
+        </th:block>
+    </select>
+
+    <br><br>
+    <button type="submit">Eliminar etiquetas seleccionadas</button>
+</form>
+
+</body>
+</html>
+

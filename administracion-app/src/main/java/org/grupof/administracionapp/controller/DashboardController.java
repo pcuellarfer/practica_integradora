@@ -6,6 +6,7 @@ import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
 import org.grupof.administracionapp.entity.Empleado;
 import org.grupof.administracionapp.entity.Etiqueta;
 import org.grupof.administracionapp.repository.EmpleadoRepository;
+import org.grupof.administracionapp.repository.EtiquetaRepository;
 import org.grupof.administracionapp.services.Empleado.EmpleadoService;
 import org.grupof.administracionapp.services.Genero.GeneroService;
 import org.grupof.administracionapp.services.etiqueta.EtiquetaService;
@@ -34,6 +35,7 @@ public class DashboardController {
     private final GeneroService generoService;
     private final EmpleadoRepository empleadoRepository;
     private final EtiquetaService etiquetaService;
+    private final EtiquetaRepository etiquetaRepository;
 
 
     /**
@@ -41,11 +43,16 @@ public class DashboardController {
      *
      * @param empleadoService servicio para gestionar empleados
      */
-    public DashboardController(EmpleadoService empleadoService, EmpleadoRepository empleadoRepository, GeneroService generoService, EtiquetaService etiquetaService) {
+    public DashboardController(EmpleadoService empleadoService,
+                               EmpleadoRepository empleadoRepository,
+                               GeneroService generoService,
+                               EtiquetaService etiquetaService,
+                               EtiquetaRepository etiquetaRepository) {
         this.empleadoService = empleadoService;
         this.empleadoRepository = empleadoRepository;
         this.generoService = generoService;
         this.etiquetaService = etiquetaService;
+        this.etiquetaRepository = etiquetaRepository;
     }
 
     /**
@@ -99,7 +106,13 @@ public class DashboardController {
 
         if (usuario == null) {
             logger.warn("Intento de acceso a detalles de empleado sin sesión iniciada");
-            return "redirect:/login";
+            return "redirect:/login/username";
+        }
+
+        Empleado enmpleado = empleadoRepository.findByUsuarioId(usuario.getId()).orElse(null);
+        if (enmpleado == null) {
+            logger.error("no hay un empleado con usuario_id en detalle: {}", usuario.getId());
+            return "redirect:/login/username";
         }
 
         logger.info("Accediendo a los detalles del empleado para usuario ID: {}", usuario.getId());
@@ -239,6 +252,12 @@ public class DashboardController {
         return "redirect:/dashboard/buscar";
     }
 
+    @GetMapping("/submenu-etiquetado")
+    public String mostrarSubmenuSubordinados() {
+        return "empleado/main/empleado-submenu-etiquetado";
+    }
+
+
     /**
      * Muestra la vista para asignar subordinados a un jefe.
      *
@@ -374,21 +393,93 @@ public class DashboardController {
         }
 
         List<Empleado> subordinados = empleadoRepository.findByJefe(jefe);
+        List<Etiqueta> etiquetas = jefe.getEtiquetasDefinidas();
+
         modelo.addAttribute("empleados", subordinados);
+        modelo.addAttribute("etiquetas", etiquetas);
 
         logger.info("Vista de etiquetado mostrada para el jefe {} con {} subordinados.", jefe.getNombre(), subordinados.size());
         return "empleado/main/empleado-etiquetado";
     }
 
-    /**
-     * Procesa el etiquetado de empleados (a completar según funcionalidad futura).
-     *
-     * @return vista del etiquetado sin cambios aún definidos.
-     */
+
     @PostMapping("/etiquetado")
-    public String procesarEtiquetado() {
-        logger.info("Formulario de etiquetado procesado (aún sin lógica definida).");
+    public String procesarEtiquetado(@RequestParam("empleados") List<UUID> empleadosIds,
+                                     @RequestParam("etiquetas") List<UUID> etiquetasIds,
+                                     HttpSession session) {
+
+        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
+        if (usuario == null) {
+            return "redirect:/login/username";
+        }
+
+        Empleado jefe = empleadoRepository.findByUsuarioId(usuario.getId()).orElse(null);
+        if (jefe == null) {
+            return "redirect:/login/username";
+        }
+
+        List<Empleado> empleados = empleadoRepository.findAllById(empleadosIds);
+        List<Etiqueta> etiquetas = etiquetaRepository.findAllById(etiquetasIds);
+
+        for (Etiqueta etiqueta : etiquetas) {
+            etiqueta.getEmpleadosEtiquetados().addAll(empleados);
+            etiquetaRepository.save(etiqueta);
+        }
+
+        logger.info("Etiquetas {} asignadas a empleados {}", etiquetasIds, empleadosIds);
         return "empleado/main/empleado-etiquetado";
+    }
+
+    @GetMapping("/etiquetado/eliminar")
+    public String mostrarFormularioEliminacion(@RequestParam(name = "empleadoId", required = false) UUID empleadoId,
+                                               HttpSession session, Model modelo) {
+        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
+        if (usuario == null) {
+            return "redirect:/login/username";
+        }
+
+        Empleado jefe = empleadoRepository.findByUsuarioId(usuario.getId()).orElse(null);
+        if (jefe == null) {
+            return "redirect:/login/username";
+        }
+
+        List<Empleado> subordinados = empleadoRepository.findByJefe(jefe);
+        modelo.addAttribute("empleados", subordinados);
+
+        if (empleadoId != null) {
+            Empleado empleadoSeleccionado = empleadoRepository.findById(empleadoId).orElse(null);
+            if (empleadoSeleccionado != null) {
+                modelo.addAttribute("empleadoSeleccionado", empleadoSeleccionado);
+                List<Etiqueta> etiquetasAsignadas = etiquetaRepository.findByEmpleadosEtiquetados_Id(empleadoId);
+                modelo.addAttribute("etiquetasAsignadas", etiquetasAsignadas);
+            }
+        }
+
+        return "empleado/main/empleado-eliminar-etiqueta";
+    }
+
+    @PostMapping("/etiquetado/eliminar")
+    public String eliminarEtiquetas(@RequestParam UUID empleadoId,
+                                    @RequestParam List<UUID> etiquetasIds,
+                                    HttpSession session) {
+        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
+        if (usuario == null) return "redirect:/login/username";
+
+        Empleado jefe = empleadoRepository.findByUsuarioId(usuario.getId()).orElse(null);
+        if (jefe == null) return "redirect:/login/username";
+
+        Empleado empleado = empleadoRepository.findById(empleadoId).orElse(null);
+        if (empleado == null) return "redirect:/dashboard/etiquetado/eliminar";
+
+        for (UUID etiquetaId : etiquetasIds) {
+            Etiqueta etiqueta = etiquetaRepository.findById(etiquetaId).orElse(null);
+            if (etiqueta != null && etiqueta.getJefe().equals(jefe)) {
+                etiqueta.getEmpleadosEtiquetados().remove(empleado);
+                etiquetaRepository.save(etiqueta);
+            }
+        }
+
+        return "redirect:/dashboard/etiquetado/eliminar?empleadoId=" + empleadoId;
     }
 
 }
