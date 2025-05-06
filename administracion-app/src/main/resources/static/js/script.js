@@ -1,13 +1,14 @@
 //funcion para mostrar u ocultar la contraseña
 function script() {
     let campocontrasena = document.getElementById("contrasena");
-    let campocontrasena2 = document.getElementById("contrasena1");
-    let campocontrasena3 = document.getElementById("contrasena2");
+    let campocontrasena2 = document.getElementById("contrasena2"); // Confirmación de la contraseña
     let checkbox = document.getElementById("mostrarcontrasena");
+
+    // Cambiar el tipo de campo de contraseñas según el estado del checkbox
     campocontrasena.type = checkbox.checked ? "text" : "password";
     campocontrasena2.type = checkbox.checked ? "text" : "password";
-    campocontrasena3.type = checkbox.checked ? "text" : "password";
 }
+
 
 function mostrarContrasenaRestablecer() {
     var contrasena1 = document.getElementById("contrasena1");

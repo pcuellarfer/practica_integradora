@@ -85,7 +85,7 @@ public class DashboardController {
 
         logger.info("Usuario ID {} es también empleado. Mostrando dashboard de empleado.", usuarioDTO.getId());
 
-        modelo.addAttribute("contador", session.getAttribute("contador"));
+        modelo.addAttribute("contadorSesiones", session.getAttribute("contador"));
         modelo.addAttribute("usuario", usuarioDTO);
         modelo.addAttribute("empleado", empleadoDTO);
 

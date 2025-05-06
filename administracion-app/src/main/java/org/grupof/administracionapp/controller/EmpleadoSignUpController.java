@@ -142,7 +142,7 @@ public class EmpleadoSignUpController {
             @ModelAttribute("registroEmpleado") RegistroEmpleadoDTO registroEmpleado,
             Model modelo,
             @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuarioDTO,
-            @RequestParam("foto") MultipartFile foto) {
+            @RequestParam("fotoUrl") MultipartFile fotoUrl) {
 
         if (errores.hasErrors()) {
             modelo.addAttribute("paises", paisService.getAllPaises());
@@ -153,13 +153,14 @@ public class EmpleadoSignUpController {
 
         logger.info("Datos personales registrados para usuario ID: {}", usuarioDTO.getId());
 
-        if (foto != null && !foto.isEmpty()) {
+        if (fotoUrl != null && !fotoUrl.isEmpty()) {
             try {
                 // Nombre único para evitar conflictos
-                String nombreImagen = UUID.randomUUID() + "_" + foto.getOriginalFilename();
+                String nombreImagen = UUID.randomUUID() + "_" + fotoUrl.getOriginalFilename();
 
                 // Ruta física en el sistema de archivos
-                String directorioDestino = "src/main/resources/static/usr/img/";
+                //String directorioDestino = "src/main/resources/static/usr/img/";
+                String directorioDestino = "subidas/";
 
                 File directorio = new File(directorioDestino);
                 if (!directorio.exists()) {
@@ -167,11 +168,11 @@ public class EmpleadoSignUpController {
                 }
 
                 // Archivo destino
-                File archivoDestino = new File(directorio, nombreImagen);
-                foto.transferTo(archivoDestino);
+                //File archivoDestino = new File(directorio, nombreImagen);
+                fotoUrl.transferTo(directorio);
 
-                String rutaImagen = "/usr/img/" + nombreImagen;
-                paso1.setFotoUrl(rutaImagen);
+                //String rutaImagen = "/usr/img/" + nombreImagen;
+                paso1.setFotoUrl(fotoUrl);
 
             } catch (IOException e) {
                 logger.error("Error al guardar la imagen", e);
