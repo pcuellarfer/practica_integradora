@@ -324,6 +324,14 @@ public class DashboardController {
         return "redirect:/dashboard/dashboard";
     }
 
+    /**
+     * Muestra la vista para crear etiquetas. Verifica que el usuario tenga una sesión activa
+     * y que sea un jefe registrado. Carga las etiquetas existentes y prepara una etiqueta nueva para el formulario.
+     *
+     * @param session sesión HTTP actual, usada para obtener el usuario autenticado.
+     * @param modelo modelo para pasar atributos a la vista.
+     * @return nombre de la vista para gestión de etiquetas o redirección al login.
+     */
     @GetMapping("/crearEtiquetas")
     public String crearEtiquetas(HttpSession session, Model modelo) {
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
@@ -348,6 +356,15 @@ public class DashboardController {
         return "empleado/main/empleado-etiquetas";
     }
 
+    /**
+     * Procesa el formulario para crear una nueva etiqueta. Asocia la etiqueta al jefe actual
+     * y la guarda mediante el servicio correspondiente. Maneja errores como duplicidad.
+     *
+     * @param etiqueta objeto etiqueta obtenido del formulario.
+     * @param session sesión HTTP actual.
+     * @param redirectAttributes atributos para mostrar mensajes flash en la redirección.
+     * @return redirección a la vista de creación de etiquetas o al login si no hay sesión.
+     */
     @PostMapping("/crearEtiquetas")
     public String crearEtiqueta(@ModelAttribute("nuevaEtiqueta") Etiqueta etiqueta,
                                 HttpSession session,
@@ -376,7 +393,14 @@ public class DashboardController {
         return "redirect:/dashboard/crearEtiquetas";
     }
 
-
+    /**
+     * Muestra la vista de etiquetado, donde el jefe puede asignar etiquetas a sus subordinados.
+     * Verifica la sesión activa y carga empleados y etiquetas disponibles.
+     *
+     * @param session sesión HTTP actual.
+     * @param modelo modelo para pasar atributos a la vista.
+     * @return nombre de la vista de etiquetado o redirección al login si no hay sesión.
+     */
     @GetMapping("/etiquetado")
     public String mostrarEtiquetado(HttpSession session, Model modelo) {
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
@@ -402,7 +426,15 @@ public class DashboardController {
         return "empleado/main/empleado-etiquetado";
     }
 
-
+    /**
+     * Procesa la asignación de etiquetas a empleados seleccionados. Verifica la validez de la sesión,
+     * recupera las entidades desde la base de datos y realiza la asociación.
+     *
+     * @param empleadosIds lista de IDs de empleados seleccionados.
+     * @param etiquetasIds lista de IDs de etiquetas a aplicar.
+     * @param session sesión HTTP actual.
+     * @return redirección a la vista de etiquetado.
+     */
     @PostMapping("/etiquetado")
     public String procesarEtiquetado(@RequestParam("empleados") List<UUID> empleadosIds,
                                      @RequestParam("etiquetas") List<UUID> etiquetasIds,
@@ -430,6 +462,15 @@ public class DashboardController {
         return "empleado/main/empleado-etiquetado";
     }
 
+    /**
+     * Muestra el formulario para eliminar etiquetas asignadas a un empleado específico.
+     * Carga la lista de subordinados y las etiquetas asignadas al empleado seleccionado (si se proporciona).
+     *
+     * @param empleadoId ID del empleado seleccionado, puede ser nulo.
+     * @param session sesión HTTP actual.
+     * @param modelo modelo para pasar datos a la vista.
+     * @return nombre de la vista para eliminar etiquetas o redirección al login si no hay sesión.
+     */
     @GetMapping("/etiquetado/eliminar")
     public String mostrarFormularioEliminacion(@RequestParam(name = "empleadoId", required = false) UUID empleadoId,
                                                HttpSession session, Model modelo) {
@@ -458,6 +499,15 @@ public class DashboardController {
         return "empleado/main/empleado-eliminar-etiqueta";
     }
 
+    /**
+     * Procesa la eliminación de etiquetas específicas de un empleado.
+     * Verifica la sesión, obtiene las entidades involucradas y actualiza las relaciones en la base de datos.
+     *
+     * @param empleadoId ID del empleado del que se eliminarán etiquetas.
+     * @param etiquetasIds lista de IDs de etiquetas a eliminar del empleado.
+     * @param session sesión HTTP actual.
+     * @return redirección a la misma vista con el empleado seleccionado.
+     */
     @PostMapping("/etiquetado/eliminar")
     public String eliminarEtiquetas(@RequestParam UUID empleadoId,
                                     @RequestParam List<UUID> etiquetasIds,
