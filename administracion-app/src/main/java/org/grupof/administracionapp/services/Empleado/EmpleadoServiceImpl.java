@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -411,6 +412,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
             if (usuario != null) {
                 logger.info("Empleado con ID: {} encontrado. Bloqueando usuario asociado...", empleadoId);
                 usuario.setEstadoBloqueado(true);
+                usuario.setBloqueadoHasta(LocalDateTime.now().plusHours(2).plusSeconds(20)); // Bloqueo por 30 segundos
                 usuarioRepository.save(usuario);
                 logger.info("Usuario con ID: {} bloqueado correctamente", usuario.getId());
             } else {

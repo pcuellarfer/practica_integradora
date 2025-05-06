@@ -122,7 +122,24 @@ public class InicioSesionController {
             return "usuario/auth/login-nombre";
         }
 
+        UsuarioDTO usuarioBBDD = usuarioService.buscarPorEmail(usuarioDTO.getEmail());
+
+        if (usuarioBBDD.getBloqueadoHasta() != null && usuarioBBDD.getBloqueadoHasta().isAfter(LocalDateTime.now())) {
+            // Sigue bloqueado, todavía no ha llegado la hora de desbloqueo
+            logger.warn("Acceso bloqueado para usuario: {}", usuarioDTO.getEmail());
+            model.addAttribute("error", "El usuario está bloqueado. Inténtelo más tarde.");
+            return "usuario/auth/login-contrasena";
+        } else {
+            // Ya pasó la hora, se debe desbloquear
+            usuarioService.desbloquearUsuario(usuarioDTO.getEmail());
+            logger.info("Desbloqueando usuario: {}", usuarioDTO.getEmail());
+            System.err.println(LocalDateTime.now());
+            usuarioBBDD.setEstadoBloqueado(false);
+            usuarioBBDD.setBloqueadoHasta(null);
+        }
+
         boolean usuarioBLoqueado = usuarioService.buscarBloqueado(usuarioDTO.getEmail());
+
         if (usuarioBLoqueado) {
             logger.warn("Usuario bloqueado: {}", usuarioDTO.getEmail());
             model.addAttribute("error", "El usuario está bloqueado.");
@@ -181,17 +198,17 @@ public class InicioSesionController {
 
         UsuarioDTO usuarioBBDD = usuarioService.buscarPorEmail(usuarioDTO.getEmail());
 
-        if (usuarioBBDD.isEstadoBloqueado()) {
-            if (usuarioBBDD.getBloqueadoHasta() != null && usuarioBBDD.getBloqueadoHasta().isAfter(LocalDateTime.now())) {
-                logger.warn("Acceso bloqueado para usuario: {}", usuarioDTO.getEmail());
-                model.addAttribute("error", "El usuario está bloqueado. Inténtelo más tarde.");
-                return "usuario/auth/login-contrasena";
-            } else {
-                usuarioService.desbloquearUsuario(usuarioDTO.getEmail());
-                logger.info("Desbloqueando usuario: {}", usuarioDTO.getEmail());
-                usuarioBBDD.setEstadoBloqueado(false);
-                usuarioBBDD.setBloqueadoHasta(null);
-            }
+        if (usuarioBBDD.getBloqueadoHasta() != null && usuarioBBDD.getBloqueadoHasta().isAfter(LocalDateTime.now())) {
+            // Sigue bloqueado, todavía no ha llegado la hora de desbloqueo
+            logger.warn("Acceso bloqueado para usuario: {}", usuarioDTO.getEmail());
+            model.addAttribute("error", "El usuario está bloqueado. Inténtelo más tarde.");
+            return "usuario/auth/login-contrasena";
+        } else {
+            // Ya pasó la hora, se debe desbloquear
+            usuarioService.desbloquearUsuario(usuarioDTO.getEmail());
+            logger.info("Desbloqueando usuario: {}", usuarioDTO.getEmail());
+            usuarioBBDD.setEstadoBloqueado(false);
+            usuarioBBDD.setBloqueadoHasta(null);
         }
 
         if (!passwordEncoder.matches(contrasena, usuarioBBDD.getContrasena())) {
@@ -335,6 +352,12 @@ public class InicioSesionController {
             Model model
     ) {
         Optional<String> emailToken = tokenService.validarToken(token);
+
+//        if (contrasenaRecuperacion.isEmpty()) {
+//            logger.warn("Las contraseñas no pueden estar vacías.");
+//            model.addAttribute("error", "Las contraseñas no pueden estar vacías.");
+//            return "redirect:/login/restablecer-contrasena/?token=" + token;
+//        }
 
         if (emailToken.isEmpty() || !emailToken.get().equals(email)) {
             logger.error("Token inválido o email no coincide para restablecer contraseña.");
