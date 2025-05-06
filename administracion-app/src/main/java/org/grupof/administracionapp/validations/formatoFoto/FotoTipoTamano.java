@@ -1,4 +1,4 @@
-package org.grupof.administracionapp.validaciones.archivo;
+package org.grupof.administracionapp.validations.formatoFoto;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
@@ -12,7 +12,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Constraint(validatedBy = FotoValidator.class)
 @Documented
 public @interface FotoTipoTamano {
-    String message() default "Archivo inválido";
+    String message() default "Archivo o tamaño inválido";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

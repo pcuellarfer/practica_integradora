@@ -93,41 +93,14 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         Paso1PersonalDTO personalDTO = registroEmpleadoDTO.getPaso1PersonalDTO();
         logger.info("Registrando datos personales para el empleado: {}", personalDTO.getNombre());
 
+        UUID empleadoId = registroEmpleadoDTO.getEmpleadoId();
+        empleado.setId(empleadoId);
+
         empleado.setNombre(personalDTO.getNombre());
         empleado.setApellido(personalDTO.getApellido());
 
-//        NO FUNCIONA NI SE POR QUE
-//        MultipartFile foto = personalDTO.getFoto();
-//
-//        if (foto != null && !foto.isEmpty()) {
-//            try {
-//
-//                //donde se va a guardar la imagen
-//                String uploadDir = "imagenes/";
-//                //limpiar el nombre original del archivo por si viene con espacios raros o rutas
-//                String originalFilename = StringUtils.cleanPath(foto.getOriginalFilename());
-//                //cambiarle el nombre para que no haya duplicados
-//                String uniqueFilename = UUID.randomUUID() + "_" + originalFilename;
-//
-//                //crear la carpeta si no existe
-//                Path uploadPath = Paths.get(uploadDir);
-//                if (!Files.exists(uploadPath)) {
-//                    Files.createDirectories(uploadPath);
-//                }
-//
-//                //guardar el la foto en la carpeta
-//                Path filePath = uploadPath.resolve(uniqueFilename);
-//                foto.transferTo(filePath.toFile());
-//
-//                //garda solo el nombre del archivo (o ruta relativa) en el empleado
-//                empleado.setFoto(uniqueFilename);
-//
-//            } catch (IOException e) {
-//                logger.error("Error al guardar la foto: {}", e.getMessage());
-//                // Aquí puedes lanzar excepción o guardar null, según lo que quieras
-//            }
-//        }
-
+        String fotoUrl = registroEmpleadoDTO.getFotoUrl();
+        empleado.setFotoUrl(fotoUrl);
 
         empleado.setFechaNacimiento(personalDTO.getFechaNacimiento());
         empleado.setEdad(personalDTO.getEdad());

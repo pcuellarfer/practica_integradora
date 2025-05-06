@@ -4,8 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import org.grupof.administracionapp.validaciones.archivo.FotoTipoTamano;
-import org.grupof.administracionapp.validaciones.fechaNaz.MayorDeEdad;
+import org.grupof.administracionapp.validations.fechaNaz.MayorDeEdad;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
@@ -21,9 +20,9 @@ public class Paso1PersonalDTO {
     @NotBlank(message = "Este campo es obligatorio y no puede estar vacío")
     private String apellido;
 
-    @NotNull(message = "Este campo es obligatorio y no puede estar vacío")
-    @FotoTipoTamano(message = "La extension del archivo tiene que ser png o gif y debe pesar menos de 200kb")
-    private String fotoUrl;
+//    @NotNull(message = "Este campo es obligatorio y no puede estar vacío")
+//    @FotoTipoTamano(message = "La extension del archivo tiene que ser png o gif y debe pesar menos de 200kb")
+//    private String fotoUrl;
 
     @NotNull(message = "Este campo es obligatorio y no puede estar vacío")
 //    Si se recibe unas siglas de género que no se

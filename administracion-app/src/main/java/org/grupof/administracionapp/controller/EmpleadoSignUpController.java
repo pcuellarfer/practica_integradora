@@ -20,6 +20,7 @@ import org.grupof.administracionapp.services.TipoVia.TipoViaService;
 import org.grupof.administracionapp.services.banco.BancoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,6 +30,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -126,6 +130,11 @@ public class EmpleadoSignUpController {
         return "empleado/auth/FormDatosPersonales";
     }
 
+
+    //meter lo que hay en e l aplication properties en una variable
+    @Value("${app.upload.dir}")
+    private String uploadDir;
+
     /**
      * Procesa los datos del Paso 1: Datos personales.
      *
@@ -151,39 +160,61 @@ public class EmpleadoSignUpController {
             return "empleado/auth/FormDatosPersonales";
         }
 
-        logger.info("Datos personales registrados para usuario ID: {}", usuarioDTO.getId());
 
-        if (foto != null && !foto.isEmpty()) {
-            try {
-                // Nombre único para evitar conflictos
-                String nombreImagen = UUID.randomUUID() + "_" + foto.getOriginalFilename();
-
-                // Ruta física en el sistema de archivos
-                String directorioDestino = "src/main/resources/static/usr/img/";
-
-                File directorio = new File(directorioDestino);
-                if (!directorio.exists()) {
-                    directorio.mkdirs();
-                }
-
-                // Archivo destino
-                File archivoDestino = new File(directorio, nombreImagen);
-                foto.transferTo(archivoDestino);
-
-                String rutaImagen = "/usr/img/" + nombreImagen;
-                paso1.setFotoUrl(rutaImagen);
-
-            } catch (IOException e) {
-                logger.error("Error al guardar la imagen", e);
-                errores.rejectValue("foto", "error.foto", "Error al guardar la foto.");
-                return "empleado/auth/FormDatosPersonales";
-            }
+        //validar la foto, faltaria tamaño/tipo
+        if (foto == null || foto.isEmpty()) {
+            System.err.println("1");
+            errores.rejectValue("foto", "foto.vacia", "Debe subir una foto.");
+            return "empleado/auth/FormDatosPersonales";
         }
 
-        // Asigna el DTO de paso1 al DTO de registroEmpleado
-        registroEmpleado.setPaso1PersonalDTO(paso1);
+        //validar que sea o png o gif
+        String tipo = foto.getContentType();
+        if (!"image/png".equals(tipo) && !"image/gif".equals(tipo)) {
+            System.err.println("2");
+            errores.rejectValue("foto", "foto.tipo", "Solo se permiten imágenes PNG o GIF.");
+            return "empleado/auth/FormDatosPersonales";
+        }
 
-        return "redirect:/registro/paso2";
+        //validar que pese menos de 200kb
+        if (foto.getSize() > 200 * 1024) {
+            System.err.println("3");
+            errores.rejectValue("foto", "foto.tamano", "La imagen debe pesar menos de 200 KB.");
+            return "empleado/auth/FormDatosPersonales";
+        }
+
+        try {
+            //generar un UUID aleatorio
+            UUID empleadoId = UUID.randomUUID();
+
+            //guardar en extension la extension de la imagen
+            String extension = tipo.equals("image/png") ? ".png" : ".gif";
+            //juntar el uuid y la extension para formar el nombre del archivoi
+            String nombreArchivo = empleadoId + extension;
+
+            //Convertir la ruta a absoluta desde la raíz del proyecto
+            File directorioBase = new File(uploadDir);
+            String rutaAbsoluta = directorioBase.getAbsolutePath();
+
+            Path ruta = Paths.get(rutaAbsoluta, nombreArchivo);
+            System.out.println("Ruta completa donde se guarda la imagen: " + ruta);
+
+            //crea el directorio si no existe(esta tambien en datosIniciales, habra que ver con cual quedarse)
+            Files.createDirectories(ruta.getParent());
+            //guarda foto en ruta
+            foto.transferTo(ruta.toFile());
+
+            //meter los datos al dto para el registro
+            registroEmpleado.setFotoUrl("/uploads/empleados/" + nombreArchivo);
+            registroEmpleado.setEmpleadoId(empleadoId);
+            registroEmpleado.setPaso1PersonalDTO(paso1);
+
+            return "redirect:/registro/paso2";
+        } catch (IOException e) {
+            logger.error("Error al guardar la foto del empleado", e);
+            modelo.addAttribute("error", "No se pudo guardar la imagen.");
+            return "empleado/auth/FormDatosPersonales";
+        }
     }
 
     /**

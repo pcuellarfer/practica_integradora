@@ -1,4 +1,4 @@
-package org.grupof.administracionapp.validaciones.archivo;
+package org.grupof.administracionapp.validations.formatoFoto;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
