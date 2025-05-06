@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Buscar Empleado</title>
-</head>
+
+<head th:replace="fragments/header :: head('Buscar Empleado')"></head>
+
 <body>
-<div th:replace="~{/fragments/cabecera::cabecera}"></div>
+<div th:replace="/fragments/cabecera"></div>
 <main>
-<div class="container mt-5">
+    <div th:replace="/fragments/cuentaatras"></div>
+    <div class="container mt-5">
     <h2>Buscar Empleado por Nombre</h2>
 
 
@@ -78,6 +79,6 @@
     </div>
 </div>
 </main>
-<div th:replace="~{/fragments/pie::pie}"></div>
+<div th:replace="/fragments/pie"></div>
 </body>
 </html>

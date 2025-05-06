@@ -1,16 +1,11 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <meta charset="UTF-8"/>
-    <title>Recuperación contraseña</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
-    <script th:src="@{/js/script.js}"></script>
+<head th:replace="fragments/header :: head('Recuperación contraseña')"></head>
 
-</head>
 
 <body>
-<div th:replace="~{/fragments/cabecera::cabecera}"></div>
+<div th:replace="/fragments/cabecera"></div>
 <main>
 <div class="absoluto mt-5">
     <div class="container">
@@ -38,6 +33,6 @@
     </div>
 </div>
 </main>
-<div th:replace="~{/fragments/pie::pie}"></div>
+<div th:replace="/fragments/pie"></div>
 </body>
 </html>

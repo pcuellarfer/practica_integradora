@@ -24,8 +24,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -138,7 +141,8 @@ public class EmpleadoSignUpController {
             BindingResult errores,
             @ModelAttribute("registroEmpleado") RegistroEmpleadoDTO registroEmpleado,
             Model modelo,
-            @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuarioDTO) {
+            @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuarioDTO,
+            @RequestParam("foto") MultipartFile foto) {
 
         if (errores.hasErrors()) {
             modelo.addAttribute("paises", paisService.getAllPaises());
@@ -148,7 +152,37 @@ public class EmpleadoSignUpController {
         }
 
         logger.info("Datos personales registrados para usuario ID: {}", usuarioDTO.getId());
+
+        if (foto != null && !foto.isEmpty()) {
+            try {
+                // Nombre único para evitar conflictos
+                String nombreImagen = UUID.randomUUID() + "_" + foto.getOriginalFilename();
+
+                // Ruta física en el sistema de archivos
+                String directorioDestino = "src/main/resources/static/usr/img/";
+
+                File directorio = new File(directorioDestino);
+                if (!directorio.exists()) {
+                    directorio.mkdirs();
+                }
+
+                // Archivo destino
+                File archivoDestino = new File(directorio, nombreImagen);
+                foto.transferTo(archivoDestino);
+
+                String rutaImagen = "/usr/img/" + nombreImagen;
+                paso1.setFotoUrl(rutaImagen);
+
+            } catch (IOException e) {
+                logger.error("Error al guardar la imagen", e);
+                errores.rejectValue("foto", "error.foto", "Error al guardar la foto.");
+                return "empleado/auth/FormDatosPersonales";
+            }
+        }
+
+        // Asigna el DTO de paso1 al DTO de registroEmpleado
         registroEmpleado.setPaso1PersonalDTO(paso1);
+
         return "redirect:/registro/paso2";
     }
 

@@ -1,15 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Paso 4 - Datos economicos</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
-    <script th:src="@{/js/script.js}"></script>
-</head>
+
+<head th:replace="fragments/header :: head('Paso 4 - Datos económicos')"></head>
+
 <body>
-<div th:replace="~{/fragments/cabecera::cabecera}"></div>
+<div th:replace="/fragments/cabecera"></div>
 <main>
-    <div th:replace="~{/fragments/cuentaatras::cuentaatras}"></div>
+    <div th:replace="/fragments/cuentaatras"></div>
 <div class="absoluto mt-5">
     <div class="container">
         <!-- Título -->
@@ -92,6 +89,6 @@
     </div>
 </div>
 </main>
-<div th:replace="~{/fragments/pie::pie}"></div>
+<div th:replace="/fragments/pie"></div>
 </body>
 </html>

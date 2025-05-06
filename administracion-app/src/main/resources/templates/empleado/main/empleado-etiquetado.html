@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+
+<head th:replace="fragments/header :: head('Etiquetado')"></head>
+
 <body>
+<div th:replace="/fragments/cabecera"></div>
+<div th:replace="/fragments/cuentaatras"></div>
 <h1>etiquetado empleado</h1>
 <!--select de empleados-->
 <form th:action="@{/dashboard/etiquetado}" method="post">
@@ -45,5 +46,6 @@
         }
     }
 </script>
+<div th:replace="/fragments/pie"></div>
 </body>
 </html>

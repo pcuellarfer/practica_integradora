@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Eliminar Etiquetas</title>
-</head>
-<body>
 
+<head th:replace="fragments/header :: head('Eliminar Etiquetas')"></head>
+
+<body>
+<div th:replace="/fragments/cabecera"></div>
+<div th:replace="/fragments/cuentaatras"></div>
 <h1>Eliminar etiquetas a un subordinado</h1>
 
 <!--Formulario 1: Seleccionar empleado (GET) -->
@@ -26,7 +27,7 @@
 <!--Formulario 2: Eliminar etiquetas (POST) -->
 <form th:action="@{/dashboard/etiquetado/eliminar}" method="post" th:if="${empleadoSeleccionado != null}">
     <!-- Campo oculto para saber a qué empleado quitarle las etiquetas -->
-    <input type="hidden" name="empleadoId" th:value="${empleadoSeleccionado.id}" />
+    <input type="hidden" name="empleadoId" th:value="${empleadoSeleccionado.id}"/>
 
     <label for="etiquetas">Etiquetas asignadas al empleado:</label><br>
     <select id="etiquetas" name="etiquetasIds" multiple size="5">
@@ -38,7 +39,7 @@
     <br><br>
     <button type="submit">Eliminar etiquetas seleccionadas</button>
 </form>
-
+<div th:replace="/fragments/pie"></div>
 </body>
 </html>
 

@@ -7,7 +7,6 @@ import lombok.Setter;
 import org.grupof.administracionapp.validaciones.archivo.FotoTipoTamano;
 import org.grupof.administracionapp.validaciones.fechaNaz.MayorDeEdad;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -24,7 +23,7 @@ public class Paso1PersonalDTO {
 
     @NotNull(message = "Este campo es obligatorio y no puede estar vacío")
     @FotoTipoTamano(message = "La extension del archivo tiene que ser png o gif y debe pesar menos de 200kb")
-    private MultipartFile foto;
+    private String fotoUrl;
 
     @NotNull(message = "Este campo es obligatorio y no puede estar vacío")
 //    Si se recibe unas siglas de género que no se
