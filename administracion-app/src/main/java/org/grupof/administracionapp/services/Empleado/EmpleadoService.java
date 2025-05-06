@@ -3,6 +3,7 @@ package org.grupof.administracionapp.services.Empleado;
 import java.util.UUID;
 import org.grupof.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
+import org.grupof.administracionapp.entity.Empleado;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -62,4 +63,37 @@ public interface EmpleadoService {
      * @return El DTO del empleado correspondiente al usuario, o null si no existe.
      */
     RegistroEmpleadoDTO buscarEmpleadoPorUsuarioId(UUID usuarioId);
+
+    /**
+     * Bloquea un empleado especificado por su ID.
+     * <p>
+     * Este método se encarga de cambiar el estado del usuario asociado al empleado a "bloqueado".
+     * Si el empleado existe y tiene un usuario asociado, se actualiza el estado de bloqueo
+     * del usuario y se guarda la entidad. En caso contrario, se lanza una excepción.
+     *
+     * @param empleadoId el identificador único del empleado cuyo estado se desea bloquear
+     * @throws RuntimeException si no se encuentra al empleado o si no tiene un usuario asociado
+     */
+    void bloquearEmpleado(UUID empleadoId);
+
+    /**
+     * Desbloquea un empleado especificado por su ID.
+     * <p>
+     * Este método se encarga de cambiar el estado del usuario asociado al empleado a "desbloqueado".
+     * Si el empleado existe y tiene un usuario asociado, se actualiza el estado de bloqueo
+     * del usuario y se guarda la entidad. En caso contrario, se lanza una excepción.
+     *
+     * @param empleadoId el identificador único del empleado cuyo estado se desea desbloquear
+     * @throws RuntimeException si no se encuentra al empleado o si no tiene un usuario asociado
+     */
+    void desbloquearEmpleado(UUID empleadoId);
+
+    /**
+     * Obtiene una lista de todos los empleados ordenados por los criterios definidos
+     * en la implementación del servicio. El criterio de orden puede ser por nombre,
+     * fecha de incorporación, cargo, etc., según lo implementado.
+     *
+     * @return una lista ordenada de empleados.
+     */
+    List<Empleado> getEmpleadosOrdenados();
 }

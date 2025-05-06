@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:replace="fragments/header :: head('Etiquetado')"></head>
+
+<body>
+<div th:replace="/fragments/cabecera"></div>
+<div th:replace="/fragments/cuentaatras"></div>
+<h1>etiquetado empleado</h1>
+<!--select de empleados-->
+<form th:action="@{/dashboard/etiquetado}" method="post">
+  <label for="empleados">Selecciona empleados:</label><br>
+  <select id="empleados" name="empleados" multiple size="4">
+    <th:block th:each="empleado : ${empleados}">
+      <option th:value="${empleado.id}" th:text="${empleado.apellido + ', ' + empleado.nombre}"></option>
+    </th:block>
+  </select>
+
+<br><br>
+
+<!--barra para buscar la etiqueta-->
+<label for="etiquetas">Selecciona etiquetas:</label><br>
+<input type="text" id="buscador" placeholder="Buscar etiqueta..." onkeyup="filtrarEtiquetas()"><br>
+
+<select id="etiquetas" name="etiquetas" multiple size="4">
+    <th:block th:each="etiqueta : ${etiquetas}">
+        <option th:value="${etiqueta.id}" th:text="${etiqueta.texto}"></option>
+    </th:block>
+</select>
+
+<br><br>
+<button type="submit">Asignar etiquetas</button>
+
+</form>
+
+<!-- JS para filtrar etiquetas por texto -->
+<script>
+    function filtrarEtiquetas() {
+        let input = document.getElementById("buscador");
+        let filtro = input.value.toLowerCase();
+        let opciones = document.getElementById("etiquetas").options;
+
+        for (let i = 0; i < opciones.length; i++) {
+            let texto = opciones[i].text.toLowerCase();
+            opciones[i].style.display = texto.includes(filtro) ? "" : "none";
+        }
+    }
+</script>
+<div th:replace="/fragments/pie"></div>
+</body>
+</html>

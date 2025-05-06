@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:replace="fragments/header :: head('Etiquetas')"></head>
+
+<body>
+<div th:replace="/fragments/cabecera"></div>
+<div th:replace="/fragments/cuentaatras"></div>
+  <h2>Gestión de Etiquetas</h2>
+
+  <form th:action="@{crearEtiquetas}" method="post" th:object="${nuevaEtiqueta}">
+    <label for="texto">Nombre de la Etiqueta:</label>
+    <input type="text" id="texto" th:field="*{texto}" required />
+    <button type="submit">Crear</button>
+  </form>
+
+  <div th:if="${error}" style="color: red;" th:text="${error}"></div>
+
+  <h3>Etiquetas Definidas:</h3>
+  <ul>
+    <li th:each="etiqueta : ${etiquetas}">
+      <span th:text="${etiqueta.texto}"></span>
+    </li>
+  </ul>
+<div th:replace="/fragments/pie"></div>
+
+</body>
+</html>

@@ -13,7 +13,6 @@ import org.grupof.administracionapp.entity.registroEmpleado.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -37,7 +36,7 @@ public class Empleado {
     private String nombre;
     private String apellido;
 
-    private String foto; // tipo multipart?
+    private String foto; //guarda la ruta
 
     @ManyToOne
     @JoinColumn(name = "genero_id")
@@ -106,16 +105,8 @@ public class Empleado {
     @OneToMany(mappedBy = "jefe")
     private List<Empleado> subordinados;
 
-    @OneToMany(mappedBy = "jefe", cascade = CascadeType.ALL)
-    private List<Etiqueta> etiquetasCreadas;
-
-    @ManyToMany
-    @JoinTable(
-            name = "empleado_etiqueta",
-            joinColumns = @JoinColumn(name = "empleado_id"),
-            inverseJoinColumns = @JoinColumn(name = "etiqueta_id")
-    )
-    private List<Etiqueta> etiquetas;
+    @OneToMany(mappedBy = "jefe")
+    private List<Etiqueta> etiquetasDefinidas;
 
     /////////////
 
