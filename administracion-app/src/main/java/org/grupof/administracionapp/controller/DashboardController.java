@@ -66,7 +66,7 @@ public class DashboardController {
      */
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model modelo) {
-        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
+        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario"); //casting
 
         if (usuarioDTO == null) {
             logger.warn("Intento de acceso al dashboard sin usuario en sesión");
