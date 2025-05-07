@@ -9,6 +9,8 @@ import lombok.Setter;
 
 import java.io.File;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -45,4 +47,14 @@ public class Usuario {
     private byte[] archivo;
 
     private int contadorInicios;
+
+    @ElementCollection
+    @CollectionTable(
+            name = "usuario_contador_navegador",
+            joinColumns = @JoinColumn(name = "usuario_id")
+    )
+    @MapKeyColumn(name = "navegador_id")
+    @Column(name = "contador")
+    private Map<String, Integer> contadoresPorNavegador = new HashMap<>();
+
 }

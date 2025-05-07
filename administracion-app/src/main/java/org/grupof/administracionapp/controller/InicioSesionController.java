@@ -1,5 +1,8 @@
 package org.grupof.administracionapp.controller;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
 import org.grupof.administracionapp.entity.Usuario;
@@ -192,7 +195,9 @@ public class InicioSesionController {
                                                @RequestParam String contrasena,
                                                HttpSession session,
                                                Model model,
-                                               RedirectAttributes redirectAttributes) {
+                                               RedirectAttributes redirectAttributes,
+                                               HttpServletRequest request,
+                                               HttpServletResponse response) {
         if (usuarioDTO == null || usuarioDTO.getEmail().isBlank()) {
             logger.warn("Intento de acceso sin email en sesión.");
             return "redirect:/login/username";
@@ -227,6 +232,32 @@ public class InicioSesionController {
 
         logger.info("Inicio de sesión exitoso para: {}", usuarioDTO.getEmail());
 
+        // 1. Buscar cookie de navegador
+        String navegadorId = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("navegador_id".equals(cookie.getName())) {
+                    navegadorId = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        // 2. Si no existe, generar uno nuevo y crear cookie persistente
+        if (navegadorId == null) {
+            navegadorId = UUID.randomUUID().toString();
+            Cookie nuevaCookie = new Cookie("navegador_id", navegadorId);
+            nuevaCookie.setMaxAge(60 * 60 * 24 * 365); // 1 año
+            nuevaCookie.setPath("/");
+            response.addCookie(nuevaCookie);
+            logger.info("Generado nuevo navegador_id: {}", navegadorId);
+        }
+
+        // 3. Actualizar contador por navegador en la base de datos
+        usuarioService.actualizarContadorPorNavegador(usuarioDTO.getEmail(), navegadorId);
+        logger.info("Contador de navegador actualizado para: {}", usuarioDTO.getEmail());
+
         // Obtener o inicializar contador de inicios de sesión
         int contador = usuarioService.getContadorInicios(usuarioBBDD.getEmail());
         contador++;
@@ -237,6 +268,7 @@ public class InicioSesionController {
         session.setAttribute("usuario", usuarioBBDD);
         session.setAttribute("contador", contador);
         redirectAttributes.addFlashAttribute("contador", contador);
+        redirectAttributes.addFlashAttribute("navegadorId", navegadorId);
         session.removeAttribute("intentos");
         return "redirect:/dashboard/dashboard";
     }
