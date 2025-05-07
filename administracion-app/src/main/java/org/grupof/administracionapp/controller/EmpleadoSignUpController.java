@@ -157,23 +157,26 @@ public class EmpleadoSignUpController {
 
         //validar la foto, faltaria tamaño/tipo
         if (foto == null || foto.isEmpty()) {
-            System.err.println("1");
-            errores.rejectValue("foto", "foto.vacia", "Debe subir una foto.");
+            modelo.addAttribute("errorFoto", "Debe subir una foto.");
+            modelo.addAttribute("paises", paisService.getAllPaises());
+            modelo.addAttribute("generos", generoService.getAllGeneros());
             return "empleado/auth/FormDatosPersonales";
         }
 
         //validar que sea o png o gif
         String tipo = foto.getContentType();
         if (!"image/png".equals(tipo) && !"image/gif".equals(tipo)) {
-            System.err.println("2");
-            errores.rejectValue("foto", "foto.tipo", "Solo se permiten imágenes PNG o GIF.");
+            modelo.addAttribute("errorFoto", "Solo se permiten imágenes PNG o GIF.");
+            modelo.addAttribute("paises", paisService.getAllPaises());
+            modelo.addAttribute("generos", generoService.getAllGeneros());
             return "empleado/auth/FormDatosPersonales";
         }
 
         //validar que pese menos de 200kb
         if (foto.getSize() > 200 * 1024) {
-            System.err.println("3");
-            errores.rejectValue("foto", "foto.tamano", "La imagen debe pesar menos de 200 KB.");
+            modelo.addAttribute("errorFoto", "La imagen debe pesar menos de 200 KB.");
+            modelo.addAttribute("paises", paisService.getAllPaises());
+            modelo.addAttribute("generos", generoService.getAllGeneros());
             return "empleado/auth/FormDatosPersonales";
         }
 

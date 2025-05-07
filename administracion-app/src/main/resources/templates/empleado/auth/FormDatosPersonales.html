@@ -35,7 +35,7 @@
             <div class="mb-3">
                 <label for="foto" class="form-label">Foto:</label>
                 <input type="file" id="foto" name="foto" class="form-control" />
-
+                <span class="error-message" th:if="${errorFoto}" th:text="${errorFoto}"></span>
             </div>
 
             <div class="mb-3">
