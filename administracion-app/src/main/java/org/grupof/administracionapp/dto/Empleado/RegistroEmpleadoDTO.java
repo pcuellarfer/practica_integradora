@@ -2,6 +2,7 @@ package org.grupof.administracionapp.dto.Empleado;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -9,6 +10,12 @@ import java.util.UUID;
 @Setter
 
 public class RegistroEmpleadoDTO {
+
+    //para guardar temporalmente el archivo
+    //no se puede hacer o no he conseguido hacer multipart porque no sobrevive entre redirecciones
+    private byte[] fotoBytes;
+    private String fotoNombre;
+    private String fotoTipo;
 
     //uuid y la foto del empleado
     private UUID empleadoId;
