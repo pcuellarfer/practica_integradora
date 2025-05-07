@@ -28,7 +28,8 @@ import java.util.UUID;
 public class Empleado {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    //quitado porque ya viene del DTO al hacer el paso de la foto
+    //@GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "PK_empleado")
     private UUID id;
 
@@ -36,7 +37,7 @@ public class Empleado {
     private String nombre;
     private String apellido;
 
-    private String foto; //guarda la ruta
+    private String fotoUrl; //guarda la ruta
 
     @ManyToOne
     @JoinColumn(name = "genero_id")
