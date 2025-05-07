@@ -187,4 +187,20 @@ public interface UsuarioService {
      * @throws IllegalArgumentException Si el email es nulo o no tiene un formato válido.
      */
     Usuario buscarPorEmailFecha(@NotBlank(message = "El email no puede estar vacío") @Email(message = "El email no tiene un formato válido") String email);
+
+    /**
+     * Actualiza el contador de inicios de sesión del usuario con el email proporcionado.
+     *
+     * @param email Email del usuario cuyo contador se actualizará.
+     * @param nuevoContador Nuevo valor del contador de inicios de sesión.
+     */
+    void actualizarContadorInicios(String email, int nuevoContador);
+
+    /**
+     * Devuelve el número de veces que el usuario con el email indicado ha iniciado sesión.
+     *
+     * @param email Email del usuario.
+     * @return Número de inicios de sesión registrados.
+     */
+    int getContadorInicios(@NotBlank(message = "El email no puede estar vacío") @Email(message = "El email no tiene un formato válido") String email);
 }

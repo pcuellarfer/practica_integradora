@@ -14,6 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
 import java.time.LocalDateTime;
@@ -155,7 +156,6 @@ public class InicioSesionController {
         return "usuario/auth/login-contrasena";
     }
 
-
     /**
      * Muestra el formulario para restablecer la contraseña del usuario.
      * Si el objeto {@link UsuarioDTO} es nulo o el correo electrónico está vacío,
@@ -174,21 +174,25 @@ public class InicioSesionController {
     }
 
     /**
-     * Procesa el ingreso de la contraseña del usuario.
-     * Si es válida, guarda el usuario en sesión y redirige al dashboard.
-     * Si no, muestra mensaje de error y permite reintentar.
+     * Procesa el formulario de inicio de sesión con contraseña.
      *
-     * @param usuarioDTO usuario obtenido del modelo o sesión.
-     * @param contrasena contraseña ingresada.
-     * @param session sesión HTTP actual.
-     * @param model modelo para enviar mensajes a la vista.
-     * @return redirección al dashboard o recarga de la vista de contraseña si hay error.
+     * <p>Valida la contraseña ingresada por el usuario. Si es incorrecta, incrementa el contador
+     * de intentos fallidos en sesión y, tras 3 intentos, bloquea al usuario temporalmente.
+     * Si la contraseña es correcta, reinicia los intentos, guarda el usuario en sesión y redirige al dashboard.</p>
+     *
+     * @param usuarioDTO Datos del usuario enviados desde el formulario, principalmente el email.
+     * @param contrasena Contraseña ingresada por el usuario.
+     * @param session Sesión HTTP para guardar datos temporales del usuario.
+     * @param model Modelo para pasar datos a la vista en caso de error.
+     * @param redirectAttributes Atributos para redirección, si fueran necesarios (no se usan en este fragmento).
+     * @return Redirección a la vista correspondiente: login con contraseña o dashboard.
      */
     @PostMapping("/password")
     public String procesarFormularioContrasena(@ModelAttribute("usuario") UsuarioDTO usuarioDTO,
                                                @RequestParam String contrasena,
                                                HttpSession session,
-                                               Model model) {
+                                               Model model,
+                                               RedirectAttributes redirectAttributes) {
         if (usuarioDTO == null || usuarioDTO.getEmail().isBlank()) {
             logger.warn("Intento de acceso sin email en sesión.");
             return "redirect:/login/username";
@@ -224,20 +228,15 @@ public class InicioSesionController {
         logger.info("Inicio de sesión exitoso para: {}", usuarioDTO.getEmail());
 
         // Obtener o inicializar contador de inicios de sesión
-        Integer contador = (Integer) session.getAttribute("contadorSesiones");
-        if (contador == null) {
-            contador = 1;
-        } else {
-            contador++;
-        }
-        //usuarioBBDD.setContadorSesiones(contador); // Actualizar en la base de datos
-        //usuarioService.actualizarContador(usuarioBBDD);
-        session.setAttribute("contador", contador);
+        int contador = usuarioService.getContadorInicios(usuarioBBDD.getEmail());
+        contador++;
+        usuarioService.actualizarContadorInicios(usuarioBBDD.getEmail(), contador);
 
         logger.info("Número de accesos al dashboard en esta sesión: {}", contador);
-        model.addAttribute("contadorSesiones", contador);
 
         session.setAttribute("usuario", usuarioBBDD);
+        session.setAttribute("contador", contador);
+        redirectAttributes.addFlashAttribute("contador", contador);
         session.removeAttribute("intentos");
         return "redirect:/dashboard/dashboard";
     }

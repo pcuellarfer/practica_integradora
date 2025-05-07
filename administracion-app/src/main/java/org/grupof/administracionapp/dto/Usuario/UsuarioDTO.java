@@ -33,4 +33,5 @@ public class UsuarioDTO {
     private String contrasenaRecuperacion;
     private boolean estadoBloqueado;
     private LocalDateTime bloqueadoHasta;
+    private int contadorInicios;
 }

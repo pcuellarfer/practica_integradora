@@ -318,4 +318,36 @@ public class UsuarioServiceImpl implements UsuarioService {
             throw new EntityNotFoundException("Usuario no encontrado con email: " + email);
         }
     }
+
+    /**
+     * Actualiza el número de inicios de sesión del usuario.
+     *
+     * @param email El email del usuario.
+     * @param nuevoContador El nuevo valor del contador de inicios.
+     */
+    @Override
+    public void actualizarContadorInicios(String email, int nuevoContador) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con email: " + email));
+
+        usuario.setContadorInicios(nuevoContador);
+        usuarioRepository.save(usuario);
+    }
+
+    /**
+     * Obtiene el número de inicios de sesión del usuario con el email proporcionado.
+     *
+     * @param email El email del usuario.
+     * @return El número actual de inicios de sesión.
+     * @throws EntityNotFoundException Si no se encuentra el usuario con ese email.
+     */
+    @Override
+    public int getContadorInicios(String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con email: " + email));
+
+        return usuario.getContadorInicios();
+    }
+
+
 }
