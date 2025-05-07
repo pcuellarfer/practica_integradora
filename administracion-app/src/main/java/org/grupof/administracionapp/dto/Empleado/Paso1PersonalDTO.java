@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import org.grupof.administracionapp.validations.fechaNaz.MayorDeEdad;
+//import org.grupof.administracionapp.validations.fechaNaz.MayorDeEdad;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
@@ -33,7 +33,7 @@ public class Paso1PersonalDTO {
 
     @NotNull(message = "Este campo es obligatorio y no puede estar vacío")
     @DateTimeFormat(pattern = "dd/MM/yyyy")
-    @MayorDeEdad(message = "Debe ser mayor de 18 años y tener un formato dd/mm/aaaa")
+    //@MayorDeEdad(message = "Debe ser mayor de 18 años y tener un formato dd/mm/aaaa")
     private LocalDate fechaNacimiento;
 
     @NotNull(message = "Este campo es obligatorio y no puede estar vacío")

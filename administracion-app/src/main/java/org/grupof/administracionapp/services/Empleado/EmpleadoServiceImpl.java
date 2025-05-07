@@ -23,13 +23,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -73,10 +66,23 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     }
 
     /**
-     * Registra un nuevo empleado en el sistema y lo asocia a un usuario existente.
+     * Registra un nuevo empleado en el sistema a partir de los datos proporcionados en un objeto
+     * {@link RegistroEmpleadoDTO} y lo asocia con un usuario existente identificado por {@link UsuarioDTO}.
      *
-     * @param registroEmpleadoDTO Objeto que contiene los datos del nuevo empleado.
-     * @param usuarioDTO          Objeto del usuario con el que se asociará el empleado.
+     * <p>El proceso de registro se divide en los siguientes pasos:
+     * <ul>
+     *   <li><strong>Paso 1:</strong> Datos personales como nombre, apellido, fecha de nacimiento, edad, género, país, etc.</li>
+     *   <li><strong>Paso 2:</strong> Datos de contacto incluyendo documento de identidad, teléfono y dirección completa.</li>
+     *   <li><strong>Paso 3:</strong> Información profesional como departamento y especialidades asignadas.</li>
+     *   <li><strong>Paso 4:</strong> Información económica como salario, comisión, cuenta corriente y tarjeta de crédito.</li>
+     * </ul>
+     *
+     * <p>Este método obtiene los datos auxiliares (género, país, tipo de documento, departamento, especialidades, etc.)
+     * desde sus respectivos servicios, crea una instancia de {@link Empleado} con todos los datos y la guarda en la base de datos.
+     *
+     * @param registroEmpleadoDTO Objeto que contiene todos los datos del empleado estructurados por secciones (pasos).
+     * @param usuarioDTO Objeto que representa al usuario al que se asociará el nuevo empleado.
+     * @throws RuntimeException si el usuario indicado no existe en la base de datos.
      */
     @Override
     public void registrarEmpleado(RegistroEmpleadoDTO registroEmpleadoDTO, UsuarioDTO usuarioDTO) {
@@ -185,11 +191,15 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     }
 
     /**
-     * Edita los datos de un empleado existente.
+     * Edita un empleado existente usando los datos proporcionados en el DTO.
      *
-     * @param id  Identificador del empleado a editar.
-     * @param dto Objeto con los nuevos datos del empleado.
-     * @return DTO del empleado actualizado, o null si no se encontró.
+     * <p>Si el empleado con el ID dado existe, se actualizan sus datos y se guardan
+     * en la base de datos. Luego, se devuelve un DTO con la información actualizada.
+     * Si no se encuentra el empleado, se devuelve {@code null}.
+     *
+     * @param id ID del empleado a editar.
+     * @param dto Datos nuevos del empleado.
+     * @return DTO con los datos actualizados, o {@code null} si no se encuentra el empleado.
      */
     @Override
     public RegistroEmpleadoDTO editarEmpleado(UUID id, RegistroEmpleadoDTO dto) {
@@ -402,11 +412,11 @@ public class EmpleadoServiceImpl implements EmpleadoService {
                 usuarioRepository.save(usuario);
                 logger.info("Usuario con ID: {} bloqueado correctamente", usuario.getId());
             } else {
-                logger.error("El empleado con ID: {} no tiene un usuario asociado", empleadoId);
+                logger.error("Bloqueo: El empleado con ID: {} no tiene un usuario asociado", empleadoId);
                 throw new RuntimeException("El empleado no tiene un usuario asociado");
             }
         } else {
-            logger.error("Empleado con ID: {} no encontrado", empleadoId);
+            logger.error("Excepcion bloqueo: Empleado con ID: {} no encontrado", empleadoId);
             throw new RuntimeException("Empleado no encontrado");
         }
     }
@@ -438,11 +448,11 @@ public class EmpleadoServiceImpl implements EmpleadoService {
                 usuarioRepository.save(usuario);
                 logger.info("Usuario con ID: {} desbloqueado correctamente", usuario.getId());
             } else {
-                logger.error("El empleado con ID: {} no tiene un usuario asociado", empleadoId);
+                logger.error("Desbloqueo: El empleado con ID: {} no tiene un usuario asociado", empleadoId);
                 throw new RuntimeException("El empleado no tiene un usuario asociado");
             }
         } else {
-            logger.error("Empleado con ID: {} no encontrado", empleadoId);
+            logger.error("Excepcion desbloqueo: Empleado con ID: {} no encontrado", empleadoId);
             throw new RuntimeException("Empleado no encontrado");
         }
     }

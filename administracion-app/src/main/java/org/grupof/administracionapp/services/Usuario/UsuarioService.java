@@ -158,9 +158,33 @@ public interface UsuarioService {
      */
     void actualizarContrasena(String email, String nuevaContrasena);
 
+    /**
+     * Desbloquea al usuario con el email dado.
+     *
+     * <p>Establece el campo {@code bloqueadoHasta} en {@code null}
+     * para permitir el acceso del usuario al sistema.
+     *
+     * @param email Email del usuario a desbloquear.
+     */
     void desbloquearUsuario(String email);
 
+    /**
+     * Actualiza la fecha y hora hasta la que el usuario estará bloqueado.
+     *
+     * @param email Email del usuario.
+     * @param localDateTime Nueva fecha y hora de desbloqueo.
+     */
     void actualizarTiempoDesbloqueo(String email, LocalDateTime localDateTime);
 
+    /**
+     * Busca un usuario por su email y devuelve su información junto con la fecha
+     * de desbloqueo si está bloqueado.
+     *
+     * @param email El email del usuario a buscar. No puede estar vacío ni tener
+     *              un formato incorrecto.
+     * @return El objeto {@link Usuario} correspondiente al email dado, o {@code null}
+     *         si no se encuentra ningún usuario con ese email.
+     * @throws IllegalArgumentException Si el email es nulo o no tiene un formato válido.
+     */
     Usuario buscarPorEmailFecha(@NotBlank(message = "El email no puede estar vacío") @Email(message = "El email no tiene un formato válido") String email);
 }

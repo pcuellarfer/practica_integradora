@@ -382,7 +382,7 @@ public class EmpleadoSignUpController {
             @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario) {
 
         if (errores.hasErrors()) {
-            System.err.println(errores.toString());
+            System.err.println(errores);
             modelo.addAttribute("bancos", bancoService.getAllBancos());
             modelo.addAttribute("tiposTarjeta", tipoTarjetaService.getAllTiposTarjetas());
             logger.warn("Errores en formulario económico para usuario ID: {}", usuario.getId());

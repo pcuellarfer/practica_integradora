@@ -137,7 +137,7 @@ public class DashboardController {
         UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
 
         if (usuarioDTO == null) {
-            logger.warn("Intento de acceso al dashboard sin usuario en sesión");
+            logger.warn("Intento de acceso al dashboard sin usuario en sesión en /buscar");
             return "redirect:/login/username";
         }
 
@@ -167,7 +167,7 @@ public class DashboardController {
         UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
 
         if (usuarioDTO == null) {
-            logger.warn("Intento de acceso al dashboard sin usuario en sesión");
+            logger.warn("Intento de acceso al dashboard sin usuario en sesión en /buscar POST");
             return "redirect:/login/username";
         }
 

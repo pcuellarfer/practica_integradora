@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Optional;
-import java.util.TimeZone;
 import java.util.UUID;
 
 /**
@@ -98,14 +97,18 @@ public class InicioSesionController {
     }
 
     /**
-     * Procesa el formulario de email del usuario.
-     * Si el email existe, guarda el usuario en sesión y redirige a la vista de contraseña.
+     * Procesa el formulario de login por email (nombre de usuario).
      *
-     * @param usuarioDTO objeto que contiene el email ingresado.
-     * @param result resultado de la validación del formulario.
-     * @param session sesión HTTP actual.
-     * @param model modelo para comunicar mensajes a la vista.
-     * @return vista de contraseña o recarga del formulario de email en caso de error.
+     * <p>Verifica si el formulario contiene errores, si el usuario existe,
+     * y si está bloqueado. Si el usuario está bloqueado y la fecha de desbloqueo
+     * ya pasó, lo desbloquea. Si todo es correcto, guarda el usuario en sesión y
+     * redirige al formulario de contraseña.
+     *
+     * @param usuarioDTO Objeto que contiene el email introducido por el usuario.
+     * @param result Resultado de la validación del formulario.
+     * @param session Sesión HTTP para guardar al usuario autenticado.
+     * @param model Modelo para enviar mensajes de error a la vista.
+     * @return Nombre de la vista a mostrar (formulario actual o el de contraseña).
      */
     @PostMapping("/username")
     public String procesarFormularioNombre(@ModelAttribute("usuario") UsuarioDTO usuarioDTO,
@@ -134,17 +137,18 @@ public class InicioSesionController {
                 model.addAttribute("error", "El usuario está bloqueado hasta: " + usuario.getBloqueadoHasta());
                 return "usuario/auth/login-nombre";
             }
+
+            boolean usuarioBLoqueado = usuarioService.buscarBloqueado(usuarioDTO.getEmail());
+            if (usuarioBLoqueado) {
+                logger.warn("Usuario bloqueado: {}", usuarioDTO.getEmail());
+                model.addAttribute("error", "El usuario está bloqueado.");
+                return "usuario/auth/login-nombre";
+            }
+
             logger.info("Usuario desbloqueado: {}", usuarioDTO.getEmail());
             usuarioService.desbloquearUsuario(usuarioDTO.getEmail());
             usuario.setBloqueadoHasta(null);
         }
-
-//        boolean usuarioBLoqueado = usuarioService.buscarBloqueado(usuarioDTO.getEmail());
-//        if (usuarioBLoqueado) {
-//            logger.warn("Usuario bloqueado: {}", usuarioDTO.getEmail());
-//            model.addAttribute("error", "El usuario está bloqueado.");
-//            return "usuario/auth/login-nombre";
-//        }
 
         logger.info("Usuario encontrado y no bloqueado: {}", usuarioExistente.getEmail());
         session.setAttribute("usuario", usuarioExistente);
