@@ -278,4 +278,14 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.setBloqueadoHasta(LocalDateTime.now().plusSeconds(30));
         usuarioRepository.save(usuario);
     }
+
+    @Override
+    public Usuario buscarPorEmailFecha(String email) {
+        Optional<Usuario> usuarioOptional = usuarioRepository.findByEmail(email);
+        if (usuarioOptional.isPresent()) {
+            return usuarioOptional.get();
+        } else {
+            throw new EntityNotFoundException("Usuario no encontrado con email: " + email);
+        }
+    }
 }

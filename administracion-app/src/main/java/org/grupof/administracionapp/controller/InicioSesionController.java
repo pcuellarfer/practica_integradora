@@ -2,6 +2,7 @@ package org.grupof.administracionapp.controller;
 
 import jakarta.servlet.http.HttpSession;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
+import org.grupof.administracionapp.entity.Usuario;
 import org.grupof.administracionapp.services.Email.EmailService;
 import org.grupof.administracionapp.services.Usuario.UsuarioService;
 import org.grupof.administracionapp.services.Token.TokenService;
@@ -124,12 +125,26 @@ public class InicioSesionController {
             return "usuario/auth/login-nombre";
         }
 
-        boolean usuarioBLoqueado = usuarioService.buscarBloqueado(usuarioDTO.getEmail());
-        if (usuarioBLoqueado) {
-            logger.warn("Usuario bloqueado: {}", usuarioDTO.getEmail());
-            model.addAttribute("error", "El usuario está bloqueado.");
-            return "usuario/auth/login-nombre";
+        Usuario usuario = usuarioService.buscarPorEmailFecha(usuarioDTO.getEmail());
+
+        if(usuario.getBloqueadoHasta() != null) {
+            LocalDateTime fechaActual = LocalDateTime.now(ZoneId.of("Europe/Madrid"));
+            if (usuario.getBloqueadoHasta().isAfter(fechaActual)) {
+                logger.warn("Usuario bloqueado hasta: {}", usuario.getBloqueadoHasta());
+                model.addAttribute("error", "El usuario está bloqueado hasta: " + usuario.getBloqueadoHasta());
+                return "usuario/auth/login-nombre";
+            }
+            logger.info("Usuario desbloqueado: {}", usuarioDTO.getEmail());
+            usuarioService.desbloquearUsuario(usuarioDTO.getEmail());
+            usuario.setBloqueadoHasta(null);
         }
+
+//        boolean usuarioBLoqueado = usuarioService.buscarBloqueado(usuarioDTO.getEmail());
+//        if (usuarioBLoqueado) {
+//            logger.warn("Usuario bloqueado: {}", usuarioDTO.getEmail());
+//            model.addAttribute("error", "El usuario está bloqueado.");
+//            return "usuario/auth/login-nombre";
+//        }
 
         logger.info("Usuario encontrado y no bloqueado: {}", usuarioExistente.getEmail());
         session.setAttribute("usuario", usuarioExistente);

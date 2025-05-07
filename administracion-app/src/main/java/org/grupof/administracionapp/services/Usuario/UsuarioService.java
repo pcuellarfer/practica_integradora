@@ -161,4 +161,6 @@ public interface UsuarioService {
     void desbloquearUsuario(String email);
 
     void actualizarTiempoDesbloqueo(String email, LocalDateTime localDateTime);
+
+    Usuario buscarPorEmailFecha(@NotBlank(message = "El email no puede estar vacío") @Email(message = "El email no tiene un formato válido") String email);
 }

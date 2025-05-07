@@ -31,6 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -299,10 +300,21 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     }
 
     /**
-     * Busca un empleado a partir del identificador del usuario al que está asociado.
+     * Busca un empleado en el sistema a partir del identificador de usuario (UUID)
+     * y construye un objeto {@link RegistroEmpleadoDTO} que contiene los datos
+     * personales, de contacto, profesionales y económicos del empleado.
      *
-     * @param usuarioId Identificador del usuario asociado al empleado.
-     * @return DTO del empleado correspondiente, o null si no existe.
+     * <p>El DTO resultante se compone de cuatro secciones:
+     * <ul>
+     *   <li>{@link Paso1PersonalDTO}: Datos personales como nombre, apellido, edad, género, país, etc.</li>
+     *   <li>{@link Paso2ContactoDTO}: Información de contacto, documento y dirección completa.</li>
+     *   <li>{@link Paso3ProfesionalDTO}: Departamento y especialidades asignadas.</li>
+     *   <li>{@link Paso4EconomicosDTO}: Información económica, cuenta corriente y tarjeta de crédito.</li>
+     * </ul>
+     *
+     * @param usuarioId El UUID que identifica al usuario vinculado al empleado.
+     * @return Un objeto {@link RegistroEmpleadoDTO} con toda la información del empleado
+     *         si se encuentra uno asociado al usuario, o {@code null} si no se encuentra.
      */
     @Override
     public RegistroEmpleadoDTO buscarEmpleadoPorUsuarioId(UUID usuarioId) {
@@ -404,6 +416,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         logger.info("Intentando bloquear al empleado con ID: {}", empleadoId);
 
         Optional<Empleado> empleadoOpt = empleadoRepository.findById(empleadoId);
+        LocalDateTime fechaActual = LocalDateTime.now(ZoneId.of("Europe/Madrid"));
 
         if (empleadoOpt.isPresent()) {
             Empleado empleado = empleadoOpt.get();
@@ -412,7 +425,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
             if (usuario != null) {
                 logger.info("Empleado con ID: {} encontrado. Bloqueando usuario asociado...", empleadoId);
                 usuario.setEstadoBloqueado(true);
-                usuario.setBloqueadoHasta(LocalDateTime.now().plusHours(2).plusSeconds(20)); // Bloqueo por 30 segundos
+                usuario.setBloqueadoHasta(fechaActual.plusSeconds(30)); // Bloqueo por 30 segundos
                 usuarioRepository.save(usuario);
                 logger.info("Usuario con ID: {} bloqueado correctamente", usuario.getId());
             } else {
