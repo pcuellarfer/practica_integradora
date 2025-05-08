@@ -1,27 +1,28 @@
 package org.grupof.administracionapp.entity.producto;
 
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
-public class Producto {
+@Entity
+public class Libro { //extends producto
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private String descripcion;
+    private String titulo;
 
-    private double precio;
+    private String autor;
 
-    private String marca;
+    private String editorial;
 
-    private int unidades;
+    private String Tapa; //entidad tapa?
 
-    //categoria
+    private int numPaginas;
 
-    //valoracion
-
+    private Boolean segundaMano;
 }
