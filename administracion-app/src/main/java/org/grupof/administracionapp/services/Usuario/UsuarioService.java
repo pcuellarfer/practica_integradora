@@ -203,4 +203,6 @@ public interface UsuarioService {
      * @return Número de inicios de sesión registrados.
      */
     int getContadorInicios(@NotBlank(message = "El email no puede estar vacío") @Email(message = "El email no tiene un formato válido") String email);
+
+    void actualizarContadorPorNavegador(@NotBlank(message = "El email no puede estar vacío") @Email(message = "El email no tiene un formato válido") String email, String navegadorId);
 }

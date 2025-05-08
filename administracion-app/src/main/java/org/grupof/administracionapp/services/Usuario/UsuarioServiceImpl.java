@@ -10,9 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Implementación del servicio de usuario que gestiona la lógica de negocio
@@ -349,5 +347,22 @@ public class UsuarioServiceImpl implements UsuarioService {
         return usuario.getContadorInicios();
     }
 
+    @Override
+    public void actualizarContadorPorNavegador(String email, String navegadorId) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con email: " + email));
 
+        // Obtener mapa o lista de contadores por navegador
+        Map<String, Integer> contadores = usuario.getContadoresPorNavegador();
+        if (contadores == null) {
+            contadores = new HashMap<>();
+        }
+
+        // Actualizar contador de este navegador
+        int actual = contadores.getOrDefault(navegadorId, 0);
+        contadores.put(navegadorId, actual + 1);
+
+        usuario.setContadoresPorNavegador(contadores);
+        usuarioRepository.save(usuario);
+    }
 }
