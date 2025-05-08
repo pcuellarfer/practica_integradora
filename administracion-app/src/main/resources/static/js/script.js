@@ -9,6 +9,12 @@ function script() {
     campocontrasena3.type = checkbox.checked ? "text" : "password";
 }
 
+function mostrarConfContrasena() {
+    let confcontrasena = document.getElementById("confirmContrasena");
+    let checkbox = document.getElementById("mostrarconfcontrasena");
+    confcontrasena.type = checkbox.checked ? "text" : "password";
+}
+
 function mostrarContrasenaRestablecer() {
     var contrasena1 = document.getElementById("contrasena1");
     var contrasena2 = document.getElementById("contrasena2");

@@ -2,12 +2,15 @@ package org.grupof.administracionapp.dto.Usuario;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.grupof.administracionapp.validations.ConfContrasena.CoincidirContrasenas;
 
 @AllArgsConstructor @NoArgsConstructor  @Data
+@CoincidirContrasenas(contrasena = "contrasena", confirmContrasena = "confirmContrasena", message = "Las contraseñas no coinciden ")
 public class RegistroUsuarioDTO {
 
     @NotBlank(message = "El email no puede estar vacío")
@@ -21,4 +24,7 @@ public class RegistroUsuarioDTO {
     )
     private String contrasena;
 
+    @NotBlank(message = "La confirmación de contraseña es obligatoria")
+    @NotNull
+    private String confirmContrasena;
 }
