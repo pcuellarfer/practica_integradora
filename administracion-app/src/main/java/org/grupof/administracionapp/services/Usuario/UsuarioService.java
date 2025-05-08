@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import org.grupof.administracionapp.dto.Usuario.RegistroUsuarioDTO;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
 import org.grupof.administracionapp.entity.Usuario;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.UUID;
 /**
  * Interfaz para definir los servicios relacionados con la gestión de usuarios.
  */
+@Service
 public interface UsuarioService {
 
     /**

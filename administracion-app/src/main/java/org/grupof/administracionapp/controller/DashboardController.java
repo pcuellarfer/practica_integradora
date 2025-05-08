@@ -7,6 +7,7 @@ import org.grupof.administracionapp.entity.Empleado;
 import org.grupof.administracionapp.entity.Etiqueta;
 import org.grupof.administracionapp.repository.EmpleadoRepository;
 import org.grupof.administracionapp.repository.EtiquetaRepository;
+import org.grupof.administracionapp.services.Departamento.DepartamentoService;
 import org.grupof.administracionapp.services.Empleado.EmpleadoService;
 import org.grupof.administracionapp.services.Genero.GeneroService;
 import org.grupof.administracionapp.services.etiqueta.EtiquetaService;
@@ -36,6 +37,7 @@ public class DashboardController {
     private final EmpleadoRepository empleadoRepository;
     private final EtiquetaService etiquetaService;
     private final EtiquetaRepository etiquetaRepository;
+    private final DepartamentoService departamentoService;
 
 
     /**
@@ -47,12 +49,13 @@ public class DashboardController {
                                EmpleadoRepository empleadoRepository,
                                GeneroService generoService,
                                EtiquetaService etiquetaService,
-                               EtiquetaRepository etiquetaRepository) {
+                               EtiquetaRepository etiquetaRepository, DepartamentoService departamentoService) {
         this.empleadoService = empleadoService;
         this.empleadoRepository = empleadoRepository;
         this.generoService = generoService;
         this.etiquetaService = etiquetaService;
         this.etiquetaRepository = etiquetaRepository;
+        this.departamentoService = departamentoService;
     }
 
     /**
@@ -119,8 +122,17 @@ public class DashboardController {
 
         RegistroEmpleadoDTO empleado = empleadoService.buscarEmpleadoPorUsuarioId(usuario.getId());
 
+        UUID idGenero = empleado.getPaso1PersonalDTO().getGenero();
+        String nombreGenero = generoService.obtenerNombreGenero(idGenero);
+
+        UUID idDepartamento = empleado.getPaso3ProfesionalDTO().getDepartamento();
+        String nombreDepartamento = departamentoService.obtenerNombreDepartamento(idDepartamento);
+
         modelo.addAttribute("usuario", usuario);
         modelo.addAttribute("empleado", empleado);
+        modelo.addAttribute("nombreGenero", nombreGenero);
+        modelo.addAttribute("nombreDepartamento", nombreDepartamento);
+
         return "empleado/main/empleadoDetalle";
     }
 

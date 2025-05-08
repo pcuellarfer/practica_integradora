@@ -347,6 +347,17 @@ public class UsuarioServiceImpl implements UsuarioService {
         return usuario.getContadorInicios();
     }
 
+    /**
+     * Actualiza el contador de accesos de un usuario para un navegador específico.
+     * <p>
+     * Si el usuario no tiene contadores previos, se inicializa el mapa de contadores.
+     * Si el navegador no ha sido registrado antes, se inicializa su contador en 0.
+     * Posteriormente, el contador para ese navegador se incrementa en 1 y se guarda en la base de datos.
+     *
+     * @param email       el correo electrónico del usuario cuyo contador se quiere actualizar
+     * @param navegadorId el identificador del navegador (por ejemplo, "Chrome", "Firefox", etc.)
+     * @throws EntityNotFoundException si no se encuentra un usuario con el email proporcionado
+     */
     @Override
     public void actualizarContadorPorNavegador(String email, String navegadorId) {
         Usuario usuario = usuarioRepository.findByEmail(email)

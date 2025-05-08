@@ -37,17 +37,17 @@
             <div class="mb-3">
                 <label for="contrasena" class="form-label">Contraseña</label>
                 <input type="password" id="contrasena" name="contrasena" class="form-control" th:field="*{contrasena}">
-                <input type="checkbox" id="mostrarcontrasena" onclick="script()"><label for="mostrarcontrasena"> Mostrar contraseña</label>
+                <input type="checkbox" id="mostrarcontrasena" onclick="script()"><label for="mostrarcontrasena">&nbsp;Mostrar contraseña</label>
                 
                 <span class="error-message" th:if="${#fields.hasErrors('contrasena')}" th:errors="*{contrasena}"></span>
             </div>
 
             <div class="mb-3">
                 <label for="confirmContrasena" class="form-label">Confirmar la Contraseña</label>
-                <input type="password" id="confirmContrasena" name="confirmContrasena" class="form-control" th:field="*{confirmContrasena}">
-                <input type="checkbox" id="mostrarconfcontrasena" onclick="mostrarConfContrasena()"><label for="mostrarconfcontrasena"> Mostrar confirmación de contraseña</label>
+                <input type="password" id="confirmContrasena" name="confirmContrasena" class="form-control" th:field="*{contrasenaConfirmar}">
+                <input type="checkbox" id="mostrarconfcontrasena" onclick="mostrarConfContrasena()"><label for="mostrarconfcontrasena">&nbsp; Mostrar confirmación de contraseña</label>
 
-                <span class="error-message" th:if="${#fields.hasErrors('confirmContrasena')}" th:errors="*{confirmContrasena}"></span>
+                <span class="error-message" th:if="${#fields.hasErrors('contrasenaConfirmar')}" th:errors="*{contrasenaConfirmar}"></span>
              </div>
 
             <button type="submit" class="btn btn-primary w-100">Enviar</button>

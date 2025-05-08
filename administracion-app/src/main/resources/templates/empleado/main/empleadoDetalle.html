@@ -41,12 +41,12 @@
             <!-- NO TENEMOS APELLIDO EN LA BASE DE DATOS
             <p><strong>Apellido:</strong> <span th:text="${empleado.paso1PersonalDTO.apellido}"></span></p> -->
             <p><strong>Fecha de nacimiento:</strong> <span th:text="${empleado.paso1PersonalDTO.fechaNacimiento}"></span></p>
-            <p><strong>Género:</strong> <span th:text="${empleado.paso1PersonalDTO.genero}"></span></p>
+            <p><strong>Género:</strong> <span th:text="${nombreGenero}"></span></p>
         </div>
 
         <div class="mb-3">
             <h3>Empresarial</h3>
-            <p><strong>Departamento:</strong> <span th:text="${empleado.paso3ProfesionalDTO.departamento}"></span></p>
+            <p><strong>Departamento:</strong> <span th:text="${nombreDepartamento}"></span></p>
         </div>
 
         <!-- Botón de regreso -->
