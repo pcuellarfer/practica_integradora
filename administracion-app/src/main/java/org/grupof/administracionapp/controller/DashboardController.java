@@ -18,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -96,38 +97,66 @@ public class DashboardController {
     }
 
     /**
-     * Muestra la vista con los detalles del empleado logueado.
-     * Si el usuario no ha iniciado sesión, se redirige al login.
+     * Muestra los detalles del empleado asociado al usuario actualmente autenticado.
      *
-     * @param session sesión HTTP actual
-     * @param modelo   modelo de atributos para la vista
-     * @return vista con los detalles del empleado
+     * <p>Este método verifica si hay un usuario autenticado en la sesión. Si es así,
+     * obtiene el empleado correspondiente a ese usuario, junto con información adicional
+     * como el nombre del género, nombre del departamento y la ruta de la foto, y lo añade
+     * al modelo para renderizar la vista.</p>
+     *
+     * @param session la sesión HTTP actual que contiene el usuario autenticado
+     * @param modelo el objeto Model para añadir atributos que serán utilizados en la vista Thymeleaf
+     * @return la ruta a la plantilla Thymeleaf que muestra los detalles del empleado;
+     *         si no hay usuario en sesión o no se encuentra el empleado, redirige a la página de login
      */
     @GetMapping("/detalle")
     public String verDetalles(HttpSession session, Model modelo) {
+        logger.info("Accediendo a los detalles del empleado...");
+
+        // Obtener usuario desde la sesión
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
 
+        // Comprobar si el usuario está autenticado
         if (usuario == null) {
             logger.warn("Intento de acceso a detalles de empleado sin sesión iniciada");
             return "redirect:/login/username";
         }
+        logger.info("Usuario encontrado: {}", usuario.getId());
 
+        // Buscar empleado por ID de usuario
         Empleado enmpleado = empleadoRepository.findByUsuarioId(usuario.getId()).orElse(null);
         if (enmpleado == null) {
-            logger.error("no hay un empleado con usuario_id en detalle: {}", usuario.getId());
+            logger.error("No hay un empleado con usuario_id en detalle: {}", usuario.getId());
             return "redirect:/login/username";
         }
+        logger.info("Empleado encontrado: {}", enmpleado.getId());
 
-        logger.info("Accediendo a los detalles del empleado para usuario ID: {}", usuario.getId());
-
+        // Obtener detalles adicionales del empleado
         RegistroEmpleadoDTO empleado = empleadoService.buscarEmpleadoPorUsuarioId(usuario.getId());
+        logger.info("Detalles del empleado obtenidos: {}", empleado);
 
+        // Obtener nombre del género
         UUID idGenero = empleado.getPaso1PersonalDTO().getGenero();
         String nombreGenero = generoService.obtenerNombreGenero(idGenero);
+        logger.info("Género obtenido: {}", nombreGenero);
 
+        // Obtener nombre del departamento
         UUID idDepartamento = empleado.getPaso3ProfesionalDTO().getDepartamento();
         String nombreDepartamento = departamentoService.obtenerNombreDepartamento(idDepartamento);
+        logger.info("Departamento obtenido: {}", nombreDepartamento);
 
+        // Obtener URL de la foto
+        Empleado empleadoEntidad = empleadoRepository.findByUsuarioId(usuario.getId()).orElse(null);
+        if (empleadoEntidad != null) {
+            String rutaFoto = empleadoEntidad.getFotoUrl();
+            String nombreFoto = Paths.get(empleadoEntidad.getFotoUrl()).getFileName().toString(); // solo el nombre del archivo
+            logger.info("Ruta de la foto del empleado: {}", nombreFoto);
+            modelo.addAttribute("nombreFoto", nombreFoto);
+        } else {
+            logger.warn("No se encontró la entidad de empleado para el usuario ID: {}", usuario.getId());
+        }
+
+        // Agregar atributos al modelo
         modelo.addAttribute("usuario", usuario);
         modelo.addAttribute("empleado", empleado);
         modelo.addAttribute("nombreGenero", nombreGenero);
@@ -136,13 +165,17 @@ public class DashboardController {
         return "empleado/main/empleadoDetalle";
     }
 
+
     /**
      * Muestra el formulario de búsqueda de empleados.
-     * Este método maneja las solicitudes GET a la ruta "/buscar".
-     * Inicializa el modelo con un nombre vacío y una lista vacía de resultados.
+     * <p>
+     * Este método verifica si hay un usuario autenticado en la sesión.
+     * Si no hay usuario en sesión, redirige al formulario de inicio de sesión.
+     * Si hay usuario, carga la lista de géneros disponibles y atributos iniciales para el formulario.
      *
-     * @param modelo el modelo que se pasa a la vista
-     * @return la vista del formulario de búsqueda de empleados
+     * @param modelo   el objeto {@link Model} utilizado para pasar atributos a la vista.
+     * @param session  la sesión HTTP actual, de donde se extrae el usuario autenticado.
+     * @return el nombre de la vista para el formulario de búsqueda, o una redirección al login si no hay sesión activa.
      */
     @GetMapping("/buscar")
     public String mostrarFormularioBusqueda(Model modelo, HttpSession session) {
@@ -161,14 +194,17 @@ public class DashboardController {
     }
 
     /**
-     * Procesa la búsqueda de empleados por nombre.
-     * Este método maneja las solicitudes POST a la ruta "/buscar".
-     * Utiliza el nombre proporcionado para buscar coincidencias en el repositorio,
-     * y añade los resultados al modelo para mostrarlos en la vista.
+     * Procesa la búsqueda de empleados según los parámetros proporcionados.
+     * <p>
+     * Este método permite buscar empleados filtrando por nombre, género o ambos.
+     * Si no se especifica ningún filtro, se devuelven todos los empleados.
+     * También verifica si el usuario está autenticado en la sesión. En caso contrario, redirige al login.
      *
-     * @param nombre el nombre o parte del nombre del empleado a buscar
-     * @param modelo el modelo que se pasa a la vista
-     * @return la vista con los resultados de la búsqueda de empleados
+     * @param nombre   el nombre (o parte de él) por el que se desea buscar empleados.
+     * @param genero   el ID del género por el que se desea filtrar (puede ser null).
+     * @param modelo   el objeto {@link Model} usado para pasar datos a la vista.
+     * @param session  la sesión HTTP actual, utilizada para validar la autenticación del usuario.
+     * @return el nombre de la vista de búsqueda con los resultados obtenidos o redirección al login si no hay sesión activa.
      */
     @PostMapping("/buscar")
     //required en false para genero para que no salte excepcion

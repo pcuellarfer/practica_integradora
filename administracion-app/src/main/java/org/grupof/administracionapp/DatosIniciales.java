@@ -182,6 +182,7 @@ public class DatosIniciales {
             empleado.setTipoDocumento(DNI);
             empleado.setApellido("Lopez");
             empleado.setFechaNacimiento(LocalDate.parse("1990-01-01"));
+            empleado.setFotoUrl("/uploads/empleados/24396928-62ed-4df7-81d4-6d011779127c.png");
 
             Direccion direccion = new Direccion();
             direccion.setTipoVia(UUID.randomUUID());

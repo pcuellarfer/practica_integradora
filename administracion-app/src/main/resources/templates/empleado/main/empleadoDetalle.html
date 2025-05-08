@@ -23,23 +23,15 @@
             <h2>Usuario</h2>
             <p><strong>Email:</strong> <span th:text="${usuario.email}"></span></p>
             <p><strong>Contraseña:</strong> <span th:text="${usuario.contrasena}"></span></p>
+            <p><strong>Foto Usuario:</strong></p>
+            <img th:src="@{'/imagenes/' + ${nombreFoto}}" alt="Foto del usuario" class="img-thumbnail" style="max-width: 200px;" />
         </div>
 
         <!-- Información del empleado -->
         <div class="mb-3">
             <h2>Empleado</h2>
             <h3>Personal</h3>
-
-            <!--imagen-->
-<!--            <div class="mb-3">-->
-<!--                <h3>Foto</h3>-->
-<!--                <img th:src="@{'/imagenes/' + ${empleado.paso1PersonalDTO.foto}}" alt="Foto del empleado" class="img-thumbnail" style="max-width: 200px;" />-->
-<!--            </div>-->
-
-
             <p><strong>Nombre:</strong> <span th:text="${empleado.paso1PersonalDTO.nombre}"></span></p>
-            <!-- NO TENEMOS APELLIDO EN LA BASE DE DATOS
-            <p><strong>Apellido:</strong> <span th:text="${empleado.paso1PersonalDTO.apellido}"></span></p> -->
             <p><strong>Fecha de nacimiento:</strong> <span th:text="${empleado.paso1PersonalDTO.fechaNacimiento}"></span></p>
             <p><strong>Género:</strong> <span th:text="${nombreGenero}"></span></p>
         </div>
