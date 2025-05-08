@@ -257,6 +257,12 @@ public class DashboardController {
         return "empleado/main/empleado-submenu-etiquetado";
     }
 
+    @GetMapping("/submenu-productos")
+    public String mostrarSubmenuProductos() {
+        return "empleado/main/empleado-submenu-productos";
+    }
+
+
 
     /**
      * Muestra la vista para asignar subordinados a un jefe.

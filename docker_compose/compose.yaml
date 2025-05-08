@@ -1,0 +1,42 @@
+services:
+  mysql:
+    image: mysql:latest
+    container_name: contiene_mysql
+#    networks:
+    environment:
+      - MYSQL_ROOT_PASSWORD=admin #contraseña de la base de datos
+      - MYSQL_DATABASE=integradoraBD #nombre de la base de datos
+    healthcheck:
+      test: [¨CMD¨, ¨mysqladmin¨, ¨ping¨, ¨'h¨, ¨localhost¨]
+      timeout: 20s #10 intentos cada 20 segundos que hace ping al servidor de MySql en localhost (contenedor) para comprobar que el servidor esta joya y puede recibir conexiones
+      retries: 10 #para que tomcat no se ejecute antes de MySql y falle
+  tomcat:
+    build: ./tomcat #carpeta en la que esta el dockerfile que tiene que usar para hacer la imagen
+    container_name: contiene_tomcat
+    ports:
+      - "8080:8080" #8080 de la maquia a 8080 del contenedor
+#    networks:
+    depends_on:
+      mysql:
+        condition: service_healthy
+  apache:
+    build: ./apache #carpeta en la que esta el dockerfile que tiene que usar para hacer la imagen
+    container_name: contiene_apache
+    ports:
+      - "8081:80" #8081 de la maquia a 80 del contenedor (apache)
+#    networks:
+    depends_on:
+      tomcat:
+        condition: service_started
+
+#  no usamos dockerfile MySql porque con la imagen nos vale,
+#  en tomcat hay que copiar la aplicacion en la carpeta correspondiente,
+#  apache hay que copiar los archivos estatiocs tambien en la carpeta correspondiente
+
+#puede que sin dns no haga falta nada de networks
+#networks:
+#  red_aplicacion:
+#    ipam:
+#        driver: default
+#        config:
+#          - subnet: "xxx.xxx.xxx"
