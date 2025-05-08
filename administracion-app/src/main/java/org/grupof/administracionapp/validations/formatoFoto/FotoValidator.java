@@ -1,4 +1,8 @@
+<<<<<<<< HEAD:administracion-app/src/main/java/org/grupof/administracionapp/validations/archivo/FotoValidator.java
 package org.grupof.administracionapp.validations.archivo;
+========
+package org.grupof.administracionapp.validations.formatoFoto;
+>>>>>>>> b3478ef7d51786e245b5f796ef6079acf741a22c:administracion-app/src/main/java/org/grupof/administracionapp/validations/formatoFoto/FotoValidator.java
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

@@ -43,4 +43,6 @@ public class Usuario {
     private Empleado empleado;
 
     private byte[] archivo;
+
+    private int contadorInicios;
 }

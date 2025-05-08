@@ -73,7 +73,9 @@ public class UsuarioSignUpController {
             @ModelAttribute("registroUsuarioDTO") @Valid RegistroUsuarioDTO registroUsuarioDTO,
             BindingResult errores,
             HttpSession session,
-            Model modelo) {
+            Model modelo,
+            @RequestParam String contrasena,
+            @RequestParam String contrasenaConfirmar) {
 
         logger.info("Iniciando proceso de registro para usuario con email: {}", registroUsuarioDTO.getEmail());
 
@@ -85,6 +87,12 @@ public class UsuarioSignUpController {
 
         if (errores.hasErrors()) {
             logger.warn("Errores de validación en el formulario de registro para el email: {}", registroUsuarioDTO.getEmail());
+            return "usuario/auth/signUp-usuario";
+        }
+
+        if (!contrasena.equals(contrasenaConfirmar)) {
+            logger.warn("Las contraseñas no coinciden para el email: {}", registroUsuarioDTO.getEmail());
+            modelo.addAttribute("error", "Las contraseñas no coinciden.");
             return "usuario/auth/signUp-usuario";
         }
 

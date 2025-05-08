@@ -66,7 +66,7 @@ public class DashboardController {
      */
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model modelo) {
-        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
+        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario"); //casting
 
         if (usuarioDTO == null) {
             logger.warn("Intento de acceso al dashboard sin usuario en sesión");
@@ -85,7 +85,7 @@ public class DashboardController {
 
         logger.info("Usuario ID {} es también empleado. Mostrando dashboard de empleado.", usuarioDTO.getId());
 
-        modelo.addAttribute("contador", session.getAttribute("contador"));
+        modelo.addAttribute("contadorSesiones", session.getAttribute("contador"));
         modelo.addAttribute("usuario", usuarioDTO);
         modelo.addAttribute("empleado", empleadoDTO);
 
@@ -137,7 +137,7 @@ public class DashboardController {
         UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
 
         if (usuarioDTO == null) {
-            logger.warn("Intento de acceso al dashboard sin usuario en sesión");
+            logger.warn("Intento de acceso al dashboard sin usuario en sesión en /buscar");
             return "redirect:/login/username";
         }
 
@@ -167,7 +167,7 @@ public class DashboardController {
         UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
 
         if (usuarioDTO == null) {
-            logger.warn("Intento de acceso al dashboard sin usuario en sesión");
+            logger.warn("Intento de acceso al dashboard sin usuario en sesión en /buscar POST");
             return "redirect:/login/username";
         }
 

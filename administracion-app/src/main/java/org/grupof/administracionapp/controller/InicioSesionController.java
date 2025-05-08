@@ -2,6 +2,7 @@ package org.grupof.administracionapp.controller;
 
 import jakarta.servlet.http.HttpSession;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
+import org.grupof.administracionapp.entity.Usuario;
 import org.grupof.administracionapp.services.Email.EmailService;
 import org.grupof.administracionapp.services.Usuario.UsuarioService;
 import org.grupof.administracionapp.services.Token.TokenService;
@@ -13,9 +14,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -95,14 +98,18 @@ public class InicioSesionController {
     }
 
     /**
-     * Procesa el formulario de email del usuario.
-     * Si el email existe, guarda el usuario en sesión y redirige a la vista de contraseña.
+     * Procesa el formulario de login por email (nombre de usuario).
      *
-     * @param usuarioDTO objeto que contiene el email ingresado.
-     * @param result resultado de la validación del formulario.
-     * @param session sesión HTTP actual.
-     * @param model modelo para comunicar mensajes a la vista.
-     * @return vista de contraseña o recarga del formulario de email en caso de error.
+     * <p>Verifica si el formulario contiene errores, si el usuario existe,
+     * y si está bloqueado. Si el usuario está bloqueado y la fecha de desbloqueo
+     * ya pasó, lo desbloquea. Si todo es correcto, guarda el usuario en sesión y
+     * redirige al formulario de contraseña.
+     *
+     * @param usuarioDTO Objeto que contiene el email introducido por el usuario.
+     * @param result Resultado de la validación del formulario.
+     * @param session Sesión HTTP para guardar al usuario autenticado.
+     * @param model Modelo para enviar mensajes de error a la vista.
+     * @return Nombre de la vista a mostrar (formulario actual o el de contraseña).
      */
     @PostMapping("/username")
     public String procesarFormularioNombre(@ModelAttribute("usuario") UsuarioDTO usuarioDTO,
@@ -122,28 +129,26 @@ public class InicioSesionController {
             return "usuario/auth/login-nombre";
         }
 
-        UsuarioDTO usuarioBBDD = usuarioService.buscarPorEmail(usuarioDTO.getEmail());
+        Usuario usuario = usuarioService.buscarPorEmailFecha(usuarioDTO.getEmail());
 
-        if (usuarioBBDD.getBloqueadoHasta() != null && usuarioBBDD.getBloqueadoHasta().isAfter(LocalDateTime.now())) {
-            // Sigue bloqueado, todavía no ha llegado la hora de desbloqueo
-            logger.warn("Acceso bloqueado para usuario: {}", usuarioDTO.getEmail());
-            model.addAttribute("error", "El usuario está bloqueado. Inténtelo más tarde.");
-            return "usuario/auth/login-contrasena";
-        } else {
-            // Ya pasó la hora, se debe desbloquear
+        if(usuario.getBloqueadoHasta() != null) {
+            LocalDateTime fechaActual = LocalDateTime.now(ZoneId.of("Europe/Madrid"));
+            if (usuario.getBloqueadoHasta().isAfter(fechaActual)) {
+                logger.warn("Usuario bloqueado hasta: {}", usuario.getBloqueadoHasta());
+                model.addAttribute("error", "El usuario está bloqueado hasta: " + usuario.getBloqueadoHasta());
+                return "usuario/auth/login-nombre";
+            }
+
+            boolean usuarioBLoqueado = usuarioService.buscarBloqueado(usuarioDTO.getEmail());
+            if (usuarioBLoqueado) {
+                logger.warn("Usuario bloqueado: {}", usuarioDTO.getEmail());
+                model.addAttribute("error", "El usuario está bloqueado.");
+                return "usuario/auth/login-nombre";
+            }
+
+            logger.info("Usuario desbloqueado: {}", usuarioDTO.getEmail());
             usuarioService.desbloquearUsuario(usuarioDTO.getEmail());
-            logger.info("Desbloqueando usuario: {}", usuarioDTO.getEmail());
-            System.err.println(LocalDateTime.now());
-            usuarioBBDD.setEstadoBloqueado(false);
-            usuarioBBDD.setBloqueadoHasta(null);
-        }
-
-        boolean usuarioBLoqueado = usuarioService.buscarBloqueado(usuarioDTO.getEmail());
-
-        if (usuarioBLoqueado) {
-            logger.warn("Usuario bloqueado: {}", usuarioDTO.getEmail());
-            model.addAttribute("error", "El usuario está bloqueado.");
-            return "usuario/auth/login-nombre";
+            usuario.setBloqueadoHasta(null);
         }
 
         logger.info("Usuario encontrado y no bloqueado: {}", usuarioExistente.getEmail());
@@ -168,23 +173,26 @@ public class InicioSesionController {
         return "usuario/auth/login-contrasena";
     }
 
-
     /**
-     * Procesa el ingreso de la contraseña del usuario.
-     * Si es válida, guarda el usuario en sesión y redirige al dashboard.
-     * Si no, muestra mensaje de error y permite reintentar.
+     * Procesa el formulario de inicio de sesión con contraseña.
      *
-     * @param usuarioDTO usuario obtenido del modelo o sesión.
-     * @param contrasena contraseña ingresada.
-     * @param session sesión HTTP actual.
-     * @param model modelo para enviar mensajes a la vista.
-     * @return redirección al dashboard o recarga de la vista de contraseña si hay error.
+     * <p>Valida la contraseña ingresada por el usuario. Si es incorrecta, incrementa el contador
+     * de intentos fallidos en sesión y, tras 3 intentos, bloquea al usuario temporalmente.
+     * Si la contraseña es correcta, reinicia los intentos, guarda el usuario en sesión y redirige al dashboard.</p>
+     *
+     * @param usuarioDTO Datos del usuario enviados desde el formulario, principalmente el email.
+     * @param contrasena Contraseña ingresada por el usuario.
+     * @param session Sesión HTTP para guardar datos temporales del usuario.
+     * @param model Modelo para pasar datos a la vista en caso de error.
+     * @param redirectAttributes Atributos para redirección, si fueran necesarios (no se usan en este fragmento).
+     * @return Redirección a la vista correspondiente: login con contraseña o dashboard.
      */
     @PostMapping("/password")
     public String procesarFormularioContrasena(@ModelAttribute("usuario") UsuarioDTO usuarioDTO,
                                                @RequestParam String contrasena,
                                                HttpSession session,
-                                               Model model) {
+                                               Model model,
+                                               RedirectAttributes redirectAttributes) {
         if (usuarioDTO == null || usuarioDTO.getEmail().isBlank()) {
             logger.warn("Intento de acceso sin email en sesión.");
             return "redirect:/login/username";
@@ -197,19 +205,6 @@ public class InicioSesionController {
         }
 
         UsuarioDTO usuarioBBDD = usuarioService.buscarPorEmail(usuarioDTO.getEmail());
-
-        if (usuarioBBDD.getBloqueadoHasta() != null && usuarioBBDD.getBloqueadoHasta().isAfter(LocalDateTime.now())) {
-            // Sigue bloqueado, todavía no ha llegado la hora de desbloqueo
-            logger.warn("Acceso bloqueado para usuario: {}", usuarioDTO.getEmail());
-            model.addAttribute("error", "El usuario está bloqueado. Inténtelo más tarde.");
-            return "usuario/auth/login-contrasena";
-        } else {
-            // Ya pasó la hora, se debe desbloquear
-            usuarioService.desbloquearUsuario(usuarioDTO.getEmail());
-            logger.info("Desbloqueando usuario: {}", usuarioDTO.getEmail());
-            usuarioBBDD.setEstadoBloqueado(false);
-            usuarioBBDD.setBloqueadoHasta(null);
-        }
 
         if (!passwordEncoder.matches(contrasena, usuarioBBDD.getContrasena())) {
             logger.warn("Contraseña incorrecta para el usuario: {}", usuarioDTO.getEmail());
@@ -233,18 +228,15 @@ public class InicioSesionController {
         logger.info("Inicio de sesión exitoso para: {}", usuarioDTO.getEmail());
 
         // Obtener o inicializar contador de inicios de sesión
-        Integer contador = (Integer) session.getAttribute("contadorSesiones");
-        if (contador == null) {
-            contador = 1;
-        } else {
-            contador++;
-        }
-        session.setAttribute("contador", contador);
+        int contador = usuarioService.getContadorInicios(usuarioBBDD.getEmail());
+        contador++;
+        usuarioService.actualizarContadorInicios(usuarioBBDD.getEmail(), contador);
 
         logger.info("Número de accesos al dashboard en esta sesión: {}", contador);
-        model.addAttribute("contadorSesiones", contador);
 
         session.setAttribute("usuario", usuarioBBDD);
+        session.setAttribute("contador", contador);
+        redirectAttributes.addFlashAttribute("contador", contador);
         session.removeAttribute("intentos");
         return "redirect:/dashboard/dashboard";
     }
@@ -352,12 +344,6 @@ public class InicioSesionController {
             Model model
     ) {
         Optional<String> emailToken = tokenService.validarToken(token);
-
-//        if (contrasenaRecuperacion.isEmpty()) {
-//            logger.warn("Las contraseñas no pueden estar vacías.");
-//            model.addAttribute("error", "Las contraseñas no pueden estar vacías.");
-//            return "redirect:/login/restablecer-contrasena/?token=" + token;
-//        }
 
         if (emailToken.isEmpty() || !emailToken.get().equals(email)) {
             logger.error("Token inválido o email no coincide para restablecer contraseña.");

@@ -259,6 +259,16 @@ public class UsuarioServiceImpl implements UsuarioService {
         }
     }
 
+    /**
+     * Desbloquea al usuario con el email proporcionado.
+     *
+     * <p>Este método elimina el bloqueo del usuario, estableciendo el campo
+     * {@code bloqueadoHasta} como {@code null} y el estado de bloqueo {@code false}.
+     * Luego, guarda los cambios en la base de datos.
+     *
+     * @param email El email del usuario a desbloquear.
+     * @throws RuntimeException Si no se encuentra un usuario con el email dado.
+     */
     @Override
     public void desbloquearUsuario(String email) {
         Usuario usuario = usuarioRepository.findByEmail(email)
@@ -269,6 +279,16 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuarioRepository.save(usuario);
     }
 
+    /**
+     * Actualiza el tiempo de desbloqueo del usuario con el email proporcionado.
+     *
+     * <p>Este método establece el campo {@code bloqueadoHasta} del usuario a 30 segundos
+     * después de la fecha y hora actuales. Luego, guarda los cambios en la base de datos.
+     *
+     * @param email El email del usuario cuyo tiempo de desbloqueo se desea actualizar.
+     * @param localDateTime El momento en que se establece el nuevo tiempo de desbloqueo.
+     * @throws EntityNotFoundException Si no se encuentra un usuario con el email proporcionado.
+     */
     @Override
     public void actualizarTiempoDesbloqueo(String email, LocalDateTime localDateTime) {
         Usuario usuario = usuarioRepository.findByEmail(email)
@@ -278,4 +298,56 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.setBloqueadoHasta(LocalDateTime.now().plusSeconds(30));
         usuarioRepository.save(usuario);
     }
+
+    /**
+     * Busca un usuario en la base de datos por su email.
+     *
+     * <p>Este método intenta encontrar un usuario cuyo email coincida con el proporcionado.
+     * Si el usuario existe, lo devuelve; de lo contrario, lanza una excepción {@link EntityNotFoundException}.
+     *
+     * @param email El email del usuario a buscar.
+     * @return El objeto {@link Usuario} correspondiente al email proporcionado.
+     * @throws EntityNotFoundException Si no se encuentra un usuario con el email proporcionado.
+     */
+    @Override
+    public Usuario buscarPorEmailFecha(String email) {
+        Optional<Usuario> usuarioOptional = usuarioRepository.findByEmail(email);
+        if (usuarioOptional.isPresent()) {
+            return usuarioOptional.get();
+        } else {
+            throw new EntityNotFoundException("Usuario no encontrado con email: " + email);
+        }
+    }
+
+    /**
+     * Actualiza el número de inicios de sesión del usuario.
+     *
+     * @param email El email del usuario.
+     * @param nuevoContador El nuevo valor del contador de inicios.
+     */
+    @Override
+    public void actualizarContadorInicios(String email, int nuevoContador) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con email: " + email));
+
+        usuario.setContadorInicios(nuevoContador);
+        usuarioRepository.save(usuario);
+    }
+
+    /**
+     * Obtiene el número de inicios de sesión del usuario con el email proporcionado.
+     *
+     * @param email El email del usuario.
+     * @return El número actual de inicios de sesión.
+     * @throws EntityNotFoundException Si no se encuentra el usuario con ese email.
+     */
+    @Override
+    public int getContadorInicios(String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con email: " + email));
+
+        return usuario.getContadorInicios();
+    }
+
+
 }

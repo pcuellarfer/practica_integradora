@@ -13,6 +13,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -53,6 +58,18 @@ public class DatosIniciales {
                                     BancoRepository bancoRepository,
                                     TipoTarjetaRepository tipoTarjetaRepository) {
         return _ -> {
+
+            //crea la carpeta uploads/empleados si no existe
+            try {
+                Path directorio = Paths.get("uploads/empleados");
+                if (!Files.exists(directorio)) {
+                    Files.createDirectories(directorio);
+                    System.out.println("Directorio 'uploads/empleados' creado exitosamente.");
+                }
+            } catch (IOException e) {
+                System.err.println("Error al crear el directorio 'uploads/empleados': " + e.getMessage());
+            }
+
             Usuario usuarioInicial = new Usuario();
             usuarioInicial.setNombre("Juan");
             usuarioInicial.setContrasena(passwordEncoder.encode("Contraseña@-"));
@@ -157,6 +174,7 @@ public class DatosIniciales {
 
             //usando el usuario inicial
             Empleado empleado = new Empleado();
+            empleado.setId(UUID.randomUUID());
             empleado.setNombre("Juan");
             empleado.setUsuario(usuarioInicial);
             empleado.setGenero(masculino);
@@ -181,6 +199,7 @@ public class DatosIniciales {
 
             //para paco
             Empleado pacoE = new Empleado();
+            pacoE.setId(UUID.randomUUID());
             pacoE.setNombre("Paco");
             pacoE.setUsuario(paco);
             pacoE.setGenero(masculino);
@@ -214,6 +233,7 @@ public class DatosIniciales {
 
             // Empleado asociado al usuario secundario
             Empleado empleado2 = new Empleado();
+            empleado2.setId(UUID.randomUUID());
             empleado2.setNombre("Maria");
             empleado2.setApellido("Gomez");
             empleado2.setUsuario(usuarioSecundario);

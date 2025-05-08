@@ -33,9 +33,9 @@
             </div>
 
             <div class="mb-3">
-                <label for="fotoUrl" class="form-label">Foto:</label>
-                <input type="file" id="fotoUrl" name="fotoUrl" class="form-control" th:field="*{fotoUrl}">
-                <span class="error-message" th:if="${#fields.hasErrors('fotoUrl')}" th:errors="*{fotoUrl}"></span>
+                <label for="foto" class="form-label">Foto:</label>
+                <input type="file" id="foto" name="foto" class="form-control" />
+                <span class="error-message" th:if="${errorFoto}" th:text="${errorFoto}"></span>
             </div>
 
             <div class="mb-3">

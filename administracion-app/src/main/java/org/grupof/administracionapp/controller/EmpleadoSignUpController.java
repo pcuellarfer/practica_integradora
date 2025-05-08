@@ -20,6 +20,7 @@ import org.grupof.administracionapp.services.TipoVia.TipoViaService;
 import org.grupof.administracionapp.services.banco.BancoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,6 +30,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -151,39 +155,47 @@ public class EmpleadoSignUpController {
             return "empleado/auth/FormDatosPersonales";
         }
 
-        logger.info("Datos personales registrados para usuario ID: {}", usuarioDTO.getId());
-
-        if (foto != null && !foto.isEmpty()) {
-            try {
-                // Nombre único para evitar conflictos
-                String nombreImagen = UUID.randomUUID() + "_" + foto.getOriginalFilename();
-
-                // Ruta física en el sistema de archivos
-                String directorioDestino = "src/main/resources/static/usr/img/";
-
-                File directorio = new File(directorioDestino);
-                if (!directorio.exists()) {
-                    directorio.mkdirs();
-                }
-
-                // Archivo destino
-                File archivoDestino = new File(directorio, nombreImagen);
-                foto.transferTo(archivoDestino);
-
-                String rutaImagen = "/usr/img/" + nombreImagen;
-                paso1.setFotoUrl(rutaImagen);
-
-            } catch (IOException e) {
-                logger.error("Error al guardar la imagen", e);
-                errores.rejectValue("foto", "error.foto", "Error al guardar la foto.");
-                return "empleado/auth/FormDatosPersonales";
-            }
+        //validar la foto, faltaria tamaño/tipo
+        if (foto == null || foto.isEmpty()) {
+            modelo.addAttribute("errorFoto", "Debe subir una foto.");
+            modelo.addAttribute("paises", paisService.getAllPaises());
+            modelo.addAttribute("generos", generoService.getAllGeneros());
+            return "empleado/auth/FormDatosPersonales";
         }
 
-        // Asigna el DTO de paso1 al DTO de registroEmpleado
+        //validar que sea o png o gif
+        String tipo = foto.getContentType();
+        if (!"image/png".equals(tipo) && !"image/gif".equals(tipo)) {
+            modelo.addAttribute("errorFoto", "Solo se permiten imágenes PNG o GIF.");
+            modelo.addAttribute("paises", paisService.getAllPaises());
+            modelo.addAttribute("generos", generoService.getAllGeneros());
+            return "empleado/auth/FormDatosPersonales";
+        }
+
+        //validar que pese menos de 200kb
+        if (foto.getSize() > 200 * 1024) {
+            modelo.addAttribute("errorFoto", "La imagen debe pesar menos de 200 KB.");
+            modelo.addAttribute("paises", paisService.getAllPaises());
+            modelo.addAttribute("generos", generoService.getAllGeneros());
+            return "empleado/auth/FormDatosPersonales";
+        }
+
+
+
+        try { //getBytes puede soltar excepcion, por eso el try catch
+            registroEmpleado.setFotoBytes(foto.getBytes());
+            registroEmpleado.setFotoTipo(foto.getContentType());
+        } catch (IOException e) {
+            logger.error("Error al leer la imagen", e);
+            errores.rejectValue("foto", "foto.error", "Error al procesar la imagen.");
+            return "empleado/auth/FormDatosPersonales";
+        }
+
+        registroEmpleado.setEmpleadoId(UUID.randomUUID());
         registroEmpleado.setPaso1PersonalDTO(paso1);
 
         return "redirect:/registro/paso2";
+
     }
 
     /**
@@ -351,7 +363,7 @@ public class EmpleadoSignUpController {
             @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario) {
 
         if (errores.hasErrors()) {
-            System.err.println(errores.toString());
+            System.err.println(errores);
             modelo.addAttribute("bancos", bancoService.getAllBancos());
             modelo.addAttribute("tiposTarjeta", tipoTarjetaService.getAllTiposTarjetas());
             logger.warn("Errores en formulario económico para usuario ID: {}", usuario.getId());
@@ -435,6 +447,12 @@ public class EmpleadoSignUpController {
         return "empleado/auth/Resumen";
     }
 
+
+    //meter lo que hay en e l aplication properties en una variable
+    @Value("${app.upload.dir}")
+    private String uploadDir;
+
+
     /**
      * Procesa el envío final del registro de un empleado. Este método verifica que exista un usuario en la sesión
      * antes de procesar el registro. Si no hay un usuario válido, redirige al formulario de registro de usuario.
@@ -451,6 +469,29 @@ public class EmpleadoSignUpController {
         if (usuarioDTO == null) {
             logger.warn("Intento de envío final de registro sin usuario.");
             return "redirect:/registro/usuario";
+        }
+
+        byte[] fotoBytes = registroEmpleadoDTO.getFotoBytes();
+        String tipo = registroEmpleadoDTO.getFotoTipo();//guardar el tipo de la foto en una variable
+
+        if (fotoBytes != null && fotoBytes.length > 0 && tipo != null) {
+            try {
+                String extension = tipo.equals("image/png") ? ".png" : ".gif"; //guardar en variable la extension de la imagen
+                String nombreArchivo = registroEmpleadoDTO.getEmpleadoId() + extension;  //juntar el uuid y la extension para formar el nombre del archivoi
+
+                File directorioBase = new File(uploadDir); //crear un objeto file que representa donde se guardan los archivos
+                String rutaAbsoluta = directorioBase.getAbsolutePath(); //pillar la ruta absolita de la variable directorioBase
+                Path ruta = Paths.get(rutaAbsoluta, nombreArchivo); //crear la ruta buena de rutaAbsoluta+nombre del archivo
+
+                Files.createDirectories(ruta.getParent()); //crea el directorio si no existe(esta tambien en datosIniciales, habra que ver con cual quedarse)
+                Files.write(ruta, fotoBytes); //guarda foto en ruta
+
+                registroEmpleadoDTO.setFotoUrl("/uploads/empleados/" + nombreArchivo);//meter al dto la url de su foto
+
+            } catch (IOException e) {
+                logger.error("Error al guardar la foto del empleado", e);
+                return "redirect:/registro/paso5";
+            }
         }
 
         logger.info("Registro finalizado para usuario ID: {}", usuarioDTO.getId());
