@@ -1,20 +1,21 @@
 package org.grupof.administracionapp.entity.producto;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import org.grupof.administracionapp.entity.producto.enums.Color;
+import org.grupof.administracionapp.entity.producto.enums.Talla;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
-public class Ropa {
+public class Ropa extends Producto{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @ElementCollection
+    @Enumerated(EnumType.STRING)
+    private List<Color> colores;
 
-    private String talla;
-
+    @ElementCollection
+    @Enumerated(EnumType.STRING)
+    private List<Talla> tallas;
 
 }

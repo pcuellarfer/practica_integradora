@@ -1,18 +1,12 @@
 package org.grupof.administracionapp.entity.producto;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import org.grupof.administracionapp.entity.producto.enums.Tapa;
 
 import java.util.UUID;
 
 @Entity
-public class Libro { //extends producto
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+public class Libro extends Producto{
 
     private String titulo;
 
@@ -20,7 +14,8 @@ public class Libro { //extends producto
 
     private String editorial;
 
-    private String Tapa; //entidad tapa?
+    @Enumerated(EnumType.STRING)
+    private Tapa tapa;
 
     private int numPaginas;
 
