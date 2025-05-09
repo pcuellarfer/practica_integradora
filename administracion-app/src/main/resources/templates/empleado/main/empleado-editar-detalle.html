@@ -18,18 +18,18 @@
         <div class="col-2"></div>
       </div>
 
-      <form th:action="@{/dashboard/editarDetalle}" th:object="${empleado}" method="post" enctype="multipart/form-data">
+      <form th:action="@{/editarDetalle}" th:object="${registroEmpleado}" method="post" enctype="multipart/form-data">
 
         <div class="mb-3">
           <label for="nombre" class="form-label">Nombre:</label>
-          <input type="text" id="nombre" name="nombre" class="form-control" th:field="*{nombre}">
-          <span class="error-message" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></span>
+          <input type="text" id="nombre" name="nombre" class="form-control" th:field="*{paso1PersonalDTO.nombre}">
+          <span class="error-message" th:if="${#fields.hasErrors('paso1PersonalDTO.nombre')}" th:errors="*{paso1PersonalDTO.nombre}"></span>
         </div>
 
         <div class="mb-3">
           <label for="apellido" class="form-label">apellido:</label>
-          <input type="text" id="apellido" name="apellido" class="form-control" th:field="*{apellido}">
-          <span class="error-message" th:if="${#fields.hasErrors('apellido')}" th:errors="*{apellido}"></span>
+          <input type="text" id="apellido" name="apellido" class="form-control" th:field="*{paso1PersonalDTO.apellido}">
+          <span class="error-message" th:if="${#fields.hasErrors('paso1PersonalDTO.apellido')}" th:errors="*{paso1PersonalDTO.apellido}"></span>
         </div>
 
         <div class="mb-3">
@@ -45,7 +45,7 @@
             <input class="form-check-input" type="radio"
                    th:id="${genero.identidad}"
                    th:value="${genero.id}"
-                   th:field="*{genero}" />
+                   th:field="*{paso1PersonalDTO.genero}" />
             <label class="form-check-label" th:for="${genero.identidad}" th:text="${genero.identidad}"></label>
           </div>
 
@@ -53,27 +53,27 @@
           <!--Boton de seleccionar el primer radio-->
           <button type="button" class="btn btn-secondary w-100 mt-2" onclick="deseleccionarGenero()">Deseleccionar género</button>
 
-          <span class="error-message" th:if="${#fields.hasErrors('genero')}" th:errors="*{genero}"></span>
+          <span class="error-message" th:if="${#fields.hasErrors('paso1PersonalDTO.genero')}" th:errors="*{paso1PersonalDTO.genero}"></span>
 
         </div>
 
         <div class="mb-3">
           <label for="fechaNacimiento" class="form-label">Fecha de nacimiento:</label>
           <input type="text" id="fechaNacimiento" name="fechaNacimiento" class="form-control"
-                 th:field="*{fechaNacimiento}">
-          <span class="error-message" th:if="${#fields.hasErrors('fechaNacimiento')}"
-                th:errors="*{fechaNacimiento}"></span>
+                 th:field="*{paso1PersonalDTO.fechaNacimiento}">
+          <span class="error-message" th:if="${#fields.hasErrors('paso1PersonalDTO.fechaNacimiento')}"
+                th:errors="*{paso1PersonalDTO.fechaNacimiento}"></span>
         </div>
 
         <div class="mb-3">
           <label for="edad" class="form-label">edad:</label>
-          <input type="text" id="edad" name="edad" class="form-control" th:field="*{edad}">
-          <span class="error-message" th:if="${#fields.hasErrors('edad')}" th:errors="*{edad}"></span>
+          <input type="text" id="edad" name="edad" class="form-control" th:field="*{paso1PersonalDTO.edad}">
+          <span class="error-message" th:if="${#fields.hasErrors('paso1PersonalDTO.edad')}" th:errors="*{paso1PersonalDTO.edad}"></span>
         </div>
 
         <!--hay que tener españa seleccionada-->
         <label for="pais">País:</label>
-        <select id="pais" th:field="*{pais}" class="form-control">
+        <select id="pais" th:field="*{paso1PersonalDTO.pais}" class="form-control">
           <option value="">Seleccione un país</option>
           <option th:each="pais : ${listaPaises}" th:value="${pais.id}" th:text="${pais.nombre}"></option>
         </select>
@@ -81,10 +81,10 @@
 
         <div class="mb-3">
           <label for="comentarios" class="form-label">Comentarios:</label>
-          <textarea id="comentarios" name="comentarios" class="form-control" th:field="*{comentarios}"
+          <textarea id="comentarios" name="comentarios" class="form-control" th:field="*{paso1PersonalDTO.comentarios}"
                     rows="4"></textarea>
-          <span class="error-message" th:if="${#fields.hasErrors('comentarios')}"
-                th:errors="*{comentarios}"></span>
+          <span class="error-message" th:if="${#fields.hasErrors('paso1PersonalDTO.comentarios')}"
+                th:errors="*{paso1PersonalDTO.comentarios}"></span>
         </div>
 
         <button type="submit" class="btn btn-primary w-100 mt-2">Aceptar cambios</button>

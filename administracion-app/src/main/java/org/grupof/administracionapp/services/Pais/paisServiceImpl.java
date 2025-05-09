@@ -25,4 +25,11 @@ public class paisServiceImpl implements PaisService {
     public Pais getPaisById(UUID id) {
         return paisRepository.findById(id).orElse(null);
     }
+
+    @Override
+    public String obtenerNombrePais(UUID id) {
+        return paisRepository.findById(id)
+                .map(Pais::getNombre)
+                .orElse("Desconocido");
+    }
 }

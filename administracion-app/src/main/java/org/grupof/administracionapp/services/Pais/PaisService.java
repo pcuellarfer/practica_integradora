@@ -10,4 +10,6 @@ import java.util.UUID;
 public interface PaisService {
      List<Pais> getAllPaises();
      Pais getPaisById(UUID id);
+     String obtenerNombrePais(UUID id);
+
 }

@@ -23,6 +23,13 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -70,6 +77,92 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         empleadoRepository.save(empleado);
         logger.info("Empleado guardado en base de datos: {}", empleado.getId());
     }
+
+    @Override
+    public void actualizarDatosEmpleado(UUID usuarioId,
+                                        RegistroEmpleadoDTO dto,
+                                        MultipartFile foto,
+                                        String uploadDir)
+            throws IOException {
+        Empleado empleado = empleadoRepository.findByUsuarioId(usuarioId) //mete el empleado con id_usuario
+                .orElseThrow(() -> new IllegalArgumentException("Empleado no encontrado"));
+
+        if (!foto.isEmpty()) { //solo entra si el usuario ha subido una imagen nueva
+
+            String tipo = foto.getContentType();//comprobar si es .png o .gif
+            if (!"image/png".equals(tipo) && !"image/gif".equals(tipo)) {
+                throw new IllegalArgumentException("Solo se permiten imágenes PNG o GIF.");
+            }
+
+            // Validación del tamaño
+            if (foto.getSize() > 200 * 1024) {//comprobar que pese menos de 200kb
+                throw new IllegalArgumentException("La imagen debe pesar menos de 200 KB.");
+            }
+
+            dto.setFotoBytes(foto.getBytes()); //guardar en el dto los bytes de la imagen
+            dto.setFotoTipo(foto.getContentType()); //y su extension
+
+            String extension = tipo.equals("image/png") ? ".png" : ".gif";
+            String nombreArchivo = empleado.getId() + extension; //crea un nombre para la imagen id_empleado+extension
+
+            File directorioBase = new File(uploadDir);
+            String rutaAbsoluta = directorioBase.getAbsolutePath();//crea el path donde se va a guardar el archivo
+            Path ruta = Paths.get(rutaAbsoluta, nombreArchivo);//ruta compleata del archivo con nombre
+
+            Files.createDirectories(ruta.getParent());//mira si el directorio existe, si no lo crea
+            Files.write(ruta, dto.getFotoBytes());//mete la imagen en la ruta
+
+            String urlFoto = "/uploads/empleados/" + nombreArchivo;
+            empleado.setFotoUrl(urlFoto);//mete al empleado la url de su foto
+        }
+
+        Paso1PersonalDTO personal = dto.getPaso1PersonalDTO();
+        empleado.setNombre(personal.getNombre());
+        empleado.setApellido(personal.getApellido());
+        empleado.setGenero(generoService.getGeneroById(personal.getGenero()));
+        empleado.setFechaNacimiento(personal.getFechaNacimiento());
+        empleado.setEdad(personal.getEdad());
+        empleado.setPais(paisService.getPaisById(personal.getPais()));
+        empleado.setComentarios(personal.getComentarios());
+        //mete los datos en el empleado
+
+        empleadoRepository.save(empleado); //y lo guarda
+    }
+
+    @Override
+    public EmpleadoDetalleDTO obtenerDetalleEmpleado(UUID usuarioId) {
+
+        Empleado empleadoEntidad = empleadoRepository.findByUsuarioId(usuarioId) //busca al empleado(entidad) a partir del id del usuario
+                .orElseThrow(() -> new IllegalArgumentException("Empleado no encontrado"));
+
+        RegistroEmpleadoDTO dto = this.buscarEmpleadoPorUsuarioId(usuarioId); //obtiene el dto con todos los datos del usuario
+
+        EmpleadoDetalleDTO detalle = new EmpleadoDetalleDTO(); //crea un dto de los detalles
+        detalle.setEmpleado(dto); //le mete el registroEmpleado a el detalle
+
+        UUID idGenero = dto.getPaso1PersonalDTO().getGenero(); //pilla el uuid del genero que tenga el dto
+        detalle.setNombreGenero(generoService.obtenerNombreGenero(idGenero));// y lo convierte en su nombre
+
+        UUID idPais = dto.getPaso1PersonalDTO().getPais();//lo mismo qe con genero
+        detalle.setNombrePais(paisService.obtenerNombrePais(idPais));
+
+        UUID idDepartamento = dto.getPaso3ProfesionalDTO().getDepartamento();//adivina que, lo mismo que genero
+        detalle.setNombreDepartamento(departamentoService.obtenerNombreDepartamento(idDepartamento));
+
+        String rutaFoto = empleadoEntidad.getFotoUrl(); //pilla la ruta de la foto que tiene la entidad empleado
+        if (rutaFoto != null && !rutaFoto.isBlank()) { //si no esta nula y no esta vacia
+            String nombreArchivo = Paths.get(rutaFoto).getFileName().toString(); //pilla solo el nombre.extension del archivo
+            detalle.setNombreFoto(nombreArchivo);//lo mete en el dto detalle
+        }
+
+        return detalle; //devuelve el dto llenito de datos
+    }
+
+    @Override
+    public RegistroEmpleadoDTO obtenerRegistroEmpleadoParaEdicion(UUID usuarioId) {
+        return this.buscarEmpleadoPorUsuarioId(usuarioId); //convierte el empleado(entidad) en un RegistroEmpeladoDTO
+    }
+
 
     /**
      * Registra un nuevo empleado en el sistema a partir de los datos proporcionados en un objeto

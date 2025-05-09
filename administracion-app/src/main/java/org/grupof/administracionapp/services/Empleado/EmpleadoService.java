@@ -1,11 +1,16 @@
 package org.grupof.administracionapp.services.Empleado;
 
+import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.grupof.administracionapp.dto.Empleado.EmpleadoDetalleDTO;
 import org.grupof.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
 import org.grupof.administracionapp.entity.Empleado;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 
 /**
@@ -16,7 +21,21 @@ import java.util.List;
 @Service
 public interface EmpleadoService {
 
+    //usado en DetalleControler
     void guardarEmpleado(Empleado empleado);
+
+    //usado en DetalleControler
+    void actualizarDatosEmpleado(UUID usuarioId,
+                                 RegistroEmpleadoDTO dto,
+                                 MultipartFile foto,
+                                 String uploadDir)
+            throws IOException;
+
+    //usado en DetalleControler
+    EmpleadoDetalleDTO obtenerDetalleEmpleado(UUID usuarioId);
+
+    //usado en DetalleControler
+    RegistroEmpleadoDTO obtenerRegistroEmpleadoParaEdicion(UUID usuarioId);
 
     /**
      * Registra un nuevo empleado en el sistema a partir de los datos personales y empresariales,
