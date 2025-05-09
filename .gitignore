@@ -19,6 +19,7 @@ logs/
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
+uploads/
 
 ### IntelliJ IDEA ###
 .idea

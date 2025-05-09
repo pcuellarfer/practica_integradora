@@ -10,14 +10,18 @@ import org.grupof.administracionapp.repository.EtiquetaRepository;
 import org.grupof.administracionapp.services.Departamento.DepartamentoService;
 import org.grupof.administracionapp.services.Empleado.EmpleadoService;
 import org.grupof.administracionapp.services.Genero.GeneroService;
+import org.grupof.administracionapp.services.Pais.PaisService;
 import org.grupof.administracionapp.services.etiqueta.EtiquetaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
@@ -39,6 +43,7 @@ public class DashboardController {
     private final EtiquetaService etiquetaService;
     private final EtiquetaRepository etiquetaRepository;
     private final DepartamentoService departamentoService;
+    private final PaisService paisService;
 
 
     /**
@@ -50,13 +55,14 @@ public class DashboardController {
                                EmpleadoRepository empleadoRepository,
                                GeneroService generoService,
                                EtiquetaService etiquetaService,
-                               EtiquetaRepository etiquetaRepository, DepartamentoService departamentoService) {
+                               EtiquetaRepository etiquetaRepository, DepartamentoService departamentoService, PaisService paisService) {
         this.empleadoService = empleadoService;
         this.empleadoRepository = empleadoRepository;
         this.generoService = generoService;
         this.etiquetaService = etiquetaService;
         this.etiquetaRepository = etiquetaRepository;
         this.departamentoService = departamentoService;
+        this.paisService = paisService;
     }
 
     /**
@@ -584,6 +590,100 @@ public class DashboardController {
         }
 
         return "redirect:/dashboard/etiquetado/eliminar?empleadoId=" + empleadoId;
+    }
+
+    @GetMapping("/editarDetalle")
+    public String editarDetalle(HttpSession session, Model modelo){
+        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
+
+        if (usuario == null) {
+            logger.warn("Intento de acceso sin sesión activa en /editarDetalle. Redirigiendo a login.");
+            return "redirect:/login/username";
+        }
+
+        // Buscar empleado por ID de usuario
+        Empleado empleado = empleadoRepository.findByUsuarioId(usuario.getId()).orElse(null);
+        if (empleado == null) {
+            logger.error("No hay un empleado con usuario_id en editarDetalle: {}", usuario.getId());
+            return "redirect:/login/username";
+        }
+        logger.info("Empleado encontrado en editarDetalle: {}", empleado.getId());
+
+        modelo.addAttribute("listaPaises", paisService.getAllPaises());
+        modelo.addAttribute("listaDepartamentos", departamentoService.getAllDepartamentos());
+        modelo.addAttribute("listaGeneros", generoService.getAllGeneros());
+        modelo.addAttribute("empleado", empleado);
+        return "empleado/main/empleado-editar-detalle";
+    }
+
+    @PostMapping("/editarDetalle")
+    public String editarDetalle(HttpSession session,
+                                RedirectAttributes redirectAttributes,
+                                @ModelAttribute("registroEmpleado") RegistroEmpleadoDTO registroEmpleado,
+                                BindingResult errores,
+                                Model modelo,
+                                @RequestParam("foto") MultipartFile foto,
+                                @RequestParam("genero") UUID generoId,
+                                @RequestParam("pais") UUID paisId,
+                                @RequestParam("nombre") String nombre,
+                                @RequestParam("apellido") String apellido) {
+        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
+
+        if (usuario == null) {
+            logger.warn("Intento de acceso sin sesión activa en /editarDetalle POST. Redirigiendo a login.");
+            return "redirect:/login/username";
+        }
+
+        if (errores.hasErrors()) {
+            modelo.addAttribute("paises", paisService.getAllPaises());
+            modelo.addAttribute("generos", generoService.getAllGeneros());
+            modelo.addAttribute("listaDepartamentos", departamentoService.getAllDepartamentos());
+            modelo.addAttribute("error", "error");
+            logger.warn("Errores en el formulario de datos personales para usuario ID: {}", usuario.getId());
+            return "empleado/main/empleado-editar-detalle";
+        }
+
+        String tipo = foto.getContentType();
+        if (!"image/png".equals(tipo) && !"image/gif".equals(tipo)) {
+            modelo.addAttribute("errorFoto", "Solo se permiten imágenes PNG o GIF.");
+            modelo.addAttribute("paises", paisService.getAllPaises());
+            modelo.addAttribute("generos", generoService.getAllGeneros());
+            return "empleado/auth/FormDatosPersonales";
+        }
+
+        //validar que pese menos de 200kb
+        if (foto.getSize() > 200 * 1024) {
+            modelo.addAttribute("errorFoto", "La imagen debe pesar menos de 200 KB.");
+            modelo.addAttribute("paises", paisService.getAllPaises());
+            modelo.addAttribute("generos", generoService.getAllGeneros());
+            return "empleado/auth/FormDatosPersonales";
+        }
+
+        try { //getBytes puede soltar excepcion, por eso el try catch
+            registroEmpleado.setFotoBytes(foto.getBytes());
+            registroEmpleado.setFotoTipo(foto.getContentType());
+        } catch (IOException e) {
+            logger.error("Error al leer la imagen", e);
+            errores.rejectValue("foto", "foto.error", "Error al procesar la imagen.");
+            return "empleado/auth/FormDatosPersonales";
+        }
+
+        // Guardar los cambios en la base de datos
+        Empleado empleado = empleadoRepository.findByUsuarioId(usuario.getId()).orElse(null);
+        if (empleado == null) {
+            logger.error("No hay un empleado con usuario_id en editarDetalle POST: {}", usuario.getId());
+            return "redirect:/login/username";
+        }
+        logger.info("Empleado encontrado en editarDetalle POST: {}", empleado.getId());
+
+        empleado.setNombre(nombre);
+        empleado.setApellido(apellido);
+        empleado.setGenero(generoService.getGeneroById(generoId));
+        empleado.setPais(paisService.getPaisById(paisId));
+        empleado.setFotoUrl(foto.getOriginalFilename());
+
+        redirectAttributes.addFlashAttribute("mensaje", "Detalles actualizados correctamente");
+        return "redirect:/dashboard/detalle";
     }
 
 }

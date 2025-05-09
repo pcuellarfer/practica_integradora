@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<head th:replace="fragments/header :: head('Paso 1 - Datos de personales')"></head>
+
+<body>
+<div th:replace="/fragments/cabecera"></div>
+<main>
+  <div th:replace="/fragments/cuentaatras"></div>
+  <div class="absoluto mt-5">
+    <div class="container">
+      <!-- Título -->
+      <div class="row align-items-center">
+        <div class="col-2"></div>
+        <div class="col">
+          <h1 class="text-center mb-2">Paso 1 - Datos personales</h1>
+        </div>
+        <div class="col-2"></div>
+      </div>
+
+      <form th:action="@{/dashboard/editarDetalle}" th:object="${empleado}" method="post" enctype="multipart/form-data">
+
+        <div class="mb-3">
+          <label for="nombre" class="form-label">Nombre:</label>
+          <input type="text" id="nombre" name="nombre" class="form-control" th:field="*{nombre}">
+          <span class="error-message" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></span>
+        </div>
+
+        <div class="mb-3">
+          <label for="apellido" class="form-label">apellido:</label>
+          <input type="text" id="apellido" name="apellido" class="form-control" th:field="*{apellido}">
+          <span class="error-message" th:if="${#fields.hasErrors('apellido')}" th:errors="*{apellido}"></span>
+        </div>
+
+        <div class="mb-3">
+          <label for="foto" class="form-label">Foto:</label>
+          <input type="file" id="foto" name="foto" class="form-control" />
+          <span class="error-message" th:if="${errorFoto}" th:text="${errorFoto}"></span>
+        </div>
+
+        <div class="mb-3">
+          <!--femenino tiene que ser el default-->
+          <label class="form-label">Genero:</label>
+          <div th:each="genero : ${listaGeneros}" class="form-check">
+            <input class="form-check-input" type="radio"
+                   th:id="${genero.identidad}"
+                   th:value="${genero.id}"
+                   th:field="*{genero}" />
+            <label class="form-check-label" th:for="${genero.identidad}" th:text="${genero.identidad}"></label>
+          </div>
+
+          <!--Boton de deseleccionar radios-->
+          <!--Boton de seleccionar el primer radio-->
+          <button type="button" class="btn btn-secondary w-100 mt-2" onclick="deseleccionarGenero()">Deseleccionar género</button>
+
+          <span class="error-message" th:if="${#fields.hasErrors('genero')}" th:errors="*{genero}"></span>
+
+        </div>
+
+        <div class="mb-3">
+          <label for="fechaNacimiento" class="form-label">Fecha de nacimiento:</label>
+          <input type="text" id="fechaNacimiento" name="fechaNacimiento" class="form-control"
+                 th:field="*{fechaNacimiento}">
+          <span class="error-message" th:if="${#fields.hasErrors('fechaNacimiento')}"
+                th:errors="*{fechaNacimiento}"></span>
+        </div>
+
+        <div class="mb-3">
+          <label for="edad" class="form-label">edad:</label>
+          <input type="text" id="edad" name="edad" class="form-control" th:field="*{edad}">
+          <span class="error-message" th:if="${#fields.hasErrors('edad')}" th:errors="*{edad}"></span>
+        </div>
+
+        <!--hay que tener españa seleccionada-->
+        <label for="pais">País:</label>
+        <select id="pais" th:field="*{pais}" class="form-control">
+          <option value="">Seleccione un país</option>
+          <option th:each="pais : ${listaPaises}" th:value="${pais.id}" th:text="${pais.nombre}"></option>
+        </select>
+        <button type="button" class="btn btn-secondary w-100 mt-2" onclick="deseleccionarPais()">Deseleccionar país</button>
+
+        <div class="mb-3">
+          <label for="comentarios" class="form-label">Comentarios:</label>
+          <textarea id="comentarios" name="comentarios" class="form-control" th:field="*{comentarios}"
+                    rows="4"></textarea>
+          <span class="error-message" th:if="${#fields.hasErrors('comentarios')}"
+                th:errors="*{comentarios}"></span>
+        </div>
+
+        <button type="submit" class="btn btn-danger w-100 mt-2">Aceptar cambios</button>
+      </form>
+      <!-- Mensaje de error (si existe) -->
+      <p th:if="${error}" th:text="${error}" style="color: red;"></p>
+    </div>
+  </div>
+</main>
+<div th:replace="/fragments/pie"></div>
+</body>
+</html>
