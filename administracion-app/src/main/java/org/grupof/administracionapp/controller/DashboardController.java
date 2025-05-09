@@ -538,30 +538,46 @@ public class DashboardController {
     @GetMapping("/etiquetado/eliminar")
     public String mostrarFormularioEliminacion(@RequestParam(name = "empleadoId", required = false) UUID empleadoId,
                                                HttpSession session, Model modelo) {
+        logger.info("Accediendo al formulario de eliminación de etiquetas");
+
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
         if (usuario == null) {
+            logger.warn("Sesión no activa. Redirigiendo a login en /etiquetado/eliminar GET");
             return "redirect:/login/username";
         }
 
+        logger.info("Usuario autenticado en /etiquetado/eliminar: {}", usuario.getId());
+
         Empleado jefe = empleadoRepository.findByUsuarioId(usuario.getId()).orElse(null);
         if (jefe == null) {
+            logger.error("No se encontró el jefe con usuario ID en etiquetado/eliminar: {}", usuario.getId());
             return "redirect:/login/username";
         }
 
         List<Empleado> subordinados = empleadoRepository.findByJefe(jefe);
+        logger.info("Se encontraron {} subordinados del jefe con ID: {}", subordinados.size(), jefe.getId());
         modelo.addAttribute("empleados", subordinados);
 
         if (empleadoId != null) {
+            logger.info("Se recibió el ID del empleado a consultar: {}", empleadoId);
             Empleado empleadoSeleccionado = empleadoRepository.findById(empleadoId).orElse(null);
             if (empleadoSeleccionado != null) {
+                logger.info("Empleado seleccionado encontrado: {}", empleadoSeleccionado.getId());
                 modelo.addAttribute("empleadoSeleccionado", empleadoSeleccionado);
+
                 List<Etiqueta> etiquetasAsignadas = etiquetaRepository.findByEmpleadosEtiquetados_Id(empleadoId);
+                logger.info("Etiquetas asignadas encontradas: {}", etiquetasAsignadas.size());
                 modelo.addAttribute("etiquetasAsignadas", etiquetasAsignadas);
+            } else {
+                logger.warn("No se encontró el empleado con ID: {}", empleadoId);
             }
+        } else {
+            logger.info("No se recibió ID de empleado. Solo se mostrará la lista de subordinados.");
         }
 
         return "empleado/main/empleado-eliminar-etiqueta";
     }
+
 
     /**
      * Procesa la eliminación de etiquetas específicas de un empleado.
@@ -576,25 +592,49 @@ public class DashboardController {
     public String eliminarEtiquetas(@RequestParam UUID empleadoId,
                                     @RequestParam List<UUID> etiquetasIds,
                                     HttpSession session) {
+        logger.info("Inicio de eliminación de etiquetas para empleado ID: {}", empleadoId);
+
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
-        if (usuario == null) return "redirect:/login/username";
+        if (usuario == null) {
+            logger.warn("Sesión no activa. Redirigiendo a login en /etiquetado/eliminar");
+            return "redirect:/login/username";
+        }
+
+        logger.info("Usuario autenticado /etiquetado/eliminar: {}", usuario.getId());
 
         Empleado jefe = empleadoRepository.findByUsuarioId(usuario.getId()).orElse(null);
-        if (jefe == null) return "redirect:/login/username";
+        if (jefe == null) {
+            logger.error("No se encontró el jefe con usuario ID: {}", usuario.getId());
+            return "redirect:/login/username";
+        }
 
         Empleado empleado = empleadoRepository.findById(empleadoId).orElse(null);
-        if (empleado == null) return "redirect:/dashboard/etiquetado/eliminar";
+        if (empleado == null) {
+            logger.error("Empleado a etiquetar no encontrado: {}", empleadoId);
+            return "redirect:/dashboard/etiquetado/eliminar";
+        }
+
+        logger.info("Empleado encontrado: {}. Etiquetas a eliminar: {}", empleado.getId(), etiquetasIds.size());
 
         for (UUID etiquetaId : etiquetasIds) {
             Etiqueta etiqueta = etiquetaRepository.findById(etiquetaId).orElse(null);
-            if (etiqueta != null && etiqueta.getJefe().equals(jefe)) {
-                etiqueta.getEmpleadosEtiquetados().remove(empleado);
-                etiquetaRepository.save(etiqueta);
+            if (etiqueta != null) {
+                if (etiqueta.getJefe().equals(jefe)) {
+                    etiqueta.getEmpleadosEtiquetados().remove(empleado);
+                    etiquetaRepository.save(etiqueta);
+                    logger.info("Etiqueta eliminada: {} para empleado: {}", etiquetaId, empleadoId);
+                } else {
+                    logger.warn("Etiqueta {} no pertenece al jefe actual. No se elimina.", etiquetaId);
+                }
+            } else {
+                logger.warn("Etiqueta no encontrada: {}", etiquetaId);
             }
         }
 
+        logger.info("Finalización de eliminación de etiquetas. Redirigiendo a vista de eliminación.");
         return "redirect:/dashboard/etiquetado/eliminar?empleadoId=" + empleadoId;
     }
+
 
     @GetMapping("/editarDetalle")
     public String editarDetalle(HttpSession session, Model modelo){
@@ -623,6 +663,25 @@ public class DashboardController {
     @Value("${app.upload.dir}")
     private String uploadDir;
 
+    /**
+     * Maneja la solicitud POST para editar los detalles personales de un empleado.
+     * Este método verifica que el usuario tenga una sesión activa, valida los datos del formulario,
+     * procesa la imagen de perfil (verificando tipo y tamaño), la guarda en disco y actualiza los
+     * datos del empleado en la base de datos. Si ocurre algún error, redirige al formulario con los
+     * mensajes correspondientes.
+     *
+     * @param session               Sesión HTTP actual, utilizada para obtener al usuario autenticado.
+     * @param redirectAttributes    Atributos para redirigir con mensajes flash.
+     * @param registroEmpleado      DTO que contiene los datos del formulario del empleado.
+     * @param errores               Resultado de la validación del formulario.
+     * @param modelo                Modelo usado para pasar atributos a la vista.
+     * @param foto                  Imagen de perfil subida por el usuario.
+     * @param generoId              Identificador del género seleccionado.
+     * @param paisId                Identificador del país seleccionado.
+     * @param nombre                Nuevo nombre del empleado.
+     * @param apellido              Nuevo apellido del empleado.
+     * @return Redirección al detalle del dashboard si se actualiza correctamente, o la vista de edición si hay errores.
+     */
     @PostMapping("/editarDetalle")
     public String editarDetalle(HttpSession session,
                                 RedirectAttributes redirectAttributes,
@@ -635,54 +694,62 @@ public class DashboardController {
                                 @RequestParam("nombre") String nombre,
                                 @RequestParam("apellido") String apellido) {
 
+        logger.info("Inicio de edición de detalle de empleado");
+
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
 
         if (usuario == null) {
-            logger.warn("Intento de acceso sin sesión activa en /editarDetalle POST. Redirigiendo a login.");
+            logger.warn("Sesión no activa. Redirigiendo a login.");
             return "redirect:/login/username";
         }
 
+        logger.info("Usuario autenticado: {}", usuario.getId());
+
         if (errores.hasErrors()) {
+            logger.warn("Errores de validación detectados para el usuario ID: {}", usuario.getId());
             modelo.addAttribute("paises", paisService.getAllPaises());
             modelo.addAttribute("generos", generoService.getAllGeneros());
             modelo.addAttribute("listaDepartamentos", departamentoService.getAllDepartamentos());
             modelo.addAttribute("error", "error");
-            logger.warn("Errores en el formulario de datos personales para usuario ID: {}", usuario.getId());
             return "empleado/main/empleado-editar-detalle";
         }
 
+        logger.info("Validación exitosa. Verificando la imagen...");
+
         String tipo = foto.getContentType();
         if (!"image/png".equals(tipo) && !"image/gif".equals(tipo)) {
+            logger.warn("Tipo de archivo inválido: {}", tipo);
             modelo.addAttribute("errorFoto", "Solo se permiten imágenes PNG o GIF.");
             modelo.addAttribute("paises", paisService.getAllPaises());
             modelo.addAttribute("generos", generoService.getAllGeneros());
-            return "empleado/auth/FormDatosPersonales";
+            return "empleado/main/empleado-editar-detalle";
         }
 
         if (foto.getSize() > 200 * 1024) {
+            logger.warn("Imagen demasiado grande: {} bytes", foto.getSize());
             modelo.addAttribute("errorFoto", "La imagen debe pesar menos de 200 KB.");
             modelo.addAttribute("paises", paisService.getAllPaises());
             modelo.addAttribute("generos", generoService.getAllGeneros());
-            return "empleado/auth/FormDatosPersonales";
+            return "empleado/main/empleado-editar-detalle";
         }
 
         try {
             registroEmpleado.setFotoBytes(foto.getBytes());
             registroEmpleado.setFotoTipo(foto.getContentType());
+            logger.info("Imagen procesada correctamente. Tamaño: {} bytes", foto.getSize());
         } catch (IOException e) {
             logger.error("Error al leer la imagen", e);
             errores.rejectValue("foto", "foto.error", "Error al procesar la imagen.");
-            return "empleado/auth/FormDatosPersonales";
+            return "empleado/main/empleado-editar-detalle";
         }
 
         Empleado empleado = empleadoRepository.findByUsuarioId(usuario.getId()).orElse(null);
         if (empleado == null) {
-            logger.error("No hay un empleado con usuario_id en editarDetalle POST: {}", usuario.getId());
+            logger.error("Empleado no encontrado para usuario ID: {}", usuario.getId());
             return "redirect:/login/username";
         }
         logger.info("Empleado encontrado en editarDetalle POST: {}", empleado.getId());
 
-        // Guardar la imagen en disco y establecer la ruta en el empleado
         if (registroEmpleado.getFotoBytes() != null && registroEmpleado.getFotoBytes().length > 0 && registroEmpleado.getFotoTipo() != null) {
             try {
                 String extension = registroEmpleado.getFotoTipo().equals("image/png") ? ".png" : ".gif";
@@ -695,11 +762,14 @@ public class DashboardController {
                 Files.createDirectories(ruta.getParent());
                 Files.write(ruta, registroEmpleado.getFotoBytes());
 
-                empleado.setFotoUrl("/uploads/empleados/" + nombreArchivo);
+                String urlFoto = "/uploads/empleados/" + nombreArchivo;
+                empleado.setFotoUrl(urlFoto);
+                logger.info("Foto guardada correctamente en: {}", urlFoto);
 
             } catch (IOException e) {
-                logger.error("Error al guardar la foto del empleado", e);
-                return "redirect:/registro/paso5";
+                logger.error("Error al guardar la foto del empleado en disco", e);
+                modelo.addAttribute("error" , "Error al guardar la foto del empleado.");
+                return "empleado/main/empleado-editar-detalle";
             }
         }
 
@@ -709,9 +779,12 @@ public class DashboardController {
         empleado.setPais(paisService.getPaisById(paisId));
 
         empleadoRepository.save(empleado);
+        logger.info("Datos del empleado actualizados y guardados en la base de datos");
 
         redirectAttributes.addFlashAttribute("mensaje", "Detalles actualizados correctamente");
+        logger.info("Redirigiendo al detalle del dashboard");
         return "redirect:/dashboard/detalle";
     }
+
 
 }
