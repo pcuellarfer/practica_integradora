@@ -65,6 +65,12 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         this.bancoService = bancoService;
     }
 
+    @Override
+    public void guardarEmpleado(Empleado empleado) {
+        empleadoRepository.save(empleado);
+        logger.info("Empleado guardado en base de datos: {}", empleado.getId());
+    }
+
     /**
      * Registra un nuevo empleado en el sistema a partir de los datos proporcionados en un objeto
      * {@link RegistroEmpleadoDTO} y lo asocia con un usuario existente identificado por {@link UsuarioDTO}.
@@ -381,6 +387,11 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 
         logger.warn("No se encontró empleado con usuarioId: {}", usuarioId);
         return null;
+    }
+
+    @Override
+    public Optional<Empleado> obtenerEmpleadoPorUsuarioId(UUID usuarioId) {
+        return empleadoRepository.findByUsuarioId(usuarioId);
     }
 
     /**

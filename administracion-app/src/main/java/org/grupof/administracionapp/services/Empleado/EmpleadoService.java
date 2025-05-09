@@ -1,5 +1,6 @@
 package org.grupof.administracionapp.services.Empleado;
 
+import java.util.Optional;
 import java.util.UUID;
 import org.grupof.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
@@ -14,6 +15,8 @@ import java.util.List;
  */
 @Service
 public interface EmpleadoService {
+
+    void guardarEmpleado(Empleado empleado);
 
     /**
      * Registra un nuevo empleado en el sistema a partir de los datos personales y empresariales,
@@ -63,6 +66,8 @@ public interface EmpleadoService {
      * @return El DTO del empleado correspondiente al usuario, o null si no existe.
      */
     RegistroEmpleadoDTO buscarEmpleadoPorUsuarioId(UUID usuarioId);
+
+    Optional<Empleado> obtenerEmpleadoPorUsuarioId(UUID usuarioId);
 
     /**
      * Bloquea un empleado especificado por su ID.
