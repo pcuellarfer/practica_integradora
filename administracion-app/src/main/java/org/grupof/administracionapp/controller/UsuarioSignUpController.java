@@ -105,6 +105,6 @@ public class UsuarioSignUpController {
         session.setAttribute("usuario", usuarioDTO);
         logger.info("Usuario almacenado en sesión con ID: {}", usuarioDTO.getId());
 
-        return "redirect:/dashboard/dashboard";
+        return "redirect:/dashboard";
     }
 }

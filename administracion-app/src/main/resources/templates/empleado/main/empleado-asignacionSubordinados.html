@@ -6,7 +6,7 @@
 <body>
 <h2 th:text="'Asignar subordinados a: ' + ${jefe.nombre}"></h2>
 
-<form th:action="@{/dashboard/asignar}" method="post">
+<form th:action="@{/asignar}" method="post">
     <label for="empleados">Selecciona empleados:</label><br>
     <select id="empleados" name="subordinadoIds" multiple size="4">
         <th:block th:each="empleado : ${empleados}">
@@ -15,6 +15,7 @@
     </select>
     <br><br>
     <button type="submit">Asignar</button>
+    <a href="/dashboard/submenu-etiquetado" class="btn btn-secondary w-100">Volver al menu de etiquetado</a>
 </form>
 </body>
 </html>

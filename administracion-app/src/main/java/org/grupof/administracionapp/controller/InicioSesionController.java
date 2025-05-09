@@ -94,7 +94,7 @@ public class InicioSesionController {
                                           HttpSession session) {
         if (session.getAttribute("usuario") != null && session.getAttribute("contraseña") != null) {
             logger.info("Sesión activa detectada. Redirigiendo al dashboard.");
-            return "redirect:/dashboard/dashboard"; // O la URL de la página que quieras redirigir
+            return "redirect:/dashboard"; // O la URL de la página que quieras redirigir
         }
         logger.info("Mostrando formulario para ingresar email.");
         return "usuario/auth/login-nombre";
@@ -270,7 +270,7 @@ public class InicioSesionController {
         redirectAttributes.addFlashAttribute("contador", contador);
         redirectAttributes.addFlashAttribute("navegadorId", navegadorId);
         session.removeAttribute("intentos");
-        return "redirect:/dashboard/dashboard";
+        return "redirect:/dashboard";
     }
 
     /**

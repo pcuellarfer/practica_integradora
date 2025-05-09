@@ -22,7 +22,7 @@ import java.util.UUID;
 @Controller
 public class BusquedaEmpleadosController {
 
-    private static final Logger logger = LoggerFactory.getLogger(DashboardController.class);
+    private static final Logger logger = LoggerFactory.getLogger(BusquedaEmpleadosController.class);
 
     private final GeneroService generoService;
     private final EmpleadoRepository empleadoRepository;

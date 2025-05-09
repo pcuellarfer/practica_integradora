@@ -496,7 +496,7 @@ public class EmpleadoSignUpController {
 
         logger.info("Registro finalizado para usuario ID: {}", usuarioDTO.getId());
         empleadoService.registrarEmpleado(registroEmpleadoDTO, usuarioDTO);
-        return "redirect:/dashboard/dashboard";
+        return "redirect:/dashboard";
     }
 }
 
