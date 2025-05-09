@@ -14,6 +14,7 @@ import org.grupof.administracionapp.services.Pais.PaisService;
 import org.grupof.administracionapp.services.etiqueta.EtiquetaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,7 +22,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
@@ -616,6 +620,9 @@ public class DashboardController {
         return "empleado/main/empleado-editar-detalle";
     }
 
+    @Value("${app.upload.dir}")
+    private String uploadDir;
+
     @PostMapping("/editarDetalle")
     public String editarDetalle(HttpSession session,
                                 RedirectAttributes redirectAttributes,
@@ -627,6 +634,7 @@ public class DashboardController {
                                 @RequestParam("pais") UUID paisId,
                                 @RequestParam("nombre") String nombre,
                                 @RequestParam("apellido") String apellido) {
+
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
 
         if (usuario == null) {
@@ -651,7 +659,6 @@ public class DashboardController {
             return "empleado/auth/FormDatosPersonales";
         }
 
-        //validar que pese menos de 200kb
         if (foto.getSize() > 200 * 1024) {
             modelo.addAttribute("errorFoto", "La imagen debe pesar menos de 200 KB.");
             modelo.addAttribute("paises", paisService.getAllPaises());
@@ -659,7 +666,7 @@ public class DashboardController {
             return "empleado/auth/FormDatosPersonales";
         }
 
-        try { //getBytes puede soltar excepcion, por eso el try catch
+        try {
             registroEmpleado.setFotoBytes(foto.getBytes());
             registroEmpleado.setFotoTipo(foto.getContentType());
         } catch (IOException e) {
@@ -668,7 +675,6 @@ public class DashboardController {
             return "empleado/auth/FormDatosPersonales";
         }
 
-        // Guardar los cambios en la base de datos
         Empleado empleado = empleadoRepository.findByUsuarioId(usuario.getId()).orElse(null);
         if (empleado == null) {
             logger.error("No hay un empleado con usuario_id en editarDetalle POST: {}", usuario.getId());
@@ -676,11 +682,33 @@ public class DashboardController {
         }
         logger.info("Empleado encontrado en editarDetalle POST: {}", empleado.getId());
 
+        // Guardar la imagen en disco y establecer la ruta en el empleado
+        if (registroEmpleado.getFotoBytes() != null && registroEmpleado.getFotoBytes().length > 0 && registroEmpleado.getFotoTipo() != null) {
+            try {
+                String extension = registroEmpleado.getFotoTipo().equals("image/png") ? ".png" : ".gif";
+                String nombreArchivo = empleado.getId() + extension;
+
+                File directorioBase = new File(uploadDir);
+                String rutaAbsoluta = directorioBase.getAbsolutePath();
+                Path ruta = Paths.get(rutaAbsoluta, nombreArchivo);
+
+                Files.createDirectories(ruta.getParent());
+                Files.write(ruta, registroEmpleado.getFotoBytes());
+
+                empleado.setFotoUrl("/uploads/empleados/" + nombreArchivo);
+
+            } catch (IOException e) {
+                logger.error("Error al guardar la foto del empleado", e);
+                return "redirect:/registro/paso5";
+            }
+        }
+
         empleado.setNombre(nombre);
         empleado.setApellido(apellido);
         empleado.setGenero(generoService.getGeneroById(generoId));
         empleado.setPais(paisService.getPaisById(paisId));
-        empleado.setFotoUrl(foto.getOriginalFilename());
+
+        empleadoRepository.save(empleado);
 
         redirectAttributes.addFlashAttribute("mensaje", "Detalles actualizados correctamente");
         return "redirect:/dashboard/detalle";
