@@ -10,10 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * Controlador para gestionar las vistas del panel principal (dashboard)
- * tanto para usuarios como para empleados.
- */
 @Controller
 public class DashboardController {
 
@@ -21,12 +17,6 @@ public class DashboardController {
 
     private final EmpleadoService empleadoService;
 
-
-    /**
-     * Constructor que inyecta el servicio de empleado.
-     *
-     * @param empleadoService servicio para gestionar empleados
-     */
     public DashboardController(EmpleadoService empleadoService) {
         this.empleadoService = empleadoService;
 
@@ -69,11 +59,19 @@ public class DashboardController {
         return "empleado/main/empleado-dashboard";
     }
 
+    /**
+     * Muestra el submenú de etiquetado para empleados.
+     * @return vista del submenú de etiquetado
+     */
     @GetMapping("dashboard/submenu-etiquetado")
     public String mostrarSubmenuSubordinados() {
         return "empleado/main/empleado-submenu-etiquetado";
     }
 
+    /**
+     * Muestra el submenú de productos para empleados.
+     * @return vista del submenú de productos
+     */
     @GetMapping("dashboard/submenu-productos")
     public String mostrarSubmenuProductos() {
         return "empleado/main/empleado-submenu-productos";
