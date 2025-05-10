@@ -27,6 +27,7 @@
         </form>
         <a href="/registro/usuario" class="btn btn-secondary w-100 mt-3">Crear Usuario</a>
         <p th:if="${error}" th:text="${error}" class="error-message"></p>
+        <p th:if="${motivoBloqueo}" th:text="${motivoBloqueo}" class="error-message"></p>
     </div>
 </div>
 </main>

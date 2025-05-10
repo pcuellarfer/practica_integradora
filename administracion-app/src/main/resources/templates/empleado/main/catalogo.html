@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Subir Catálogo</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+</head>
+<body>
+<div class="container mt-5">
+    <h2>Subir archivo de catálogo JSON</h2>
+    <form th:action="@{/catalogo/subir}" method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="file" class="form-label">Seleccionar archivo JSON:</label>
+            <input type="file" id="file" name="file" class="form-control" accept=".json" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Subir catálogo</button>
+    </form>
+
+    <div th:if="${error}" class="alert alert-info mt-3" th:text="${error}"></div>
+    <div th:if="${mensaje}" class="alert alert-info mt-3" th:text="${mensaje}"></div>
+
+</div>
+</body>
+</html>

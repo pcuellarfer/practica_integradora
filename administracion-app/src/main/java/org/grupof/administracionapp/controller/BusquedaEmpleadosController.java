@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -112,27 +113,32 @@ public class BusquedaEmpleadosController {
     }
 
     /**
-     * Bloquea a un empleado por su ID.
+     * Bloquea un empleado y registra la acción en los logs.
+     * <p>
+     * Este método se encarga de bloquear al empleado especificado por su ID. Antes de
+     * proceder, verifica que haya un usuario autenticado en la sesión y registra la
+     * acción en los logs. Después de bloquear al empleado, se agrega un mensaje flash
+     * al modelo para ser mostrado en la siguiente solicitud.
      *
-     * Si no hay usuario en sesión, redirige al login.
-     * Añade un mensaje flash tras la operación.
-     *
-     * @param empleadoId ID del empleado a bloquear
-     * @param session sesión HTTP actual
-     * @param redirectAttributes atributos para mensajes flash
-     * @return redirección al formulario de búsqueda
+     * @param empleadoId el identificador único del empleado que se desea bloquear
+     * @param session la sesión HTTP que contiene la información del usuario autenticado
+     * @param redirectAttributes los atributos de redirección que permiten enviar el mensaje
+     *        flash al modelo para ser mostrado después de la redirección
+     * @return la vista de redirección a la página de búsqueda de empleados
      */
     @PostMapping("/bloquear")
-    public String bloquearUsuario(@RequestParam("empleadoId") UUID empleadoId, HttpSession session, RedirectAttributes redirectAttributes) {
-
+    public String bloquearUsuario(@RequestParam("empleadoId") UUID empleadoId,
+                                  @RequestParam("motivoBloqueo") String motivoBloqueo,
+                                  HttpSession session,
+                                  RedirectAttributes redirectAttributes) {
         Empleado empleado = obtenerEmpleadoDesdeSesion(session, logger);
         if (empleado == null) {
             return "redirect:/login/username";
         }
 
-        empleadoService.bloquearEmpleado(empleadoId);
+        empleadoService.bloquearEmpleado(empleadoId, motivoBloqueo);
         redirectAttributes.addFlashAttribute("mensaje", "Empleado bloqueado correctamente");
-        return "redirect:/dashboard/buscar";
+        return "redirect:/buscar";
     }
 
     /**
@@ -156,6 +162,6 @@ public class BusquedaEmpleadosController {
 
         empleadoService.desbloquearEmpleado(empleadoId);
         redirectAttributes.addFlashAttribute("mensaje", "Empleado desbloqueado correctamente");
-        return "redirect:/dashboard/buscar";
+        return "redirect:/buscar";
     }
 }

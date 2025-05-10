@@ -108,7 +108,7 @@ public interface EmpleadoService {
      * @param empleadoId el identificador único del empleado cuyo estado se desea bloquear
      * @throws RuntimeException si no se encuentra al empleado o si no tiene un usuario asociado
      */
-    void bloquearEmpleado(UUID empleadoId);
+    void bloquearEmpleado(UUID empleadoId, String motivoBloqueo);
 
     /**
      * Desbloquea un empleado especificado por su ID.

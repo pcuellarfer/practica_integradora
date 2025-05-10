@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Catalogo de Productos</title>
+</head>
+<body>
+<h1>Catálogo de Productos</h1>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>Descripción</th>
+        <th>Precio</th>
+        <th>Marca</th>
+        <th>Categorías</th>
+        <th>Es Perecedero</th>
+        <th>Unidades</th>
+        <th>Fecha Fabricación</th>
+        <th>Colores</th>
+        <th>Título</th>
+        <th>Autor</th>
+        <th>Editorial</th>
+        <th>Tapa</th>
+        <th>Número de Páginas</th>
+        <th>Segunda Mano</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="producto : ${productos}">
+        <td th:text="${producto.descripcion}"></td>
+        <td th:text="${producto.precio}"></td>
+        <td th:text="${producto.marca}"></td>
+        <td th:text="${producto.categorias}"></td>
+
+        <td th:text="${producto.unidades}"></td>
+        <td th:text="${producto.fechaFabricacion}"></td>
+        <td th:text="${producto.colores}"></td>
+        <td th:text="${producto.titulo}"></td>
+        <td th:text="${producto.autor}"></td>
+        <td th:text="${producto.editorial}"></td>
+        <td th:text="${producto.tapa}"></td>
+        <td th:text="${producto.numeroPaginas}"></td>
+
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
+
+<!--
+ <td th:text="${producto.esPerecedero ? 'Sí' : 'No'}"></td>
+ <td th:text="${producto.segundaMano ? 'Sí' : 'No'}"></td>
+-->

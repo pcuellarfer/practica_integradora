@@ -539,7 +539,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
      *                          o si el empleado no tiene un usuario asociado
      */
     @Override
-    public void bloquearEmpleado(UUID empleadoId) {
+    public void bloquearEmpleado(UUID empleadoId, String motivoBloqueo) {
         logger.info("Intentando bloquear al empleado con ID: {}", empleadoId);
 
         Optional<Empleado> empleadoOpt = empleadoRepository.findById(empleadoId);
@@ -553,6 +553,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
                 logger.info("Empleado con ID: {} encontrado. Bloqueando usuario asociado...", empleadoId);
                 usuario.setEstadoBloqueado(true);
                 usuario.setBloqueadoHasta(fechaActual.plusSeconds(30)); // Bloqueo por 30 segundos
+                usuario.setMotivoBloqueo(motivoBloqueo);
                 usuarioRepository.save(usuario);
                 logger.info("Usuario con ID: {} bloqueado correctamente", usuario.getId());
             } else {

@@ -85,7 +85,7 @@ public class DatosIniciales {
             usuarioRepository.save(paco);
 
 
-            ///// PAISES //////
+            // PAISES //////
 
             Pais espana = new Pais("España", "+34");
             Pais francia = new Pais("Francia", "+33");
@@ -94,7 +94,7 @@ public class DatosIniciales {
             paisRepository.save(francia);
             paisRepository.save(belgica);
 
-            ///// GENEROS //////
+            // GENEROS //////
 
             Genero femenino = new Genero("Femenino");
             Genero masculino = new Genero("Masculino");
