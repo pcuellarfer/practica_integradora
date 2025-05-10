@@ -66,6 +66,7 @@ public class CatalogoService {
             producto.setFechaFabricacion(dto.getFechaFabricacion());
             producto.setDimensiones(dto.getDimensiones());
             producto.setColores(dto.getColores());
+            producto.setSegundaMano(dto.isSegundaMano());
 
             if (dto.getTitulo() != null) {
                 producto.setTitulo(dto.getTitulo());
@@ -73,7 +74,7 @@ public class CatalogoService {
                 producto.setEditorial(dto.getEditorial());
                 producto.setTapa(dto.getTapa());
                 producto.setNumeroPaginas(dto.getNumeroPaginas());
-                producto.setSegundaMano(dto.getSegundaMano());
+                producto.setSegundaMano(dto.isSegundaMano());
                 logger.debug("Producto con información de libro: Título '{}'", dto.getTitulo());
             }
 

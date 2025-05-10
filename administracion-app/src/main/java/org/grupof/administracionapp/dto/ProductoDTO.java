@@ -22,6 +22,6 @@ public class ProductoDTO {
     private List<String> colores;
     private String titulo, autor, editorial, tapa;
     private Integer numeroPaginas;
-    private Boolean segundaMano;
+    private boolean segundaMano;
     private Dimensiones dimensiones;
 }

@@ -31,7 +31,7 @@
         <td th:text="${producto.precio}"></td>
         <td th:text="${producto.marca}"></td>
         <td th:text="${producto.categorias}"></td>
-
+        <td th:text="${producto.esPerecedero ? 'Sí' : 'No'}"></td>
         <td th:text="${producto.unidades}"></td>
         <td th:text="${producto.fechaFabricacion}"></td>
         <td th:text="${producto.colores}"></td>
@@ -40,14 +40,9 @@
         <td th:text="${producto.editorial}"></td>
         <td th:text="${producto.tapa}"></td>
         <td th:text="${producto.numeroPaginas}"></td>
-
+        <td th:text="${producto.segundaMano ? 'Sí' : 'No'}"></td>
     </tr>
     </tbody>
 </table>
 </body>
 </html>
-
-<!--
- <td th:text="${producto.esPerecedero ? 'Sí' : 'No'}"></td>
- <td th:text="${producto.segundaMano ? 'Sí' : 'No'}"></td>
--->
