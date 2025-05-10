@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Servicio encargado de procesar archivos de catálogos de productos en formato JSON
@@ -81,5 +82,17 @@ public class CatalogoService {
         }
 
         logger.info("Procesamiento del catálogo finalizado con éxito.");
+    }
+
+    /**
+     * Obtiene una lista de todos los productos almacenados en la base de datos.
+     * Este método utiliza el repositorio de productos para recuperar todos los registros
+     * de productos y devolverlos en una lista.
+     *
+     * @return una lista de objetos {@link Producto} que representa todos los productos
+     *         almacenados en la base de datos.
+     */
+    public List<Producto> obtenerTodosLosProductos() {
+        return productoRepo.findAll();
     }
 }

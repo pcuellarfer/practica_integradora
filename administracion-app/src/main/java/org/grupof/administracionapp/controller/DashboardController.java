@@ -3,12 +3,17 @@ package org.grupof.administracionapp.controller;
 import jakarta.servlet.http.HttpSession;
 import org.grupof.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
+import org.grupof.administracionapp.entity.producto.Producto;
+import org.grupof.administracionapp.services.CatalogoService;
 import org.grupof.administracionapp.services.Empleado.EmpleadoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Controlador para gestionar las vistas del panel principal (dashboard)
@@ -20,15 +25,16 @@ public class DashboardController {
     private static final Logger logger = LoggerFactory.getLogger(DashboardController.class);
 
     private final EmpleadoService empleadoService;
-
+    private final CatalogoService catalogoService;
 
     /**
      * Constructor que inyecta el servicio de empleado.
      *
      * @param empleadoService servicio para gestionar empleados
      */
-    public DashboardController(EmpleadoService empleadoService) {
+    public DashboardController(EmpleadoService empleadoService, CatalogoService catalogoService) {
         this.empleadoService = empleadoService;
+        this.catalogoService = catalogoService;
 
     }
 
@@ -76,6 +82,26 @@ public class DashboardController {
 
     @GetMapping("dashboard/submenu-productos")
     public String mostrarSubmenuProductos() {
+        return "empleado/main/empleado-submenu-productos";
+    }
+
+    @GetMapping("dashboard/subida-catalogo")
+    public String mostrarSubidaCatalogo() {
         return "empleado/main/catalogo";
     }
+
+    /**
+     * Recupera todos los productos y los pasa a la vista para mostrarlos en una tabla.
+     *
+     * @param model El modelo que se usará para enviar los productos a la vista.
+     * @return El nombre de la vista que muestra los productos.
+     */
+    @GetMapping("/dashboard/mostrarCatalogo")
+    public String mostrarCatalogo(Model model) {
+        List<Producto> productos = catalogoService.obtenerTodosLosProductos();
+        model.addAttribute("productos", productos);
+        return "empleado/main/empleado-mostrarCatalogo";
+    }
+
+
 }

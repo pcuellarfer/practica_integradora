@@ -3,17 +3,12 @@ package org.grupof.administracionapp.controller;
 import org.grupof.administracionapp.services.CatalogoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.Map;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * Controlador REST para manejar operaciones relacionadas con el catálogo de productos.
@@ -37,28 +32,27 @@ public class CatalogoController {
     }
 
     /**
-     * Endpoint para subir un archivo JSON con información del catálogo.
-     * El archivo debe tener la estructura esperada por el DTO {@code CatalogoDTO}.
+     * Maneja la subida de un archivo de catálogo y lo procesa.
+     * Si el archivo se procesa correctamente, redirige a la página de catálogo con un mensaje de éxito.
+     * Si ocurre un error, redirige con un mensaje de error.
      *
-     * @param file archivo JSON con el catálogo de productos.
-     * @return una respuesta HTTP indicando el resultado de la operación.
-     *         Devuelve 200 OK si el catálogo se procesa correctamente,
-     *         o 400 Bad Request si ocurre un error.
+     * @param file El archivo de catálogo a subir.
+     * @param redirectAttributes Atributos para mostrar mensajes después de la redirección.
+     * @return La redirección a la página de catálogo con el mensaje adecuado.
      */
     @PostMapping("/subir")
-    public ResponseEntity<?> subirCatalogo(@RequestParam("file") MultipartFile file) {
+    public String subirCatalogo(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
         logger.info("Petición recibida para subir catálogo: nombre del archivo '{}'", file.getOriginalFilename());
 
         try {
             catalogoService.procesarCatalogo(file);
             logger.info("Catálogo '{}' procesado correctamente", file.getOriginalFilename());
-            return ResponseEntity.ok().body(Map.of("mensaje", "Catálogo procesado correctamente."));
+            redirectAttributes.addFlashAttribute("mensaje", "Catálogo procesado correctamente.");
         } catch (Exception e) {
             logger.error("Error al procesar el catálogo '{}': {}", file.getOriginalFilename(), e.getMessage(), e);
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", "Error al procesar el catálogo: " + e.getMessage()));
+            redirectAttributes.addFlashAttribute("error", "Error al procesar el catálogo: " + e.getMessage());
         }
-    }
 
+        return "redirect:/dashboard/mostrarCatalogo";
+    }
 }
