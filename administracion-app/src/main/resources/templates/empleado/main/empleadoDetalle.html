@@ -7,51 +7,51 @@
 <div th:replace="/fragments/cabecera"></div>
 <main>
     <div th:replace="/fragments/cuentaatras"></div>
-<div class="absoluto mt-5">
-    <div class="container">
-        <!-- Título -->
-        <div class="row align-items-center">
-            <div class="col-2"></div>
-            <div class="col">
+
+    <div class="container mt-5 mb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10 col-12">
                 <h1 class="text-center mb-4">Detalles del usuario</h1>
+
+                <!-- Usuario -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">Usuario</div>
+                    <div class="card-body">
+                        <p><strong>Email:</strong> <span th:text="${usuario.email}"></span></p>
+                        <p><strong>Contraseña:</strong> <span th:text="${usuario.contrasena}"></span></p>
+                        <p><strong>Foto Usuario:</strong></p>
+                        <img th:src="@{'/imagenes/' + ${detalle.nombreFoto}}" alt="Foto del usuario"
+                             class="img-thumbnail d-block mx-auto" style="max-width: 200px;" />
+                    </div>
+                </div>
+
+                <!-- Empleado -->
+                <div class="card mb-4">
+                    <div class="card-header bg-success text-white">Empleado</div>
+                    <div class="card-body">
+                        <h5 class="card-title">Personal</h5>
+                        <p><strong>Nombre:</strong> <span th:text="${detalle.empleado.paso1PersonalDTO.nombre}"></span></p>
+                        <p><strong>Apellido:</strong> <span th:text="${detalle.empleado.paso1PersonalDTO.apellido}"></span></p>
+                        <p><strong>Género:</strong> <span th:text="${detalle.nombreGenero}"></span></p>
+                        <p><strong>Fecha de nacimiento:</strong> <span th:text="${detalle.empleado.paso1PersonalDTO.fechaNacimiento}"></span></p>
+                        <p><strong>Edad:</strong> <span th:text="${detalle.empleado.paso1PersonalDTO.edad}"></span></p>
+                        <p><strong>País:</strong> <span th:text="${detalle.nombrePais}"></span></p>
+                        <p><strong>Comentarios:</strong> <span th:text="${detalle.empleado.paso1PersonalDTO.comentarios}"></span></p>
+
+                        <hr>
+                        <h5 class="card-title">Empresarial</h5>
+                        <p><strong>Departamento:</strong> <span th:text="${detalle.nombreDepartamento}"></span></p>
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div class="d-grid gap-2">
+                    <a href="/editarDetalle" class="btn btn-outline-primary">Editar detalles</a>
+                    <a href="/dashboard" class="btn btn-outline-secondary">Volver al dashboard</a>
+                </div>
             </div>
-            <div class="col-2"></div>
         </div>
-
-        <!-- Información del usuario -->
-        <div class="mb-3">
-            <h2>Usuario</h2>
-            <p><strong>Email:</strong> <span th:text="${usuario.email}"></span></p>
-            <p><strong>Contraseña:</strong> <span th:text="${usuario.contrasena}"></span></p>
-            <p><strong>Foto Usuario:</strong></p>
-            <img th:src="@{'/imagenes/' + ${detalle.nombreFoto}}" alt="Foto del usuario"
-                 class="img-thumbnail" style="max-width: 200px;" />
-        </div>
-
-        <!-- Información del empleado -->
-        <div class="mb-3">
-            <h2>Empleado</h2>
-            <h3>Personal</h3>
-            <p><strong>Nombre:</strong> <span th:text="${detalle.empleado.paso1PersonalDTO.nombre}"></span></p>
-            <p><strong>Apellido:</strong> <span th:text="${detalle.empleado.paso1PersonalDTO.apellido}"></span></p>
-            <p><strong>Género:</strong> <span th:text="${detalle.nombreGenero}"></span></p>
-            <p><strong>Fecha de nacimiento:</strong> <span th:text="${detalle.empleado.paso1PersonalDTO.fechaNacimiento}"></span></p>
-            <p><strong>Edad:</strong> <span th:text="${detalle.empleado.paso1PersonalDTO.edad}"></span></p>
-            <p><strong>País:</strong> <span th:text="${detalle.nombrePais}"></span></p>
-            <p><strong>Comentarios:</strong> <span th:text="${detalle.empleado.paso1PersonalDTO.comentarios}"></span></p>
-        </div>
-
-        <div class="mb-3">
-            <h3>Empresarial</h3>
-            <p><strong>Departamento:</strong> <span th:text="${detalle.nombreDepartamento}"></span></p>
-        </div>
-
-
-        <!-- Botón de regreso -->
-        <a href="/editarDetalle" class="btn btn-secondary w-100 mb-4 mt-3">Editar detalles</a>
-        <a href="/dashboard" class="btn btn-secondary w-100">Volver al dashboard</a>
     </div>
-</div>
 </main>
 <div th:replace="/fragments/pie"></div>
 </body>

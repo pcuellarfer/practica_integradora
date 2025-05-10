@@ -137,7 +137,7 @@ public class BusquedaEmpleadosController {
 
         empleadoService.bloquearEmpleado(empleadoId);
         redirectAttributes.addFlashAttribute("mensaje", "Empleado bloqueado correctamente");
-        return "redirect:/dashboard/buscar";
+        return "redirect:/buscar";
     }
 
     /**
@@ -165,6 +165,6 @@ public class BusquedaEmpleadosController {
 
         empleadoService.desbloquearEmpleado(empleadoId);
         redirectAttributes.addFlashAttribute("mensaje", "Empleado desbloqueado correctamente");
-        return "redirect:/dashboard/buscar";
+        return "redirect:/buscar";
     }
 }
