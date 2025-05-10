@@ -135,9 +135,9 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         Empleado empleadoEntidad = empleadoRepository.findByUsuarioId(usuarioId) //busca al empleado(entidad) a partir del id del usuario
                 .orElseThrow(() -> new IllegalArgumentException("Empleado no encontrado"));
 
-        RegistroEmpleadoDTO dto = this.buscarEmpleadoPorUsuarioId(usuarioId); //obtiene el dto con todos los datos del usuario
+        RegistroEmpleadoDTO dto = this.buscarEmpleadoPorUsuarioId(usuarioId); //obtiene el dto con todos los datos del usuario, en id
 
-        EmpleadoDetalleDTO detalle = new EmpleadoDetalleDTO(); //crea un dto de los detalles
+        EmpleadoDetalleDTO detalle = new EmpleadoDetalleDTO(); //crea un dto de los detalles, con nombres
         detalle.setEmpleado(dto); //le mete el registroEmpleado a el detalle
 
         UUID idGenero = dto.getPaso1PersonalDTO().getGenero(); //pilla el uuid del genero que tenga el dto
