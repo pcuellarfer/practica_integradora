@@ -1,24 +1,44 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Subir Catálogo</title>
-    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
-</head>
+<head th:replace="fragments/header :: head('Subir catálogo')"></head>
+
 <body>
-<div class="container mt-5">
-    <h2>Subir archivo de catálogo JSON</h2>
-    <form th:action="@{/catalogo/subir}" method="post" enctype="multipart/form-data">
-        <div class="mb-3">
-            <label for="file" class="form-label">Seleccionar archivo JSON:</label>
-            <input type="file" id="file" name="file" class="form-control" accept=".json" required>
+<div th:replace="/fragments/cabecera"></div>
+
+<main>
+    <div th:replace="/fragments/cuentaatras"></div>
+    <div class="absoluto mt-5">
+        <div class="container">
+            <!-- Título -->
+            <div class="row align-items-center mb-4">
+                <div class="col-2"></div>
+                <div class="col text-center">
+                    <h1 class="subir-titulo">Subir catálogo</h1>
+                </div>
+                <div class="col-2"></div>
+            </div>
+
+            <!-- Formulario de subida -->
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="subir-card card shadow-lg p-4">
+                        <form th:action="@{/catalogo/subir}" method="post" enctype="multipart/form-data" class="subir-formulario">
+                            <div class="mb-3">
+                                <label for="file" class="form-label subir-label">Seleccionar archivo JSON:</label>
+                                <input type="file" id="file" name="file" class="form-control subir-input" accept=".json" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 subir-boton mb-4 mt-3">Subir catálogo</button>
+                                <a href="/dashboard" class="btn btn-secondary w-100 mb-4">Volver al dashboard</a>
+                        </form>
+                        <div th:if="${error}" class="alert alert-danger mt-3 subir-alerta" th:text="${error}"></div>
+                        <div th:if="${mensaje}" class="alert alert-success mt-3 subir-alerta" th:text="${mensaje}"></div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <button type="submit" class="btn btn-primary">Subir catálogo</button>
-    </form>
+    </div>
+</main>
 
-    <div th:if="${error}" class="alert alert-info mt-3" th:text="${error}"></div>
-    <div th:if="${mensaje}" class="alert alert-info mt-3" th:text="${mensaje}"></div>
-
-</div>
+<div th:replace="/fragments/pie" class="mt-5"></div>
 </body>
 </html>

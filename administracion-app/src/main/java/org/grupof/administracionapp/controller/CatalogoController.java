@@ -53,6 +53,6 @@ public class CatalogoController {
             redirectAttributes.addFlashAttribute("error", "Error al procesar el catálogo: " + e.getMessage());
         }
 
-        return "redirect:/dashboard/mostrarCatalogo";
+        return "empleado/main/catalogo";
     }
 }

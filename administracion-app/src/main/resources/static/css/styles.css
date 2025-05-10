@@ -254,8 +254,3 @@ footer {
 .nav-links a:hover {
     background-color: #e9ecef;
 }
-
-#cuentatras {
-    display: flex;
-    gap: 1em;
-}
