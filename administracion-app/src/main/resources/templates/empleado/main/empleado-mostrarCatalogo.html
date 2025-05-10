@@ -45,6 +45,7 @@
                         <td class="catalogo-cell" th:text="${producto.precio}"></td>
                         <td class="catalogo-cell" th:text="${producto.marca}"></td>
                         <td class="catalogo-cell" th:text="${producto.categorias}"></td>
+                        <td class="catalogo-cell" th:text="${producto.esPerecedero ? 'Sí' : 'No'}"></td>
                         <td class="catalogo-cell" th:text="${producto.unidades}"></td>
                         <td class="catalogo-cell" th:text="${producto.fechaFabricacion}"></td>
                         <td class="catalogo-cell" th:text="${producto.colores}"></td>
@@ -53,6 +54,7 @@
                         <td class="catalogo-cell" th:text="${producto.editorial}"></td>
                         <td class="catalogo-cell" th:text="${producto.tapa}"></td>
                         <td class="catalogo-cell" th:text="${producto.numeroPaginas}"></td>
+                        <td class="catalogo-cell" th:text="${producto.segundaMano ? 'Sí' : 'No'}"></td>
                     </tr>
                     </tbody>
                 </table>
@@ -69,8 +71,3 @@
 <div class="mt-5" th:replace="/fragments/pie"></div>
 </body>
 </html>
-
-<!--
-<td class="catalogo-cell" th:text="${producto.esPerecedero ? 'Sí' : 'No'}"></td>
-<td class="catalogo-cell" th:text="${producto.segundaMano ? 'Sí' : 'No'}"></td>
--->

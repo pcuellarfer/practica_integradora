@@ -36,6 +36,13 @@ public class EtiquetadoController {
         this.empleadoService = empleadoService;
     }
 
+    /**
+     * Obtiene el jefe asociado al usuario en sesión.
+     * Si no hay usuario o no se encuentra el jefe, se registra en el log y se devuelve null.
+     *
+     * @param session sesión HTTP actual
+     * @return el jefe correspondiente o null si no se encuentra
+     */
     private Empleado obtenerJefeDesdeSesion(HttpSession session) {
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
 
@@ -52,6 +59,15 @@ public class EtiquetadoController {
         return jefe;
     }
 
+    /**
+     * Muestra la vista para asignar subordinados a un jefe.
+     * Si no hay jefe en sesión, redirige al login.
+     * Carga en el modelo el jefe y la lista de empleados disponibles para asignar.
+     *
+     * @param session sesión HTTP actual
+     * @param modelo modelo para pasar datos a la vista
+     * @return vista de asignación de subordinados o redirección al login
+     */
     @GetMapping("/asignar")
     public String asignarSubordinados(HttpSession session, Model modelo) {
 
@@ -60,7 +76,7 @@ public class EtiquetadoController {
             return "redirect:/login/username";
         }
 
-        List<Empleado> posiblesSubordinados = empleadoService.buscarTodosMenos(jefe.getId());
+        List<Empleado> posiblesSubordinados = empleadoService.buscarTodosMenos(jefe.getId()); //mete en una lista todos los empleados menos el que se esta metiendo a la funcionalidad
 
         logger.info("Mostrando vista de asignación de subordinados para el jefe: {}", jefe.getNombre());
         modelo.addAttribute("jefe", jefe);
@@ -69,6 +85,15 @@ public class EtiquetadoController {
         return "empleado/main/empleado-asignacionSubordinados";
     }
 
+    /**
+     * Procesa la asignación de subordinados a un jefe.
+     * Si no hay jefe en sesión, redirige al login.
+     * Asocia los empleados seleccionados como subordinados del jefe y guarda los cambios.
+     *
+     * @param subordinadoIds lista de IDs de empleados seleccionados
+     * @param session sesión HTTP actual
+     * @return redirección al submenú de etiquetado
+     */
     @PostMapping("/asignar")
     public String procesarAsignacion(@RequestParam List<UUID> subordinadoIds, HttpSession session) {
 
@@ -77,7 +102,7 @@ public class EtiquetadoController {
             return "redirect:/login/username";
         }
 
-        List<Empleado> subordinados = empleadoService.buscarPorIds(subordinadoIds);
+        List<Empleado> subordinados = empleadoService.buscarPorIds(subordinadoIds); //mete en una lista los empleados con las ids que se hayan seleccionado
         for (Empleado subordinado : subordinados) {
             subordinado.setJefe(jefe);
             logger.info("Asignado subordinado {} al jefe {}", subordinado.getNombre(), jefe.getNombre());
@@ -89,6 +114,15 @@ public class EtiquetadoController {
         return "redirect:/dashboard/submenu-etiquetado";
     }
 
+    /**
+     * Muestra la vista de gestión de etiquetas definidas por el jefe.
+     * Si no hay jefe en sesión, redirige al login.
+     * Carga en el modelo el jefe, sus etiquetas actuales y una nueva etiqueta vacía para crear.
+     *
+     * @param session sesión HTTP actual
+     * @param modelo modelo para pasar datos a la vista
+     * @return vista de gestión de etiquetas o redirección al login
+     */
     @GetMapping("/crearEtiquetas")
     public String crearEtiquetas(HttpSession session, Model modelo) {
 
@@ -106,6 +140,16 @@ public class EtiquetadoController {
         return "empleado/main/empleado-etiquetas";
     }
 
+    /**
+     * Guarda una nueva etiqueta definida por el jefe.
+     * Si no hay jefe en sesión, redirige al login.
+     * Asocia la etiqueta al jefe y la guarda. Si ya existe, añade un mensaje de error.
+     *
+     * @param etiqueta objeto etiqueta recibido del formulario
+     * @param session sesión HTTP actual
+     * @param redirectAttributes atributos para mensajes flash
+     * @return redirección a la vista de gestión de etiquetas
+     */
     @PostMapping("/crearEtiquetas")
     public String crearEtiqueta(@ModelAttribute("nuevaEtiqueta") Etiqueta etiqueta,
                                 HttpSession session,
@@ -127,6 +171,15 @@ public class EtiquetadoController {
         return "redirect:/crearEtiquetas";
     }
 
+    /**
+     * Muestra la vista de etiquetado de subordinados.
+     * Si no hay jefe en sesión, redirige al login.
+     * Carga en el modelo la lista de subordinados y las etiquetas definidas por el jefe.
+     *
+     * @param session sesión HTTP actual
+     * @param modelo modelo para pasar datos a la vista
+     * @return vista de etiquetado o redirección al login
+     */
     @GetMapping("/etiquetado")
     public String mostrarEtiquetado(HttpSession session, Model modelo) {
 
@@ -145,6 +198,18 @@ public class EtiquetadoController {
         return "empleado/main/empleado-etiquetado";
     }
 
+    /**
+     * Procesa la asignación de etiquetas a los empleados seleccionados.
+     * Si no hay jefe en sesión, redirige al login.
+     * Si no se seleccionan empleados o etiquetas, muestra un mensaje de error.
+     * Asocia las etiquetas a los empleados y guarda los cambios.
+     *
+     * @param empleadosIds lista de IDs de empleados seleccionados
+     * @param etiquetasIds lista de IDs de etiquetas seleccionadas
+     * @param session sesión HTTP actual
+     * @param redirectAttributes atributos para mensajes flash
+     * @return vista de etiquetado o redirección con mensaje de error
+     */
     @PostMapping("/etiquetado")
     public String procesarEtiquetado(@RequestParam(name = "empleados", required = false) List<UUID> empleadosIds,
                                      @RequestParam(name = "etiquetas", required = false) List<UUID> etiquetasIds,
@@ -181,6 +246,17 @@ public class EtiquetadoController {
         return "empleado/main/empleado-etiquetado";
     }
 
+    /**
+     * Muestra el formulario para eliminar etiquetas asignadas a empleados.
+     * Si no hay jefe en sesión, redirige al login.
+     * Si se proporciona un ID de empleado, carga sus etiquetas asignadas y lo añade al modelo.
+     * Siempre carga la lista de subordinados del jefe para selección.
+     *
+     * @param empleadoId ID opcional del empleado a consultar
+     * @param session sesión HTTP actual
+     * @param modelo modelo para pasar datos a la vista
+     * @return vista del formulario de eliminación de etiquetas o redirección al login
+     */
     @GetMapping("/etiquetado/eliminar")
     public String mostrarFormularioEliminacion(@RequestParam(name = "empleadoId", required = false) UUID empleadoId,
                                                HttpSession session, Model modelo) {
@@ -215,6 +291,17 @@ public class EtiquetadoController {
         return "empleado/main/empleado-eliminar-etiqueta";
     }
 
+    /**
+     * Elimina etiquetas asignadas a un empleado específico.
+     * Si no hay jefe en sesión, redirige al login.
+     * Verifica que el empleado y las etiquetas existan, y que las etiquetas pertenezcan al jefe actual.
+     * Elimina la relación entre cada etiqueta y el empleado indicado.
+     *
+     * @param empleadoId ID del empleado al que se le eliminarán las etiquetas
+     * @param etiquetasIds lista de IDs de etiquetas a eliminar
+     * @param session sesión HTTP actual
+     * @return redirección a la vista de eliminación con el empleado seleccionado
+     */
     @PostMapping("/etiquetado/eliminar")
     public String eliminarEtiquetas(@RequestParam UUID empleadoId,
                                     @RequestParam List<UUID> etiquetasIds,

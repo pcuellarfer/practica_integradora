@@ -75,11 +75,19 @@ public class DashboardController {
         return "empleado/main/empleado-dashboard";
     }
 
+    /**
+     * Muestra el submenú de etiquetado para empleados.
+     * @return vista del submenú de etiquetado
+     */
     @GetMapping("dashboard/submenu-etiquetado")
     public String mostrarSubmenuSubordinados() {
         return "empleado/main/empleado-submenu-etiquetado";
     }
 
+    /**
+     * Muestra el submenú de productos para empleados.
+     * @return vista del submenú de productos
+     */
     @GetMapping("dashboard/submenu-productos")
     public String mostrarSubmenuProductos() {
         return "empleado/main/empleado-submenu-productos";

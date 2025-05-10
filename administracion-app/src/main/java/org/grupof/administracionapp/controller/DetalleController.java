@@ -48,6 +48,16 @@ public class DetalleController {
         this.paisService = paisService;
     }
 
+    /**
+     * Muestra los detalles del empleado autenticado.
+     *
+     * Si no hay usuario en sesión o ocurre un error al obtener los datos, redirige al login.
+     * Carga en el modelo el usuario y sus detalles para mostrarlos en la vista.
+     *
+     * @param session sesión HTTP actual
+     * @param modelo modelo para pasar datos a la vista
+     * @return vista con los detalles del empleado o redirección al login
+     */
     @GetMapping("/detalle")
     public String verDetalles(HttpSession session, Model modelo) {
         logger.info("Accediendo a los detalles del empleado");
@@ -70,6 +80,16 @@ public class DetalleController {
     }
 
 
+    /**
+     * Muestra el formulario para editar los datos del empleado.
+     *
+     * Si no hay usuario en sesión o ocurre un error al obtener los datos, redirige al login.
+     * Carga en el modelo el DTO del empleado y las listas necesarias para los selectores del formulario.
+     *
+     * @param session sesión HTTP actual
+     * @param modelo modelo para pasar datos a la vista
+     * @return vista del formulario de edición o redirección al login
+     */
     @GetMapping("/editarDetalle")
     public String editarDetalle(HttpSession session, Model modelo){
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario"); //recuperar el usuario de la sesion
@@ -96,6 +116,13 @@ public class DetalleController {
         }
     }
 
+    /**
+     * Añade al modelo los datos necesarios para cargar el formulario de empleado.
+     *
+     * Incluye un DTO vacío y las listas de países, géneros y departamentos.
+     *
+     * @param modelo modelo donde se añaden los atributos para la vista
+     */
     private void prepararModeloFormulario(Model modelo) { //metodo para meter los selects y radios de una al modelo
         modelo.addAttribute("registroEmpleado", new RegistroEmpleadoDTO());
         modelo.addAttribute("paises", paisService.getAllPaises());
@@ -106,6 +133,21 @@ public class DetalleController {
     @Value("${app.upload.dir}")  //pilla lo que haya en el aplication properties
     private String uploadDir; // y lo mete en un string
 
+    /**
+     * Procesa el formulario de edición de los datos del empleado.
+     *
+     * Si no hay usuario en sesión, redirige al login.
+     * Si hay errores de validación o al guardar la imagen, vuelve a la vista con mensajes de error.
+     * Si todo va bien, actualiza los datos del empleado y redirige a la vista de detalles.
+     *
+     * @param session sesión HTTP actual
+     * @param redirectAttributes atributos para mensajes flash tras redirección
+     * @param registroEmpleado DTO con los datos del formulario
+     * @param errores resultado de validación del formulario
+     * @param modelo modelo para pasar datos a la vista
+     * @param foto archivo de imagen subido por el usuario
+     * @return redirección o vista del formulario con errores
+     */
     @PostMapping("/editarDetalle")
     public String editarDetalle(HttpSession session,
                                 RedirectAttributes redirectAttributes,

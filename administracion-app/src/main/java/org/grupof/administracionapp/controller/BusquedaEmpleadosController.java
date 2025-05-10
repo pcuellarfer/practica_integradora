@@ -32,89 +32,108 @@ public class BusquedaEmpleadosController {
     }
 
     /**
-     * Muestra el formulario de búsqueda de empleados.
-     * <p>
-     * Este método verifica si hay un usuario autenticado en la sesión.
-     * Si no hay usuario en sesión, redirige al formulario de inicio de sesión.
-     * Si hay usuario, carga la lista de géneros disponibles y atributos iniciales para el formulario.
+     * Obtiene el empleado asociado al usuario en sesión.
      *
-     * @param modelo   el objeto {@link Model} utilizado para pasar atributos a la vista.
-     * @param session  la sesión HTTP actual, de donde se extrae el usuario autenticado.
-     * @return el nombre de la vista para el formulario de búsqueda, o una redirección al login si no hay sesión activa.
+     * Si no hay usuario o no se encuentra el empleado, se registra en el log y se devuelve null.
+     *
+     * @param session sesión HTTP actual
+     * @param logger logger para registrar avisos y errores
+     * @return el empleado correspondiente o null si no se encuentra
+     */
+    private Empleado obtenerEmpleadoDesdeSesion(HttpSession session, Logger logger) {
+        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
+
+        if (usuario == null) {
+            logger.warn("Sesión no activa.");
+            return null;
+        }
+
+        Empleado empleado = empleadoService.obtenerEmpleadoPorUsuarioId(usuario.getId()).orElse(null);
+        if (empleado == null) {
+            logger.error("No se encontró el empleado para usuario ID: {}", usuario.getId());
+        }
+
+        return empleado;
+    }
+
+    /**
+     * Muestra el formulario de búsqueda de empleados.
+     *
+     * Si no hay usuario en sesión, redirige al login.
+     * Carga la lista de géneros y todos los empleados ordenados.
+     *
+     * @param modelo modelo para pasar datos a la vista
+     * @param session sesión HTTP actual
+     * @return vista del formulario de búsqueda
      */
     @GetMapping("/buscar")
     public String mostrarFormularioBusqueda(Model modelo, HttpSession session) {
-        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
-
-        if (usuarioDTO == null) {
-            logger.warn("Intento de acceso al dashboard sin usuario en sesión en /buscar");
+        Empleado empleado = obtenerEmpleadoDesdeSesion(session, logger);
+        if (empleado == null) {
             return "redirect:/login/username";
         }
 
         modelo.addAttribute("generos", generoService.getAllGeneros());
-        modelo.addAttribute("genero", null);
+        modelo.addAttribute("resultados", empleadoService.getEmpleadosOrdenados()); // o lo que tengas
         modelo.addAttribute("nombre", "");
-        modelo.addAttribute("resultados", Collections.emptyList());
+        modelo.addAttribute("selectedGeneroId", null);
         return "empleado/main/empleado-buscar";
     }
 
     /**
-     * Procesa la búsqueda de empleados según los parámetros proporcionados.
-     * <p>
-     * Este método permite buscar empleados filtrando por nombre, género o ambos.
-     * Si no se especifica ningún filtro, se devuelven todos los empleados.
-     * También verifica si el usuario está autenticado en la sesión. En caso contrario, redirige al login.
+     * Procesa la búsqueda de empleados por nombre y género.
      *
-     * @param nombre   el nombre (o parte de él) por el que se desea buscar empleados.
-     * @param genero   el ID del género por el que se desea filtrar (puede ser null).
-     * @param modelo   el objeto {@link Model} usado para pasar datos a la vista.
-     * @param session  la sesión HTTP actual, utilizada para validar la autenticación del usuario.
-     * @return el nombre de la vista de búsqueda con los resultados obtenidos o redirección al login si no hay sesión activa.
+     * Si no hay usuario en sesión, redirige al login.
+     * Añade al modelo los resultados de la búsqueda y los filtros aplicados.
+     *
+     * @param nombre texto a buscar en el nombre del empleado
+     * @param genero ID del género seleccionado (opcional)
+     * @param modelo modelo para pasar datos a la vista
+     * @param session sesión HTTP actual
+     * @return vista con los resultados de la búsqueda
      */
     @PostMapping("/buscar")
     //required en false para genero para que no salte excepcion
-    public String procesarBusqueda(@RequestParam String nombre, @RequestParam(required = false) UUID genero,
+    public String procesarBusqueda(@RequestParam String nombre,
+                                   @RequestParam(required = false) UUID genero,
                                    Model modelo,
                                    HttpSession session) {
-
-        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
-
-        if (usuarioDTO == null) {
-            logger.warn("Intento de acceso al dashboard sin usuario en sesión en /buscar POST");
+        Empleado empleado = obtenerEmpleadoDesdeSesion(session, logger);
+        if (empleado == null) {
             return "redirect:/login/username";
         }
 
         List<Empleado> resultados = empleadoService.buscarEmpleados(nombre, genero);
 
-        modelo.addAttribute("nombre", nombre);
-        modelo.addAttribute("genero", genero);
-        modelo.addAttribute("generos", generoService.getAllGeneros());
         modelo.addAttribute("resultados", resultados);
+        modelo.addAttribute("nombre", nombre);
+        modelo.addAttribute("selectedGeneroId", genero);
+        modelo.addAttribute("generos", generoService.getAllGeneros());
         return "empleado/main/empleado-buscar";
     }
 
     /**
-     * Bloquea un empleado dado su ID y el motivo de bloqueo.
-     * Este método recibe el ID del empleado y el motivo del bloqueo como parámetros,
-     * obtiene la información del usuario autenticado desde la sesión,
-     * y luego llama al servicio correspondiente para realizar la operación de bloqueo.
+     * Bloquea un empleado y registra la acción en los logs.
+     * <p>
+     * Este método se encarga de bloquear al empleado especificado por su ID. Antes de
+     * proceder, verifica que haya un usuario autenticado en la sesión y registra la
+     * acción en los logs. Después de bloquear al empleado, se agrega un mensaje flash
+     * al modelo para ser mostrado en la siguiente solicitud.
      *
-     * @param empleadoId El ID del empleado a bloquear.
-     * @param motivoBloqueo El motivo por el cual el empleado está siendo bloqueado.
-     * @param session La sesión HTTP actual que contiene el usuario autenticado.
-     * @param redirectAttributes Los atributos de redirección para agregar mensajes flash.
-     * @return La ruta a la cual redirigir después de bloquear al empleado, en este caso "/buscar".
+     * @param empleadoId el identificador único del empleado que se desea bloquear
+     * @param session la sesión HTTP que contiene la información del usuario autenticado
+     * @param redirectAttributes los atributos de redirección que permiten enviar el mensaje
+     *        flash al modelo para ser mostrado después de la redirección
+     * @return la vista de redirección a la página de búsqueda de empleados
      */
     @PostMapping("/bloquear")
     public String bloquearUsuario(@RequestParam("empleadoId") UUID empleadoId,
                                   @RequestParam("motivoBloqueo") String motivoBloqueo,
                                   HttpSession session,
                                   RedirectAttributes redirectAttributes) {
-        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");  // Recuperar usuario autenticado
-        if (usuario != null) {
-            logger.info("Bloqueando empleado ID: {} por usuario ID: {}", empleadoId, usuario.getId());
-        } else {
-            logger.warn("Usuario no identificado intentando bloquear empleado ID: {}", empleadoId);
+        Empleado empleado = obtenerEmpleadoDesdeSesion(session, logger);
+        if (empleado == null) {
+            return "redirect:/login/username";
         }
 
         empleadoService.bloquearEmpleado(empleadoId, motivoBloqueo);
@@ -123,26 +142,22 @@ public class BusquedaEmpleadosController {
     }
 
     /**
-     * Desbloquea un empleado y registra la acción en los logs.
-     * <p>
-     * Este método se encarga de desbloquear al empleado especificado por su ID. Antes de
-     * proceder, verifica que haya un usuario autenticado en la sesión y registra la
-     * acción en los logs. Después de desbloquear al empleado, se agrega un mensaje flash
-     * al modelo para ser mostrado en la siguiente solicitud.
+     * Desbloquea a un empleado por su ID.
      *
-     * @param empleadoId el identificador único del empleado que se desea desbloquear
-     * @param session la sesión HTTP que contiene la información del usuario autenticado
-     * @param redirectAttributes los atributos de redirección que permiten enviar el mensaje
-     *        flash al modelo para ser mostrado después de la redirección
-     * @return la vista de redirección a la página de búsqueda de empleados
+     * Si no hay usuario en sesión, redirige al login.
+     * Añade un mensaje flash tras la operación.
+     *
+     * @param empleadoId ID del empleado a desbloquear
+     * @param session sesión HTTP actual
+     * @param redirectAttributes atributos para mensajes flash
+     * @return redirección al formulario de búsqueda
      */
     @PostMapping("/desbloquear")
     public String desbloquearUsuario(@RequestParam("empleadoId") UUID empleadoId, HttpSession session, RedirectAttributes redirectAttributes) {
-        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
-        if (usuario != null) {
-            logger.info("Desbloqueando empleado ID: {} por usuario ID: {}", empleadoId, usuario.getId());
-        } else {
-            logger.warn("Usuario no identificado intentando desbloquear empleado ID: {}", empleadoId);
+
+        Empleado empleado = obtenerEmpleadoDesdeSesion(session, logger);
+        if (empleado == null) {
+            return "redirect:/login/username";
         }
 
         empleadoService.desbloquearEmpleado(empleadoId);
