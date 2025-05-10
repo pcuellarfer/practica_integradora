@@ -36,19 +36,27 @@ public class EtiquetadoController {
         this.empleadoService = empleadoService;
     }
 
-    @GetMapping("/asignar")
-    public String asignarSubordinados(HttpSession session, Model modelo) {
+    private Empleado obtenerJefeDesdeSesion(HttpSession session, Logger logger) {
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
 
         if (usuario == null) {
-            logger.warn("Intento de acceso sin sesión activa. Redirigiendo a login.");
-            return "redirect:/login/username";
+            logger.warn("Sesión no activa.");
+            return null;
         }
 
         Empleado jefe = empleadoService.obtenerEmpleadoPorUsuarioId(usuario.getId()).orElse(null);
-
         if (jefe == null) {
-            logger.error("Get:/asignar No se encontró el empleado asociado al usuario con ID: {}", usuario.getId());
+            logger.error("No se encontró el jefe para usuario ID: {}", usuario.getId());
+        }
+
+        return jefe;
+    }
+
+    @GetMapping("/asignar")
+    public String asignarSubordinados(HttpSession session, Model modelo) {
+
+        Empleado jefe = obtenerJefeDesdeSesion(session, logger);
+        if (jefe == null) {
             return "redirect:/login/username";
         }
 
@@ -63,17 +71,9 @@ public class EtiquetadoController {
 
     @PostMapping("/asignar")
     public String procesarAsignacion(@RequestParam List<UUID> subordinadoIds, HttpSession session) {
-        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
 
-        if (usuario == null) {
-            logger.warn("Intento de asignación sin usuario en sesión. Redirigiendo.");
-            return "redirect:/login";
-        }
-
-        Empleado jefe = empleadoService.obtenerEmpleadoPorUsuarioId(usuario.getId()).orElse(null);
-
+        Empleado jefe = obtenerJefeDesdeSesion(session, logger);
         if (jefe == null) {
-            logger.error("Post:/asignar No se encontró el empleado asociado al usuario con ID: {}", usuario.getId());
             return "redirect:/login/username";
         }
 
@@ -91,16 +91,9 @@ public class EtiquetadoController {
 
     @GetMapping("/crearEtiquetas")
     public String crearEtiquetas(HttpSession session, Model modelo) {
-        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
 
-        if (usuario == null) {
-            logger.warn("Intento de acceso sin sesión activa en /etiquetas. Redirigiendo a login.");
-            return "redirect:/login/username";
-        }
-
-        Empleado jefe = empleadoService.obtenerEmpleadoPorUsuarioId(usuario.getId()).orElse(null);
+        Empleado jefe = obtenerJefeDesdeSesion(session, logger);
         if (jefe == null) {
-            logger.error("no hay un empleado con usuario_id en crearEtiquetas: {}", usuario.getId());
             return "redirect:/login/username";
         }
 
@@ -117,24 +110,17 @@ public class EtiquetadoController {
     public String crearEtiqueta(@ModelAttribute("nuevaEtiqueta") Etiqueta etiqueta,
                                 HttpSession session,
                                 RedirectAttributes redirectAttributes) {
-        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
 
-        if (usuario == null) {
-            logger.warn("Intento de crear etiqueta sin sesión activa");
-            return "redirect:/login/username";
-        }
-
-        Empleado jefe = empleadoService.obtenerEmpleadoPorUsuarioId(usuario.getId()).orElse(null);
+        Empleado jefe = obtenerJefeDesdeSesion(session, logger);
         if (jefe == null) {
-            logger.error("No se encontró el jefe para usuario ID: {}", usuario.getId());
             return "redirect:/login/username";
         }
 
         etiqueta.setJefe(jefe);
         try {
             etiquetaService.guardarEtiqueta(etiqueta);
-        } catch (Exception e) {
-            logger.error("Etiqueta duplicada: {}", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            logger.warn("Etiqueta duplicada: {}", e.getMessage());
             redirectAttributes.addFlashAttribute("error", "Ya has has puesto esta etiqueta crack");
         }
 
@@ -143,16 +129,9 @@ public class EtiquetadoController {
 
     @GetMapping("/etiquetado")
     public String mostrarEtiquetado(HttpSession session, Model modelo) {
-        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
 
-        if (usuario == null) {
-            logger.warn("Intento de acceso sin sesión activa en /etiquetado. Redirigiendo a login.");
-            return "redirect:/login/username";
-        }
-
-        Empleado jefe = empleadoService.obtenerEmpleadoPorUsuarioId(usuario.getId()).orElse(null);
+        Empleado jefe = obtenerJefeDesdeSesion(session, logger);
         if (jefe == null) {
-            logger.error("no hay un empleado con usuario_id: {}", usuario.getId());
             return "redirect:/login/username";
         }
 
@@ -167,26 +146,35 @@ public class EtiquetadoController {
     }
 
     @PostMapping("/etiquetado")
-    public String procesarEtiquetado(@RequestParam("empleados") List<UUID> empleadosIds,
-                                     @RequestParam("etiquetas") List<UUID> etiquetasIds,
-                                     HttpSession session) {
+    public String procesarEtiquetado(@RequestParam(name = "empleados", required = false) List<UUID> empleadosIds,
+                                     @RequestParam(name = "etiquetas", required = false) List<UUID> etiquetasIds,
+                                     HttpSession session,
+                                     RedirectAttributes redirectAttributes) {
 
-        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
-        if (usuario == null) {
+        Empleado jefe = obtenerJefeDesdeSesion(session, logger);
+        if (jefe == null) {
             return "redirect:/login/username";
         }
 
-        Empleado jefe = empleadoService.obtenerEmpleadoPorUsuarioId(usuario.getId()).orElse(null);
-        if (jefe == null) {
-            return "redirect:/login/username";
+        if (empleadosIds == null || empleadosIds.isEmpty() || etiquetasIds == null || etiquetasIds.isEmpty()) {
+            logger.warn("No se seleccionaron empleados o etiquetas para asignar.");
+            redirectAttributes.addFlashAttribute("error", "Debes seleccionar al menos un empleado y una etiqueta.");
+            return "redirect:/etiquetado";
         }
 
         List<Empleado> empleados = empleadoService.buscarPorIds(empleadosIds);
         List<Etiqueta> etiquetas = etiquetaService.buscarPorIds(etiquetasIds);
 
-        for (Etiqueta etiqueta : etiquetas) {
-            etiqueta.getEmpleadosEtiquetados().addAll(empleados);
-            etiquetaService.guardarEtiqueta(etiqueta);
+        try {
+            for (Etiqueta etiqueta : etiquetas) {
+                etiqueta.getEmpleadosEtiquetados().addAll(empleados);
+                etiquetaService.guardarEtiqueta(etiqueta);
+            }
+            logger.info("Etiquetas {} asignadas a empleados {}", etiquetasIds, empleadosIds);
+        } catch (IllegalArgumentException e) {
+            logger.warn("Error al etiquetar: {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Alguna de las etiquetas ya está definida para ese jefe.");
+            return "redirect:/etiquetado";
         }
 
         logger.info("Etiquetas {} asignadas a empleados {}", etiquetasIds, empleadosIds);
@@ -198,17 +186,8 @@ public class EtiquetadoController {
                                                HttpSession session, Model modelo) {
         logger.info("Accediendo al formulario de eliminación de etiquetas");
 
-        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
-        if (usuario == null) {
-            logger.warn("Sesión no activa. Redirigiendo a login en /etiquetado/eliminar GET");
-            return "redirect:/login/username";
-        }
-
-        logger.info("Usuario autenticado en /etiquetado/eliminar: {}", usuario.getId());
-
-        Empleado jefe = empleadoService.obtenerEmpleadoPorUsuarioId(usuario.getId()).orElse(null);
+        Empleado jefe = obtenerJefeDesdeSesion(session, logger);
         if (jefe == null) {
-            logger.error("No se encontró el jefe con usuario ID en etiquetado/eliminar: {}", usuario.getId());
             return "redirect:/login/username";
         }
 
@@ -242,17 +221,8 @@ public class EtiquetadoController {
                                     HttpSession session) {
         logger.info("Inicio de eliminación de etiquetas para empleado ID: {}", empleadoId);
 
-        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
-        if (usuario == null) {
-            logger.warn("Sesión no activa. Redirigiendo a login en /etiquetado/eliminar");
-            return "redirect:/login/username";
-        }
-
-        logger.info("Usuario autenticado /etiquetado/eliminar: {}", usuario.getId());
-
-        Empleado jefe = empleadoService.obtenerEmpleadoPorUsuarioId(usuario.getId()).orElse(null);
+        Empleado jefe = obtenerJefeDesdeSesion(session, logger);
         if (jefe == null) {
-            logger.error("No se encontró el jefe con usuario ID: {}", usuario.getId());
             return "redirect:/login/username";
         }
 

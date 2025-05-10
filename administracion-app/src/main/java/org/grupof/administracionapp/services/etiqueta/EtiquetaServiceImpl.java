@@ -19,8 +19,10 @@ public class EtiquetaServiceImpl implements EtiquetaService {
 
     @Override
     public void guardarEtiqueta(Etiqueta etiqueta) {
-        if (etiquetaRepository.existsByJefeAndTexto(etiqueta.getJefe(), etiqueta.getTexto())) {
-            throw new IllegalArgumentException("esta etiqueta ya existe para este jefe");
+        if (etiqueta.getId() == null) {
+            if (etiquetaRepository.existsByJefeAndTexto(etiqueta.getJefe(), etiqueta.getTexto())) {
+                throw new IllegalArgumentException("esta etiqueta ya existe para este jefe");
+            }
         }
         etiquetaRepository.save(etiqueta);
     }
