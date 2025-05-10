@@ -139,6 +139,8 @@ public class InicioSesionController {
             if (usuario.getBloqueadoHasta().isAfter(fechaActual)) {
                 logger.warn("Usuario bloqueado hasta: {}", usuario.getBloqueadoHasta());
                 model.addAttribute("error", "El usuario está bloqueado hasta: " + usuario.getBloqueadoHasta());
+                logger.warn("Usuario bloqueado por motivo de bloqueo: {}", usuario.getMotivoBloqueo());
+                model.addAttribute("motivoBloqueo", "Estas bloqueado por: " + usuario.getMotivoBloqueo());
                 return "usuario/auth/login-nombre";
             }
 
