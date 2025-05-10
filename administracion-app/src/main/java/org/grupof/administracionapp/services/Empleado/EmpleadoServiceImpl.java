@@ -11,7 +11,6 @@ import org.grupof.administracionapp.services.Especialidades.EspecialidadesServic
 import org.grupof.administracionapp.services.Genero.GeneroService;
 import org.grupof.administracionapp.services.Pais.PaisService;
 import org.grupof.administracionapp.services.TipoDocumento.TipoDocumentoService;
-import org.grupof.administracionapp.services.banco.BancoService;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
 import org.grupof.administracionapp.entity.Empleado;
 import org.grupof.administracionapp.entity.Usuario;
@@ -52,7 +51,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     private final TipoDocumentoService tipoDocumentoService;
     private final DepartamentoService departamentoService;
     private final EspecialidadesService especialidadesService;
-    private final BancoService bancoService;
+
 
     @Autowired
     public EmpleadoServiceImpl(EmpleadoRepository empleadoRepository,
@@ -61,7 +60,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
                                PaisService paisService,
                                TipoDocumentoService tipoDocumentoService,
                                DepartamentoService departamentoService,
-                               EspecialidadesService especialidadesService, BancoService bancoService) {
+                               EspecialidadesService especialidadesService) {
         this.empleadoRepository = empleadoRepository;
         this.usuarioRepository = usuarioRepository;
         this.generoService = generoService;
@@ -69,7 +68,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         this.tipoDocumentoService = tipoDocumentoService;
         this.departamentoService = departamentoService;
         this.especialidadesService = especialidadesService;
-        this.bancoService = bancoService;
+
     }
 
     @Override

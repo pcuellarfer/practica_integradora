@@ -38,14 +38,12 @@ public class EtiquetadoController {
 
     /**
      * Obtiene el jefe asociado al usuario en sesión.
-     *
      * Si no hay usuario o no se encuentra el jefe, se registra en el log y se devuelve null.
      *
      * @param session sesión HTTP actual
-     * @param logger logger para registrar avisos y errores
      * @return el jefe correspondiente o null si no se encuentra
      */
-    private Empleado obtenerJefeDesdeSesion(HttpSession session, Logger logger) {
+    private Empleado obtenerJefeDesdeSesion(HttpSession session) {
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
 
         if (usuario == null) {
@@ -63,7 +61,6 @@ public class EtiquetadoController {
 
     /**
      * Muestra la vista para asignar subordinados a un jefe.
-     *
      * Si no hay jefe en sesión, redirige al login.
      * Carga en el modelo el jefe y la lista de empleados disponibles para asignar.
      *
@@ -90,7 +87,6 @@ public class EtiquetadoController {
 
     /**
      * Procesa la asignación de subordinados a un jefe.
-     *
      * Si no hay jefe en sesión, redirige al login.
      * Asocia los empleados seleccionados como subordinados del jefe y guarda los cambios.
      *
@@ -120,7 +116,6 @@ public class EtiquetadoController {
 
     /**
      * Muestra la vista de gestión de etiquetas definidas por el jefe.
-     *
      * Si no hay jefe en sesión, redirige al login.
      * Carga en el modelo el jefe, sus etiquetas actuales y una nueva etiqueta vacía para crear.
      *
@@ -147,7 +142,6 @@ public class EtiquetadoController {
 
     /**
      * Guarda una nueva etiqueta definida por el jefe.
-     *
      * Si no hay jefe en sesión, redirige al login.
      * Asocia la etiqueta al jefe y la guarda. Si ya existe, añade un mensaje de error.
      *
@@ -179,7 +173,6 @@ public class EtiquetadoController {
 
     /**
      * Muestra la vista de etiquetado de subordinados.
-     *
      * Si no hay jefe en sesión, redirige al login.
      * Carga en el modelo la lista de subordinados y las etiquetas definidas por el jefe.
      *
@@ -207,7 +200,6 @@ public class EtiquetadoController {
 
     /**
      * Procesa la asignación de etiquetas a los empleados seleccionados.
-     *
      * Si no hay jefe en sesión, redirige al login.
      * Si no se seleccionan empleados o etiquetas, muestra un mensaje de error.
      * Asocia las etiquetas a los empleados y guarda los cambios.
@@ -256,7 +248,6 @@ public class EtiquetadoController {
 
     /**
      * Muestra el formulario para eliminar etiquetas asignadas a empleados.
-     *
      * Si no hay jefe en sesión, redirige al login.
      * Si se proporciona un ID de empleado, carga sus etiquetas asignadas y lo añade al modelo.
      * Siempre carga la lista de subordinados del jefe para selección.
@@ -302,7 +293,6 @@ public class EtiquetadoController {
 
     /**
      * Elimina etiquetas asignadas a un empleado específico.
-     *
      * Si no hay jefe en sesión, redirige al login.
      * Verifica que el empleado y las etiquetas existan, y que las etiquetas pertenezcan al jefe actual.
      * Elimina la relación entre cada etiqueta y el empleado indicado.
