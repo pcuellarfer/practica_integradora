@@ -37,7 +37,7 @@ public interface EmpleadoService {
     //usado en DetalleControler
     RegistroEmpleadoDTO obtenerRegistroEmpleadoParaEdicion(UUID usuarioId);
 
-    //usado en BusqedaEmpleadosController para la busqueda parametrizada
+    //usado en BusqedaEmpleadosController para la busqueda parametrizada nombre+genero
     List<Empleado> buscarEmpleados(String nombre, UUID generoId);
 
 
@@ -73,7 +73,7 @@ public interface EmpleadoService {
      * @param id Identificador único del empleado.
      * @return El DTO del empleado encontrado, o null si no existe.
      */
-    RegistroEmpleadoDTO buscarEmpleado(UUID id);
+    RegistroEmpleadoDTO buscarRegistroEmpleado(UUID id);
 
     /**
      * Obtiene una lista de todos los empleados registrados en el sistema.
@@ -90,7 +90,13 @@ public interface EmpleadoService {
      */
     RegistroEmpleadoDTO buscarEmpleadoPorUsuarioId(UUID usuarioId);
 
+
     Optional<Empleado> obtenerEmpleadoPorUsuarioId(UUID usuarioId);
+    List<Empleado> buscarTodosMenos(UUID id); //usado para devolver todos los empleaos menos el que accede al metodo, @GetMapping("/asignar")
+    List<Empleado> buscarPorIds(List<UUID> ids); //usado para listar los subordinados de un jefe, @PostMapping("/asignar")
+    void guardarTodos(List<Empleado> empleados); //usado para guardar los subordinados del jefe
+    List<Empleado> buscarPorJefe(Empleado jefe); //usado para buscar
+    Optional<Empleado> buscarPorId(UUID id);
 
     /**
      * Bloquea un empleado especificado por su ID.
