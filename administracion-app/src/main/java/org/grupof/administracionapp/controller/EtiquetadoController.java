@@ -36,17 +36,17 @@ public class EtiquetadoController {
         this.empleadoService = empleadoService;
     }
 
-    private Empleado obtenerJefeDesdeSesion(HttpSession session, Logger logger) {
+    private Empleado obtenerJefeDesdeSesion(HttpSession session) {
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
 
         if (usuario == null) {
-            logger.warn("Sesión no activa.");
+            EtiquetadoController.logger.warn("Sesión no activa.");
             return null;
         }
 
         Empleado jefe = empleadoService.obtenerEmpleadoPorUsuarioId(usuario.getId()).orElse(null);
         if (jefe == null) {
-            logger.error("No se encontró el jefe para usuario ID: {}", usuario.getId());
+            EtiquetadoController.logger.error("No se encontró el jefe para usuario ID: {}", usuario.getId());
         }
 
         return jefe;
@@ -55,7 +55,7 @@ public class EtiquetadoController {
     @GetMapping("/asignar")
     public String asignarSubordinados(HttpSession session, Model modelo) {
 
-        Empleado jefe = obtenerJefeDesdeSesion(session, logger);
+        Empleado jefe = obtenerJefeDesdeSesion(session);
         if (jefe == null) {
             return "redirect:/login/username";
         }
@@ -72,7 +72,7 @@ public class EtiquetadoController {
     @PostMapping("/asignar")
     public String procesarAsignacion(@RequestParam List<UUID> subordinadoIds, HttpSession session) {
 
-        Empleado jefe = obtenerJefeDesdeSesion(session, logger);
+        Empleado jefe = obtenerJefeDesdeSesion(session);
         if (jefe == null) {
             return "redirect:/login/username";
         }
@@ -92,7 +92,7 @@ public class EtiquetadoController {
     @GetMapping("/crearEtiquetas")
     public String crearEtiquetas(HttpSession session, Model modelo) {
 
-        Empleado jefe = obtenerJefeDesdeSesion(session, logger);
+        Empleado jefe = obtenerJefeDesdeSesion(session);
         if (jefe == null) {
             return "redirect:/login/username";
         }
@@ -111,7 +111,7 @@ public class EtiquetadoController {
                                 HttpSession session,
                                 RedirectAttributes redirectAttributes) {
 
-        Empleado jefe = obtenerJefeDesdeSesion(session, logger);
+        Empleado jefe = obtenerJefeDesdeSesion(session);
         if (jefe == null) {
             return "redirect:/login/username";
         }
@@ -130,7 +130,7 @@ public class EtiquetadoController {
     @GetMapping("/etiquetado")
     public String mostrarEtiquetado(HttpSession session, Model modelo) {
 
-        Empleado jefe = obtenerJefeDesdeSesion(session, logger);
+        Empleado jefe = obtenerJefeDesdeSesion(session);
         if (jefe == null) {
             return "redirect:/login/username";
         }
@@ -151,7 +151,7 @@ public class EtiquetadoController {
                                      HttpSession session,
                                      RedirectAttributes redirectAttributes) {
 
-        Empleado jefe = obtenerJefeDesdeSesion(session, logger);
+        Empleado jefe = obtenerJefeDesdeSesion(session);
         if (jefe == null) {
             return "redirect:/login/username";
         }
@@ -186,7 +186,7 @@ public class EtiquetadoController {
                                                HttpSession session, Model modelo) {
         logger.info("Accediendo al formulario de eliminación de etiquetas");
 
-        Empleado jefe = obtenerJefeDesdeSesion(session, logger);
+        Empleado jefe = obtenerJefeDesdeSesion(session);
         if (jefe == null) {
             return "redirect:/login/username";
         }
@@ -221,7 +221,7 @@ public class EtiquetadoController {
                                     HttpSession session) {
         logger.info("Inicio de eliminación de etiquetas para empleado ID: {}", empleadoId);
 
-        Empleado jefe = obtenerJefeDesdeSesion(session, logger);
+        Empleado jefe = obtenerJefeDesdeSesion(session);
         if (jefe == null) {
             return "redirect:/login/username";
         }

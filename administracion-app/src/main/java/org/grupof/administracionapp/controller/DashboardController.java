@@ -76,6 +76,6 @@ public class DashboardController {
 
     @GetMapping("dashboard/submenu-productos")
     public String mostrarSubmenuProductos() {
-        return "empleado/main/empleado-submenu-productos";
+        return "empleado/main/catalogo";
     }
 }
