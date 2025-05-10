@@ -3,7 +3,6 @@ package org.grupof.administracionapp.controller;
 import jakarta.servlet.http.HttpSession;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
 import org.grupof.administracionapp.entity.Empleado;
-import org.grupof.administracionapp.repository.EmpleadoRepository;
 import org.grupof.administracionapp.services.Empleado.EmpleadoService;
 import org.grupof.administracionapp.services.Genero.GeneroService;
 import org.slf4j.Logger;
@@ -25,12 +24,10 @@ public class BusquedaEmpleadosController {
     private static final Logger logger = LoggerFactory.getLogger(BusquedaEmpleadosController.class);
 
     private final GeneroService generoService;
-    private final EmpleadoRepository empleadoRepository;
     private final EmpleadoService empleadoService;
 
-    public BusquedaEmpleadosController(GeneroService generoService, EmpleadoRepository empleadoRepository, EmpleadoService empleadoService) {
+    public BusquedaEmpleadosController(GeneroService generoService, EmpleadoService empleadoService) {
         this.generoService = generoService;
-        this.empleadoRepository = empleadoRepository;
         this.empleadoService = empleadoService;
     }
 
@@ -87,23 +84,7 @@ public class BusquedaEmpleadosController {
             return "redirect:/login/username";
         }
 
-        List<Empleado> resultados;
-
-        //nombre+genero
-        if (nombre != null && !nombre.trim().isEmpty() && genero != null) {
-            resultados = empleadoRepository.findByNombreContainingIgnoreCaseAndGeneroId(nombre, genero);
-        }
-        //nombre
-        else if (nombre != null && !nombre.trim().isEmpty()) {
-            resultados = empleadoRepository.findByNombreContainingIgnoreCase(nombre);
-        }
-        //genero
-        else if (genero != null) {
-            resultados = empleadoRepository.findByGeneroId(genero);
-        } else {
-            //NINGUNOOOO, es decir, se muestran todos los empleados
-            resultados = empleadoRepository.findAll();
-        }
+        List<Empleado> resultados = empleadoService.buscarEmpleados(nombre, genero);
 
         modelo.addAttribute("nombre", nombre);
         modelo.addAttribute("genero", genero);

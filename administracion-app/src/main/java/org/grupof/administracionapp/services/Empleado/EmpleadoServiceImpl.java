@@ -163,6 +163,22 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         return this.buscarEmpleadoPorUsuarioId(usuarioId); //convierte el empleado(entidad) en un RegistroEmpeladoDTO
     }
 
+    @Override //usado en BusqedaEmpleadosController para la busqueda parametrizada
+    public List<Empleado> buscarEmpleados(String nombre, UUID generoId) {
+        boolean tieneNombre = nombre != null && !nombre.trim().isEmpty();
+        boolean tieneGenero = generoId != null;
+
+        if (tieneNombre && tieneGenero) {
+            return empleadoRepository.findByNombreContainingIgnoreCaseAndGeneroId(nombre, generoId);
+        } else if (tieneNombre) {
+            return empleadoRepository.findByNombreContainingIgnoreCase(nombre);
+        } else if (tieneGenero) {
+            return empleadoRepository.findByGeneroId(generoId);
+        } else {
+            return empleadoRepository.findAll();
+        }
+    }
+
 
     /**
      * Registra un nuevo empleado en el sistema a partir de los datos proporcionados en un objeto
@@ -355,7 +371,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
      * @return DTO del empleado encontrado, o null si no existe.
      */
     @Override
-    public RegistroEmpleadoDTO buscarEmpleado(UUID id) {
+    public RegistroEmpleadoDTO buscarRegistroEmpleado(UUID id) {
         logger.info("Buscando empleado con ID: {}", id);
         return empleadoRepository.findById(id)
                 .map(emp -> {
@@ -485,6 +501,30 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     @Override
     public Optional<Empleado> obtenerEmpleadoPorUsuarioId(UUID usuarioId) {
         return empleadoRepository.findByUsuarioId(usuarioId);
+    }
+
+    @Override
+    public List<Empleado> buscarTodosMenos(UUID id){
+        return empleadoRepository.findByIdNot(id);
+    }
+
+    @Override
+    public List<Empleado> buscarPorIds(List<UUID> ids) {
+        return empleadoRepository.findAllById(ids);
+    }
+
+    @Override
+    public void guardarTodos(List<Empleado> empleados) {
+        empleadoRepository.saveAll(empleados);
+    }
+
+    @Override
+    public List<Empleado> buscarPorJefe(Empleado jefe) {
+        return empleadoRepository.findByJefe(jefe);
+    }
+
+    public Optional<Empleado> buscarPorId(UUID id) {
+        return empleadoRepository.findById(id);
     }
 
     /**
