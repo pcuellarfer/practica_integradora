@@ -41,6 +41,7 @@
                         <span th:text="${empleado.nombre}"></span>
                         <div>
                             <form th:action="@{/bloquear}" method="post" style="display:inline;">
+                                <input type="text" name="motivoBloqueo" placeholder="Motivo de bloqueo"/>
                                 <input type="hidden" name="empleadoId" th:value="${empleado.id}" />
                                 <button type="submit" class="btn btn-sm btn-danger">Bloquear</button>
                             </form>

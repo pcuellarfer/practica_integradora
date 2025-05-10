@@ -33,11 +33,11 @@ public class BusquedaEmpleadosController {
 
     /**
      * Obtiene el empleado asociado al usuario en sesión.
-     *
+     * <p>
      * Si no hay usuario o no se encuentra el empleado, se registra en el log y se devuelve null.
      *
      * @param session sesión HTTP actual
-     * @param logger logger para registrar avisos y errores
+     * @param logger  logger para registrar avisos y errores
      * @return el empleado correspondiente o null si no se encuentra
      */
     private Empleado obtenerEmpleadoDesdeSesion(HttpSession session, Logger logger) {
@@ -58,11 +58,11 @@ public class BusquedaEmpleadosController {
 
     /**
      * Muestra el formulario de búsqueda de empleados.
-     *
+     * <p>
      * Si no hay usuario en sesión, redirige al login.
      * Carga la lista de géneros y todos los empleados ordenados.
      *
-     * @param modelo modelo para pasar datos a la vista
+     * @param modelo  modelo para pasar datos a la vista
      * @param session sesión HTTP actual
      * @return vista del formulario de búsqueda
      */
@@ -82,13 +82,13 @@ public class BusquedaEmpleadosController {
 
     /**
      * Procesa la búsqueda de empleados por nombre y género.
-     *
+     * <p>
      * Si no hay usuario en sesión, redirige al login.
      * Añade al modelo los resultados de la búsqueda y los filtros aplicados.
      *
-     * @param nombre texto a buscar en el nombre del empleado
-     * @param genero ID del género seleccionado (opcional)
-     * @param modelo modelo para pasar datos a la vista
+     * @param nombre  texto a buscar en el nombre del empleado
+     * @param genero  ID del género seleccionado (opcional)
+     * @param modelo  modelo para pasar datos a la vista
      * @param session sesión HTTP actual
      * @return vista con los resultados de la búsqueda
      */
@@ -113,18 +113,17 @@ public class BusquedaEmpleadosController {
     }
 
     /**
-     * Bloquea un empleado y registra la acción en los logs.
+     * Maneja la solicitud POST para bloquear a un empleado específico.
      * <p>
-     * Este método se encarga de bloquear al empleado especificado por su ID. Antes de
-     * proceder, verifica que haya un usuario autenticado en la sesión y registra la
-     * acción en los logs. Después de bloquear al empleado, se agrega un mensaje flash
-     * al modelo para ser mostrado en la siguiente solicitud.
+     * Este método verifica si hay un empleado autenticado en sesión. Si no lo hay, redirige al formulario de login.
+     * Si el empleado está autenticado, se llama al servicio para bloquear al empleado con el motivo proporcionado.
+     * Después, redirige a la vista de búsqueda con un mensaje de éxito.
      *
-     * @param empleadoId el identificador único del empleado que se desea bloquear
-     * @param session la sesión HTTP que contiene la información del usuario autenticado
-     * @param redirectAttributes los atributos de redirección que permiten enviar el mensaje
-     *        flash al modelo para ser mostrado después de la redirección
-     * @return la vista de redirección a la página de búsqueda de empleados
+     * @param empleadoId          UUID del empleado que se desea bloquear.
+     * @param motivoBloqueo       Motivo proporcionado para el bloqueo del empleado.
+     * @param session             Sesión HTTP actual desde la cual se recupera el empleado autenticado.
+     * @param redirectAttributes  Atributos utilizados para enviar mensajes flash al redirigir.
+     * @return Redirección a la página de login si no hay sesión válida, o a la vista de búsqueda tras el bloqueo.
      */
     @PostMapping("/bloquear")
     public String bloquearUsuario(@RequestParam("empleadoId") UUID empleadoId,
@@ -143,12 +142,12 @@ public class BusquedaEmpleadosController {
 
     /**
      * Desbloquea a un empleado por su ID.
-     *
+     * <p>
      * Si no hay usuario en sesión, redirige al login.
      * Añade un mensaje flash tras la operación.
      *
-     * @param empleadoId ID del empleado a desbloquear
-     * @param session sesión HTTP actual
+     * @param empleadoId         ID del empleado a desbloquear
+     * @param session            sesión HTTP actual
      * @param redirectAttributes atributos para mensajes flash
      * @return redirección al formulario de búsqueda
      */

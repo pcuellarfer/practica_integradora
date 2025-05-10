@@ -1,22 +1,18 @@
-body {
-    background-color: #f8f9fa;
-    font-family: 'Segoe UI', sans-serif;
-}
-
-.catalogo-container {
-    background-color: #ffffff;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-}
-
 .catalogo-titulo {
     font-weight: 600;
     color: #333;
 }
 
+.catalogo-tabla {
+    background-color: #ffffff;
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
 .catalogo-table {
     width: 100%;
+    table-layout: auto;
     border-collapse: collapse;
 }
 
@@ -29,6 +25,7 @@ body {
     font-weight: bold;
     text-align: center;
     vertical-align: middle;
+    white-space: nowrap;
 }
 
 .catalogo-tbody .catalogo-row:nth-child(even) {
@@ -43,4 +40,10 @@ body {
 
 .catalogo-row:hover {
     background-color: #e9ecef;
+}
+
+@media (max-width: 768px) {
+    .catalogo-table {
+        font-size: 0.85rem;
+    }
 }

@@ -91,11 +91,57 @@ public interface EmpleadoService {
     RegistroEmpleadoDTO buscarEmpleadoPorUsuarioId(UUID usuarioId);
 
 
+    /**
+     * Busca un empleado en base al ID de usuario asociado.
+     *
+     * @param usuarioId ID del usuario vinculado al empleado.
+     * @return Un {@code Optional} que contiene el {@code Empleado} si se encuentra, o vacío si no.
+     */
     Optional<Empleado> obtenerEmpleadoPorUsuarioId(UUID usuarioId);
-    List<Empleado> buscarTodosMenos(UUID id); //usado para devolver todos los empleaos menos el que accede al metodo, @GetMapping("/asignar")
-    List<Empleado> buscarPorIds(List<UUID> ids); //usado para listar los subordinados de un jefe, @PostMapping("/asignar")
-    void guardarTodos(List<Empleado> empleados); //usado para guardar los subordinados del jefe
-    List<Empleado> buscarPorJefe(Empleado jefe); //usado para buscar
+
+    /**
+     * Devuelve una lista de todos los empleados excepto el que tenga el ID proporcionado.
+     *
+     * Este método es útil para excluir al empleado que está realizando una acción,
+     * como por ejemplo en la vista de asignación de subordinados.
+     *
+     * @param id ID del empleado que se desea excluir.
+     * @return Lista de empleados distintos al proporcionado.
+     */
+    List<Empleado> buscarTodosMenos(UUID id);
+
+    /**
+     * Busca una lista de empleados cuyos IDs se proporcionan.
+     * <p>
+     * Este método se utiliza normalmente para obtener los subordinados
+     * asignados a un jefe a partir de sus identificadores.
+     *
+     * @param ids Lista de IDs de los empleados a buscar.
+     * @return Lista de empleados correspondientes a los IDs dados.
+     */
+    List<Empleado> buscarPorIds(List<UUID> ids);
+
+    /**
+     * Guarda o actualiza en lote una lista de empleados.
+     *
+     * @param empleados Lista de empleados a guardar o actualizar.
+     */
+    void guardarTodos(List<Empleado> empleados);
+
+    /**
+     * Busca todos los empleados que tengan como jefe al empleado proporcionado.
+     *
+     * @param jefe Empleado que actúa como jefe.
+     * @return Lista de empleados subordinados al jefe indicado.
+     */
+    List<Empleado> buscarPorJefe(Empleado jefe);
+
+    /**
+     * Busca un empleado por su identificador único.
+     *
+     * @param id ID del empleado a buscar.
+     * @return Un {@code Optional} con el empleado encontrado, o vacío si no existe.
+     */
     Optional<Empleado> buscarPorId(UUID id);
 
     /**

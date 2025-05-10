@@ -206,5 +206,16 @@ public interface UsuarioService {
      */
     int getContadorInicios(@NotBlank(message = "El email no puede estar vacío") @Email(message = "El email no tiene un formato válido") String email);
 
+    /**
+     * Incrementa el contador de accesos de un usuario identificando el navegador utilizado.
+     * <p>
+     * Este método permite registrar cuántas veces un usuario ha accedido desde un navegador específico.
+     * Es útil para estadísticas o control de accesos diferenciados por navegador.
+     *
+     * @param email Correo electrónico del usuario. No puede ser nulo ni vacío y debe tener un formato válido.
+     * @param navegadorId Identificador único del navegador desde el cual se está accediendo.
+     *
+     * @throws IllegalArgumentException Si el email no es válido o está vacío.
+     */
     void actualizarContadorPorNavegador(@NotBlank(message = "El email no puede estar vacío") @Email(message = "El email no tiene un formato válido") String email, String navegadorId);
 }

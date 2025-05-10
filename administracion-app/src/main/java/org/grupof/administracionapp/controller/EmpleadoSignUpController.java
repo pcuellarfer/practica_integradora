@@ -104,8 +104,8 @@ public class EmpleadoSignUpController {
     /**
      * Muestra el formulario del Paso 1: Datos personales.
      *
-     * @param modelo el modelo para la vista
-     * @param usuario el usuario en sesión
+     * @param modelo             el modelo para la vista
+     * @param usuario            el usuario en sesión
      * @param redirectAttributes atributos para redirección en caso de error
      * @return la vista correspondiente o redirección
      */
@@ -132,10 +132,10 @@ public class EmpleadoSignUpController {
     /**
      * Procesa los datos del Paso 1: Datos personales.
      *
-     * @param paso1 datos del formulario
+     * @param paso1            datos del formulario
      * @param registroEmpleado objeto en sesión
-     * @param errores errores de validación
-     * @param usuarioDTO el usuario en sesión
+     * @param errores          errores de validación
+     * @param usuarioDTO       el usuario en sesión
      * @return redirección al paso siguiente o vista actual en caso de error
      */
     @PostMapping("/paso1")
@@ -180,7 +180,6 @@ public class EmpleadoSignUpController {
         }
 
 
-
         try { //getBytes puede soltar excepcion, por eso el try catch
             registroEmpleado.setFotoBytes(foto.getBytes());
             registroEmpleado.setFotoTipo(foto.getContentType());
@@ -202,8 +201,8 @@ public class EmpleadoSignUpController {
      * a los datos de contacto. Este método verifica que haya un usuario en la sesión.
      * Si no lo hay, redirige al formulario de registro de usuario con un mensaje de error.
      *
-     * @param modelo el modelo de Spring para pasar atributos a la vista
-     * @param usuario el objeto {@link UsuarioDTO} obtenido de la sesión, puede ser null si no está presente
+     * @param modelo             el modelo de Spring para pasar atributos a la vista
+     * @param usuario            el objeto {@link UsuarioDTO} obtenido de la sesión, puede ser null si no está presente
      * @param redirectAttributes objeto para añadir atributos flash en caso de redirección
      * @return la vista del formulario de contacto o redirección al registro de usuario si no hay sesión válida
      */
@@ -230,10 +229,10 @@ public class EmpleadoSignUpController {
      * Si el formulario contiene errores de validación, se vuelve a mostrar el mismo formulario.
      * Si los datos son válidos, se almacenan en el objeto de registro y se redirige al paso 3.
      *
-     * @param paso2 el DTO que contiene los datos del formulario de contacto
+     * @param paso2            el DTO que contiene los datos del formulario de contacto
      * @param registroEmpleado el DTO que almacena los datos del registro del empleado en múltiples pasos
-     * @param errores objeto que contiene errores de validación del formulario
-     * @param usuario el objeto {@link UsuarioDTO} obtenido de la sesión, puede ser null si no está presente
+     * @param errores          objeto que contiene errores de validación del formulario
+     * @param usuario          el objeto {@link UsuarioDTO} obtenido de la sesión, puede ser null si no está presente
      * @return redirección al paso 3 del registro si no hay errores, o el formulario de contacto nuevamente si hay errores
      */
     @PostMapping("/paso2")
@@ -261,8 +260,8 @@ public class EmpleadoSignUpController {
      * a los datos profesionales. Verifica que exista un usuario en la sesión antes de mostrar el formulario.
      * Si no hay un usuario válido, redirige al formulario de registro de usuario con un mensaje de error.
      *
-     * @param modelo el modelo de Spring utilizado para pasar atributos a la vista
-     * @param usuario el objeto {@link UsuarioDTO} obtenido de la sesión, puede ser null si no está presente
+     * @param modelo             el modelo de Spring utilizado para pasar atributos a la vista
+     * @param usuario            el objeto {@link UsuarioDTO} obtenido de la sesión, puede ser null si no está presente
      * @param redirectAttributes objeto para añadir atributos flash en caso de redirección
      * @return la vista del formulario de datos profesionales o una redirección al registro de usuario
      */
@@ -287,10 +286,10 @@ public class EmpleadoSignUpController {
      * Si hay errores de validación, se vuelve a mostrar el formulario con los errores.
      * Si los datos son válidos, se almacenan en el objeto de registro y se redirige al paso 4.
      *
-     * @param paso3 el DTO que contiene los datos profesionales ingresados por el usuario
+     * @param paso3            el DTO que contiene los datos profesionales ingresados por el usuario
      * @param registroEmpleado el DTO que acumula los datos del registro del empleado en distintos pasos
-     * @param errores objeto que contiene los errores de validación del formulario
-     * @param usuario el objeto {@link UsuarioDTO} obtenido de la sesión, puede ser null si no está presente
+     * @param errores          objeto que contiene los errores de validación del formulario
+     * @param usuario          el objeto {@link UsuarioDTO} obtenido de la sesión, puede ser null si no está presente
      * @return redirección al paso 4 del registro si no hay errores, o el formulario profesional nuevamente si hay errores
      */
     @PostMapping("/paso3")
@@ -318,8 +317,8 @@ public class EmpleadoSignUpController {
      * a los datos económicos. Verifica que exista un usuario en la sesión antes de mostrar el formulario.
      * Si no hay un usuario válido, redirige al formulario de registro de usuario con un mensaje de error.
      *
-     * @param modelo el modelo de Spring utilizado para pasar atributos a la vista
-     * @param usuario el objeto {@link UsuarioDTO} obtenido de la sesión, puede ser null si no está presente
+     * @param modelo             el modelo de Spring utilizado para pasar atributos a la vista
+     * @param usuario            el objeto {@link UsuarioDTO} obtenido de la sesión, puede ser null si no está presente
      * @param redirectAttributes objeto para añadir atributos flash en caso de redirección
      * @return la vista del formulario de datos económicos o una redirección al registro de usuario
      */
@@ -347,10 +346,10 @@ public class EmpleadoSignUpController {
      * Si hay errores de validación, se vuelve a mostrar el formulario con los errores.
      * Si los datos son válidos, se almacenan en el objeto de registro y se redirige al paso 5.
      *
-     * @param paso4 el DTO que contiene los datos económicos ingresados por el usuario
+     * @param paso4            el DTO que contiene los datos económicos ingresados por el usuario
      * @param registroEmpleado el DTO que acumula los datos del registro del empleado en distintos pasos
-     * @param errores objeto que contiene los errores de validación del formulario
-     * @param usuario el objeto {@link UsuarioDTO} obtenido de la sesión, puede ser null si no está presente
+     * @param errores          objeto que contiene los errores de validación del formulario
+     * @param usuario          el objeto {@link UsuarioDTO} obtenido de la sesión, puede ser null si no está presente
      * @return redirección al paso 5 del registro si no hay errores, o el formulario económico nuevamente si hay errores
      */
     @PostMapping("/paso4")
@@ -381,9 +380,9 @@ public class EmpleadoSignUpController {
      * Este método reúne los datos de cada paso del registro (personal, contacto, profesional, económico)
      * y los prepara para ser mostrados en la vista de resumen.
      *
-     * @param registroEmpleado el DTO que acumula los datos del registro del empleado en distintos pasos
-     * @param modelo el modelo de Spring utilizado para pasar atributos a la vista
-     * @param usuario el objeto {@link UsuarioDTO} obtenido de la sesión, puede ser null si no está presente
+     * @param registroEmpleado   el DTO que acumula los datos del registro del empleado en distintos pasos
+     * @param modelo             el modelo de Spring utilizado para pasar atributos a la vista
+     * @param usuario            el objeto {@link UsuarioDTO} obtenido de la sesión, puede ser null si no está presente
      * @param redirectAttributes objeto para añadir atributos flash en caso de redirección
      * @return la vista del resumen del registro del empleado o una redirección al registro de usuario si no hay sesión válida
      */
@@ -458,7 +457,7 @@ public class EmpleadoSignUpController {
      * Si el registro es válido, guarda los datos del empleado y redirige al dashboard.
      *
      * @param registroEmpleadoDTO el DTO que contiene todos los datos del registro del empleado recopilados a lo largo de los pasos
-     * @param usuarioDTO el objeto {@link UsuarioDTO} obtenido de la sesión, puede ser null si no está presente
+     * @param usuarioDTO          el objeto {@link UsuarioDTO} obtenido de la sesión, puede ser null si no está presente
      * @return una redirección al dashboard si el registro es exitoso, o al formulario de registro de usuario si no hay sesión válida
      */
     @PostMapping("/paso5")

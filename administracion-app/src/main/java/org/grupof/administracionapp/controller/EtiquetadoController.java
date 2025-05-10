@@ -30,8 +30,8 @@ public class EtiquetadoController {
 
 
     public EtiquetadoController(
-                                EtiquetaService etiquetaService,
-                                EmpleadoService empleadoService) {
+            EtiquetaService etiquetaService,
+            EmpleadoService empleadoService) {
         this.etiquetaService = etiquetaService;
         this.empleadoService = empleadoService;
     }
@@ -65,7 +65,7 @@ public class EtiquetadoController {
      * Carga en el modelo el jefe y la lista de empleados disponibles para asignar.
      *
      * @param session sesión HTTP actual
-     * @param modelo modelo para pasar datos a la vista
+     * @param modelo  modelo para pasar datos a la vista
      * @return vista de asignación de subordinados o redirección al login
      */
     @GetMapping("/asignar")
@@ -91,7 +91,7 @@ public class EtiquetadoController {
      * Asocia los empleados seleccionados como subordinados del jefe y guarda los cambios.
      *
      * @param subordinadoIds lista de IDs de empleados seleccionados
-     * @param session sesión HTTP actual
+     * @param session        sesión HTTP actual
      * @return redirección al submenú de etiquetado
      */
     @PostMapping("/asignar")
@@ -120,7 +120,7 @@ public class EtiquetadoController {
      * Carga en el modelo el jefe, sus etiquetas actuales y una nueva etiqueta vacía para crear.
      *
      * @param session sesión HTTP actual
-     * @param modelo modelo para pasar datos a la vista
+     * @param modelo  modelo para pasar datos a la vista
      * @return vista de gestión de etiquetas o redirección al login
      */
     @GetMapping("/crearEtiquetas")
@@ -145,8 +145,8 @@ public class EtiquetadoController {
      * Si no hay jefe en sesión, redirige al login.
      * Asocia la etiqueta al jefe y la guarda. Si ya existe, añade un mensaje de error.
      *
-     * @param etiqueta objeto etiqueta recibido del formulario
-     * @param session sesión HTTP actual
+     * @param etiqueta           objeto etiqueta recibido del formulario
+     * @param session            sesión HTTP actual
      * @param redirectAttributes atributos para mensajes flash
      * @return redirección a la vista de gestión de etiquetas
      */
@@ -177,7 +177,7 @@ public class EtiquetadoController {
      * Carga en el modelo la lista de subordinados y las etiquetas definidas por el jefe.
      *
      * @param session sesión HTTP actual
-     * @param modelo modelo para pasar datos a la vista
+     * @param modelo  modelo para pasar datos a la vista
      * @return vista de etiquetado o redirección al login
      */
     @GetMapping("/etiquetado")
@@ -204,9 +204,9 @@ public class EtiquetadoController {
      * Si no se seleccionan empleados o etiquetas, muestra un mensaje de error.
      * Asocia las etiquetas a los empleados y guarda los cambios.
      *
-     * @param empleadosIds lista de IDs de empleados seleccionados
-     * @param etiquetasIds lista de IDs de etiquetas seleccionadas
-     * @param session sesión HTTP actual
+     * @param empleadosIds       lista de IDs de empleados seleccionados
+     * @param etiquetasIds       lista de IDs de etiquetas seleccionadas
+     * @param session            sesión HTTP actual
      * @param redirectAttributes atributos para mensajes flash
      * @return vista de etiquetado o redirección con mensaje de error
      */
@@ -253,8 +253,8 @@ public class EtiquetadoController {
      * Siempre carga la lista de subordinados del jefe para selección.
      *
      * @param empleadoId ID opcional del empleado a consultar
-     * @param session sesión HTTP actual
-     * @param modelo modelo para pasar datos a la vista
+     * @param session    sesión HTTP actual
+     * @param modelo     modelo para pasar datos a la vista
      * @return vista del formulario de eliminación de etiquetas o redirección al login
      */
     @GetMapping("/etiquetado/eliminar")
@@ -297,9 +297,9 @@ public class EtiquetadoController {
      * Verifica que el empleado y las etiquetas existan, y que las etiquetas pertenezcan al jefe actual.
      * Elimina la relación entre cada etiqueta y el empleado indicado.
      *
-     * @param empleadoId ID del empleado al que se le eliminarán las etiquetas
+     * @param empleadoId   ID del empleado al que se le eliminarán las etiquetas
      * @param etiquetasIds lista de IDs de etiquetas a eliminar
-     * @param session sesión HTTP actual
+     * @param session      sesión HTTP actual
      * @return redirección a la vista de eliminación con el empleado seleccionado
      */
     @PostMapping("/etiquetado/eliminar")

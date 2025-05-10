@@ -25,7 +25,7 @@
                         <form th:action="@{/catalogo/subir}" method="post" enctype="multipart/form-data" class="subir-formulario">
                             <div class="mb-3">
                                 <label for="file" class="form-label subir-label">Seleccionar archivo JSON:</label>
-                                <input type="file" id="file" name="file" class="form-control subir-input" accept=".json" required>
+                                <input type="file" id="file" name="file" class="form-control subir-input" accept=".json" required multiple>
                             </div>
                             <button type="submit" class="btn btn-primary w-100 subir-boton mb-4 mt-3">Subir catálogo</button>
                                 <a href="/dashboard" class="btn btn-secondary w-100 mb-4">Volver al dashboard</a>

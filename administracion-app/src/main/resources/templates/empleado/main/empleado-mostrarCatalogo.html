@@ -1,60 +1,60 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="fragments/header :: head('Mostrar catálogo')"></head>
-
+<head th:replace="fragments/header :: head('Mostrar catálogo')">
+    <!-- Agrega DataTables CSS si no está en tu fragmento -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+</head>
 <body>
 <div th:replace="/fragments/cabecera"></div>
 
 <main>
     <div th:replace="/fragments/cuentaatras"></div>
     <div class="absoluto mt-5">
-        <div class="container">
+        <div class="container-fluid px-5">
             <!-- Título -->
             <div class="row align-items-center mb-4">
-                <div class="col-2"></div>
                 <div class="col text-center">
                     <h1 class="catalogo-titulo">Catálogo de Productos</h1>
                 </div>
-                <div class="col-2"></div>
             </div>
 
             <!-- Tabla de productos -->
             <div class="catalogo-tabla table-responsive mb-4">
-                <table class="catalogo-table table table-bordered table-hover">
+                <table id="catalogo" class="catalogo-table table table-bordered table-hover w-100">
                     <thead class="catalogo-thead">
                     <tr class="catalogo-header-row">
-                        <th class="catalogo-header-cell">Descripción</th>
-                        <th class="catalogo-header-cell">Precio</th>
-                        <th class="catalogo-header-cell">Marca</th>
-                        <th class="catalogo-header-cell">Categorías</th>
-                        <th class="catalogo-header-cell">Es Perecedero</th>
-                        <th class="catalogo-header-cell">Unidades</th>
-                        <th class="catalogo-header-cell">Fecha Fabricación</th>
-                        <th class="catalogo-header-cell">Colores</th>
-                        <th class="catalogo-header-cell">Título</th>
-                        <th class="catalogo-header-cell">Autor</th>
-                        <th class="catalogo-header-cell">Editorial</th>
-                        <th class="catalogo-header-cell">Tapa</th>
-                        <th class="catalogo-header-cell">Número de Páginas</th>
-                        <th class="catalogo-header-cell">Segunda Mano</th>
+                        <th>Descripción</th>
+                        <th>Precio</th>
+                        <th>Marca</th>
+                        <th>Categorías</th>
+                        <th>Es Perecedero</th>
+                        <th>Unidades</th>
+                        <th>Fecha Fabricación</th>
+                        <th>Colores</th>
+                        <th>Título</th>
+                        <th>Autor</th>
+                        <th>Editorial</th>
+                        <th>Tapa</th>
+                        <th>Número de Páginas</th>
+                        <th>Segunda Mano</th>
                     </tr>
                     </thead>
-                    <tbody class="catalogo-tbody">
-                    <tr class="catalogo-row" th:each="producto : ${productos}">
-                        <td class="catalogo-cell" th:text="${producto.descripcion}"></td>
-                        <td class="catalogo-cell" th:text="${producto.precio}"></td>
-                        <td class="catalogo-cell" th:text="${producto.marca}"></td>
-                        <td class="catalogo-cell" th:text="${producto.categorias}"></td>
-                        <td class="catalogo-cell" th:text="${producto.esPerecedero ? 'Sí' : 'No'}"></td>
-                        <td class="catalogo-cell" th:text="${producto.unidades}"></td>
-                        <td class="catalogo-cell" th:text="${producto.fechaFabricacion}"></td>
-                        <td class="catalogo-cell" th:text="${producto.colores}"></td>
-                        <td class="catalogo-cell" th:text="${producto.titulo}"></td>
-                        <td class="catalogo-cell" th:text="${producto.autor}"></td>
-                        <td class="catalogo-cell" th:text="${producto.editorial}"></td>
-                        <td class="catalogo-cell" th:text="${producto.tapa}"></td>
-                        <td class="catalogo-cell" th:text="${producto.numeroPaginas}"></td>
-                        <td class="catalogo-cell" th:text="${producto.segundaMano ? 'Sí' : 'No'}"></td>
+                    <tbody>
+                    <tr th:each="producto : ${productos}">
+                        <td th:text="${producto.descripcion}"></td>
+                        <td th:text="${producto.precio}"></td>
+                        <td th:text="${producto.marca}"></td>
+                        <td th:text="${producto.categorias}"></td>
+                        <td th:text="${producto.esPerecedero ? 'Sí' : 'No'}"></td>
+                        <td th:text="${producto.unidades}"></td>
+                        <td th:text="${producto.fechaFabricacion}"></td>
+                        <td th:text="${producto.colores}"></td>
+                        <td th:text="${producto.titulo}"></td>
+                        <td th:text="${producto.autor}"></td>
+                        <td th:text="${producto.editorial}"></td>
+                        <td th:text="${producto.tapa}"></td>
+                        <td th:text="${producto.numeroPaginas}"></td>
+                        <td th:text="${producto.segundaMano ? 'Sí' : 'No'}"></td>
                     </tr>
                     </tbody>
                 </table>
@@ -69,5 +69,21 @@
 </main>
 
 <div class="mt-5" th:replace="/fragments/pie"></div>
+
+<!-- Scripts necesarios para DataTables -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#catalogo').DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+            },
+            "order": []
+        });
+    });
+</script>
 </body>
 </html>
