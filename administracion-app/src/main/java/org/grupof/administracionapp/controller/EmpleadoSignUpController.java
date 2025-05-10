@@ -8,7 +8,6 @@ import org.grupof.administracionapp.entity.embeddable.CuentaCorriente;
 import org.grupof.administracionapp.entity.embeddable.Direccion;
 import org.grupof.administracionapp.entity.embeddable.TarjetaCredito;
 import org.grupof.administracionapp.entity.registroEmpleado.*;
-import org.grupof.administracionapp.repository.BancoRepository;
 import org.grupof.administracionapp.services.Departamento.DepartamentoService;
 import org.grupof.administracionapp.services.Empleado.EmpleadoService;
 import org.grupof.administracionapp.services.Especialidades.EspecialidadesService;
@@ -55,7 +54,6 @@ public class EmpleadoSignUpController {
     private final GeneroService generoService;
     private final TipoDocumentoService tipoDocumentoService;
     private final DepartamentoService departamentoService;
-    private final BancoRepository bancoRepository;
     private final BancoService bancoService;
     private final TipoTarjetaService tipoTarjetaService;
     private final EmpleadoService empleadoService;
@@ -66,7 +64,6 @@ public class EmpleadoSignUpController {
                                     GeneroService generoService,
                                     TipoDocumentoService tipoDocumentoService,
                                     DepartamentoService departamentoService,
-                                    BancoRepository bancoRepository,
                                     BancoService bancoService,
                                     TipoTarjetaService tipoTarjetaService,
                                     EmpleadoService empleadoService,
@@ -76,7 +73,6 @@ public class EmpleadoSignUpController {
         this.generoService = generoService;
         this.tipoDocumentoService = tipoDocumentoService;
         this.departamentoService = departamentoService;
-        this.bancoRepository = bancoRepository;
         this.bancoService = bancoService;
         this.tipoTarjetaService = tipoTarjetaService;
         this.empleadoService = empleadoService;
