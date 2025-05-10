@@ -37,6 +37,10 @@ public interface EmpleadoService {
     //usado en DetalleControler
     RegistroEmpleadoDTO obtenerRegistroEmpleadoParaEdicion(UUID usuarioId);
 
+    //usado en BusqedaEmpleadosController para la busqueda parametrizada
+    List<Empleado> buscarEmpleados(String nombre, UUID generoId);
+
+
     /**
      * Registra un nuevo empleado en el sistema a partir de los datos personales y empresariales,
      * asociados a un usuario existente.

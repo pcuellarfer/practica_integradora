@@ -163,6 +163,22 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         return this.buscarEmpleadoPorUsuarioId(usuarioId); //convierte el empleado(entidad) en un RegistroEmpeladoDTO
     }
 
+    @Override //usado en BusqedaEmpleadosController para la busqueda parametrizada
+    public List<Empleado> buscarEmpleados(String nombre, UUID generoId) {
+        boolean tieneNombre = nombre != null && !nombre.trim().isEmpty();
+        boolean tieneGenero = generoId != null;
+
+        if (tieneNombre && tieneGenero) {
+            return empleadoRepository.findByNombreContainingIgnoreCaseAndGeneroId(nombre, generoId);
+        } else if (tieneNombre) {
+            return empleadoRepository.findByNombreContainingIgnoreCase(nombre);
+        } else if (tieneGenero) {
+            return empleadoRepository.findByGeneroId(generoId);
+        } else {
+            return empleadoRepository.findAll();
+        }
+    }
+
 
     /**
      * Registra un nuevo empleado en el sistema a partir de los datos proporcionados en un objeto
