@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="fragments/header :: head('Nóminas del Empleado')">
+  <meta charset="UTF-8" />
+  <title>Nóminas del Empleado</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+  <script th:src="@{/js/script.js}"></script>
+</head>
+<body>
+<div th:replace="/fragments/cabecera"></div>
+<main>
+  <div class="absoluto mt-5">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-2"></div>
+        <div class="col">
+          <h1 class="text-center mb-2">Nóminas del Empleado</h1>
+          <h2 class="text-center mb-3" th:if="${empleado}" th:text="'Empleado ID: ' + ${empleado.id}"></h2>
+        </div>
+        <div class="col-2">
+          <a th:href="@{/nomina/alta/nomina(empleadoId=${empleado.id})}" class="btn btn-success float-end">Añadir Nueva Nómina</a>
+        </div>
+      </div>
+
+      <div id="listaNominas">
+        <p th:if="${#lists.isEmpty(nominas)}" class="alert alert-info">Este empleado no tiene nóminas registradas.</p>
+        <ul class="list-group">
+          <li class="list-group-item" th:each="nomina : ${nominas}">
+            <div class="d-flex justify-content-between align-items-center">
+              <span th:text="'Periodo: ' + ${nomina.periodo}"></span>
+              <div>
+                <a th:href="@{/nomina/modificar(id=${nomina.id})}" class="btn btn-primary btn-sm me-2">Modificar</a>
+                <button type="button" class="btn btn-danger btn-sm" th:data-nomina-id="${nomina.id}" onclick="confirmarEliminar(this)">Eliminar</button>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="mt-3">
+        <a th:href="@{/buscar/empleados}" class="btn btn-secondary">Volver a Buscar Empleados</a>
+      </div>
+
+      <form id="eliminarNominaForm" th:action="@{/nomina/eliminar}" method="post" style="display: none;">
+        <input type="hidden" name="id" id="nominaIdToDelete">
+      </form>
+    </div>
+  </div>
+</main>
+<div th:replace="/fragments/pie"></div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+  function confirmarEliminar(boton) {
+    const nominaId = $(boton).data('nomina-id');
+    if (confirm('¿Estás seguro de que quieres eliminar esta nómina?')) {
+      $('#nominaIdToDelete').val(nominaId);
+      $('#eliminarNominaForm').submit();
+    }
+  }
+</script>
+</body>
+</html>

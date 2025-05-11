@@ -20,7 +20,10 @@ public class LineaNomina {
     private UUID id;
 
     private String concepto;
-    private BigDecimal cantidad;
+
+    //private BigDecimal cantidad;
+
+    private BigDecimal importe;
 
     @ManyToOne
     private Nomina nomina;

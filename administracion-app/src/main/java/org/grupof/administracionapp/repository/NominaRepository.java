@@ -1,10 +1,15 @@
 package org.grupof.administracionapp.repository;
 
+import java.util.List;
 import java.util.UUID;
 import org.grupof.administracionapp.entity.Nomina;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface NominaRepository extends JpaRepository<Nomina, UUID> {}
+public interface NominaRepository extends JpaRepository<Nomina, UUID> {
+
+    List<Nomina> findByEmpleado_Id(UUID empleadoId);
+
+}
 

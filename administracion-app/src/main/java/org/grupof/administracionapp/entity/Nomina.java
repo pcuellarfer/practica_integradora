@@ -28,8 +28,8 @@ public class Nomina {
 
     private BigDecimal total;
 
-    @OneToOne
-    @JoinColumn(name = "FK_empleado", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "empleado_id") // Nueva relación directa
     private Empleado empleado;
 
     @OneToMany(mappedBy = "nomina", cascade = CascadeType.ALL)

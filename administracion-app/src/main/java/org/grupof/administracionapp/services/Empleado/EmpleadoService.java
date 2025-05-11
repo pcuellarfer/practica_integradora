@@ -1,6 +1,8 @@
 package org.grupof.administracionapp.services.Empleado;
 
 import java.util.UUID;
+
+import org.grupof.administracionapp.dto.Empleado.EmpleadoDTO;
 import org.grupof.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
 import org.grupof.administracionapp.entity.Empleado;
@@ -96,4 +98,6 @@ public interface EmpleadoService {
      * @return una lista ordenada de empleados.
      */
     List<Empleado> getEmpleadosOrdenados();
+
+    EmpleadoDTO obtenerEmpleadoPorId(UUID empleadoId);
 }

@@ -6,6 +6,7 @@ import org.grupof.administracionapp.entity.embeddable.CuentaCorriente;
 import org.grupof.administracionapp.entity.embeddable.Direccion;
 import org.grupof.administracionapp.entity.embeddable.TarjetaCredito;
 import org.grupof.administracionapp.entity.registroEmpleado.*;
+import org.grupof.administracionapp.mapper.EmpleadoMapper;
 import org.grupof.administracionapp.services.Departamento.DepartamentoService;
 import org.grupof.administracionapp.services.Especialidades.EspecialidadesService;
 import org.grupof.administracionapp.services.Genero.GeneroService;
@@ -22,7 +23,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -46,6 +50,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     private final DepartamentoService departamentoService;
     private final EspecialidadesService especialidadesService;
     private final BancoService bancoService;
+    private final EmpleadoMapper empleadoMapper;
 
     @Autowired
     public EmpleadoServiceImpl(EmpleadoRepository empleadoRepository,
@@ -54,7 +59,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
                                PaisService paisService,
                                TipoDocumentoService tipoDocumentoService,
                                DepartamentoService departamentoService,
-                               EspecialidadesService especialidadesService, BancoService bancoService) {
+                               EspecialidadesService especialidadesService, BancoService bancoService, EmpleadoMapper empleadoMapper) {
         this.empleadoRepository = empleadoRepository;
         this.usuarioRepository = usuarioRepository;
         this.generoService = generoService;
@@ -63,6 +68,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         this.departamentoService = departamentoService;
         this.especialidadesService = especialidadesService;
         this.bancoService = bancoService;
+        this.empleadoMapper = empleadoMapper;
     }
 
     /**
@@ -470,5 +476,13 @@ public class EmpleadoServiceImpl implements EmpleadoService {
                 Sort.by("apellido").ascending().and(Sort.by("nombre").ascending()));
         logger.debug("Se han recuperado {} empleados.", empleadosOrdenados.size());
         return empleadosOrdenados;
+    }
+
+    @Override
+    public EmpleadoDTO obtenerEmpleadoPorId(UUID empleadoId) {
+        logger.info("Obteniendo empleado con ID: {}", empleadoId);
+        Empleado empleado = empleadoRepository.findById(empleadoId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Empleado no encontrado con ID: " + empleadoId));
+        return empleadoMapper.toDTO(empleado);
     }
 }

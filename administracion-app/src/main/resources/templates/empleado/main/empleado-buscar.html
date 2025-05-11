@@ -51,6 +51,7 @@
                         <input type="hidden" name="empleadoId" th:value="${empleado.id}" />
                         <button type="submit" class="btn btn-sm btn-success">Desbloquear</button>
                     </form>
+                    <a th:href="@{/nomina/empleado/{id}/listar(id=${empleado.id})}" class="btn btn-info btn-sm">Gestionar Nóminas</a>
                 </div>
             </li>
         </ul>
