@@ -2,6 +2,7 @@ package org.grupof.administracionapp.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.grupof.administracionapp.entity.embeddable.Periodo;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -10,6 +11,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
+
 @Entity
 @Table(name = "linea_nomina")
 public class LineaNomina {
@@ -20,8 +22,12 @@ public class LineaNomina {
     private UUID id;
 
     private String concepto;
+
+    private BigDecimal porcentaje;
+
     private BigDecimal cantidad;
 
     @ManyToOne
+    @JoinColumn(name = "nomina_id")
     private Nomina nomina;
 }

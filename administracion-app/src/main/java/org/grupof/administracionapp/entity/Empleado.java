@@ -117,9 +117,8 @@ public class Empleado {
     @Column(name = "fecha_cese")
     private LocalDateTime fechaCese;
 
-    // Relación 1:1 con Nomina
-    @OneToOne(mappedBy = "empleado", cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
-    private Nomina nomina;
+    @OneToMany(mappedBy = "empleado", cascade = CascadeType.ALL)
+    private List<Nomina> nominas;
 
     @OneToOne
     @JoinColumn(name = "usuario_id")
