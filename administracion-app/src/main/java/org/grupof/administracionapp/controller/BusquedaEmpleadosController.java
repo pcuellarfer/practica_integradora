@@ -105,6 +105,7 @@ public class BusquedaEmpleadosController {
 
         List<Empleado> resultados = empleadoService.buscarEmpleados(nombre, genero);
 
+
         modelo.addAttribute("resultados", resultados);
         modelo.addAttribute("nombre", nombre);
         modelo.addAttribute("selectedGeneroId", genero);

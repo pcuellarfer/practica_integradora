@@ -1,7 +1,7 @@
 package org.grupof.administracionapp.repository;
 
 import java.util.UUID;
-import org.grupof.administracionapp.entity.Nomina;
+import org.grupof.administracionapp.entity.nomina.Nomina;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

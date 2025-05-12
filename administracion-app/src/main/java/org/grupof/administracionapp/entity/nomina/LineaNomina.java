@@ -1,8 +1,7 @@
-package org.grupof.administracionapp.entity;
+package org.grupof.administracionapp.entity.nomina;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.grupof.administracionapp.entity.embeddable.Periodo;
 
 import java.math.BigDecimal;
 import java.util.UUID;

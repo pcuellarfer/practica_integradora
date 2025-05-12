@@ -93,10 +93,16 @@ public class DashboardController {
         return "empleado/main/empleado-submenu-productos";
     }
 
+    @GetMapping("dashboard/submenu-nominas")
+    public String mostrarSubmenuNominas() {
+        return "empleado/main/empleado-submenu-nominas";
+    }
+
     @GetMapping("dashboard/subida-catalogo")
     public String mostrarSubidaCatalogo() {
         return "empleado/main/catalogo";
     }
+
 
     /**
      * Recupera todos los productos y los pasa a la vista para mostrarlos en una tabla.

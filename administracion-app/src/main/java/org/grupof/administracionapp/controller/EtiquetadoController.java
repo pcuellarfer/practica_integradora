@@ -133,7 +133,7 @@ public class EtiquetadoController {
         }
 
         modelo.addAttribute("jefe", jefe);
-        modelo.addAttribute("etiquetas", jefe.getEtiquetasDefinidas()); //le pasa las etiquetas definidas que tenga el jefe
+        modelo.addAttribute("etiquetas", jefe.getEtiquetasDefinidas()); //le pasa las etiquetas definidas que ya tenga el jefe
         //mandarle el objeto vacio para la vista
         modelo.addAttribute("nuevaEtiqueta", new Etiqueta());
 
