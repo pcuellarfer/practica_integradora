@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+  <h2>Selecciona un empleado para gestionar su nómina</h2>
+  <form th:action="@{/nominas/alta}" method="get">
+    <select name="empleadoId" class="form-control">
+      <option th:each="empleado : ${empleados}"
+              th:value="${empleado.id}"
+              th:text="${empleado.apellido + ' ' + empleado.nombre}"></option>
+    </select>
+    <button type="submit" class="btn btn-success mt-3">Crear Nómina</button>
+  </form>
+</body>
+</html>

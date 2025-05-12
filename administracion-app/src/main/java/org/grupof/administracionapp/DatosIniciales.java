@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
@@ -183,6 +184,7 @@ public class DatosIniciales {
             empleado.setApellido("Lopez");
             empleado.setFechaNacimiento(LocalDate.parse("1990-01-01"));
             empleado.setFotoUrl("/uploads/empleados/24396928-62ed-4df7-81d4-6d011779127c.png");
+            empleado.setFechaContratacion(LocalDate.parse("1985-07-15"));
 
             Direccion direccion = new Direccion();
             direccion.setTipoVia(UUID.randomUUID());
@@ -208,6 +210,7 @@ public class DatosIniciales {
             pacoE.setTipoDocumento(DNI);
             pacoE.setApellido("Paquito");
             pacoE.setFechaNacimiento(LocalDate.parse("1990-01-02"));
+            pacoE.setFechaContratacion(LocalDate.parse("1985-06-15"));
 
             Direccion direccion1 = new Direccion();
             direccion1.setTipoVia(UUID.randomUUID());
@@ -242,6 +245,7 @@ public class DatosIniciales {
             empleado2.setPais(francia);
             empleado2.setTipoDocumento(pasaporte);
             empleado2.setFechaNacimiento(LocalDate.parse("1985-06-15"));
+            empleado2.setFechaContratacion(LocalDate.parse("1985-06-15"));
 
             Direccion direccion2 = new Direccion();
             direccion2.setTipoVia(avenida.getId()); // usa ID válido ya guardado
