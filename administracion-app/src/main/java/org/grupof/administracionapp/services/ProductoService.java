@@ -1,6 +1,6 @@
 package org.grupof.administracionapp.services;
 
-import org.grupof.administracionapp.dto.ProductoDTO;
+import org.grupof.administracionapp.dto.Producto.ProductoDTO;
 
 import java.util.List;
 

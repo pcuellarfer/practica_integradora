@@ -3,8 +3,11 @@ package org.grupof.administracionapp.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.grupof.administracionapp.dto.CatalogoDTO;
-import org.grupof.administracionapp.dto.ProductoDTO;
+import org.grupof.administracionapp.dto.Producto.*;
+import org.grupof.administracionapp.entity.producto.Libro;
+import org.grupof.administracionapp.entity.producto.Mueble;
 import org.grupof.administracionapp.entity.producto.Producto;
+import org.grupof.administracionapp.entity.producto.Ropa;
 import org.grupof.administracionapp.repository.ProductoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+
+import static org.grupof.administracionapp.entity.producto.enums.TipoProducto.*;
 
 /**
  * Servicio encargado de procesar archivos de catálogos de productos en formato JSON
@@ -56,7 +61,47 @@ public class CatalogoService {
         for (ProductoDTO dto : catalogo.getProductos()) {
             logger.debug("Procesando producto: {}", dto.getDescripcion());
 
-            Producto producto = new Producto();
+            Producto producto;
+
+            switch (dto.getTipoProducto()) {
+                case LIBRO -> {
+                    LibroDTO libroDTO = (LibroDTO) dto;
+                    Libro libro = new Libro();
+                    libro.setTitulo(libroDTO.getTitulo());
+                    libro.setAutor(libroDTO.getAutor());
+                    libro.setEditorial(libroDTO.getEditorial());
+                    libro.setTapa(libroDTO.getTapa());
+                    libro.setNumeroPaginas(libroDTO.getNumeroPaginas());
+                    libro.setSegundaMano(libroDTO.isSegundaMano());
+                    libro.setDimensiones(libroDTO.getDimensiones());
+                    producto = libro;
+                    logger.debug("Producto identificado como LIBRO: '{}'", libro.getTitulo());
+                }
+                case ROPA -> {
+                    RopaDTO ropaDTO = (RopaDTO) dto;
+                    Ropa ropa = new Ropa();
+                    ropa.setTalla(ropaDTO.getTalla());
+                    ropa.setMaterial(ropaDTO.getMaterial());
+                    ropa.setGenero(ropaDTO.getGenero());
+                    producto = ropa;
+                    logger.debug("Producto identificado como ROPA");
+                }
+                case MUEBLE -> {
+                    MuebleDTO muebleDTO = (MuebleDTO) dto;
+                    Mueble mueble = new Mueble();
+                    mueble.setTipoMadera(muebleDTO.getTipoMadera());
+                    mueble.setEstilo(muebleDTO.getEstilo());
+                    mueble.setDimensiones(muebleDTO.getDimensiones());
+                    producto = mueble;
+                    logger.debug("Producto identificado como MUEBLE");
+                }
+                default -> {
+                    logger.warn("Tipo de producto no reconocido: {}", dto.getTipoProducto());
+                    continue;
+                }
+            }
+
+            // Rellenar campos comunes del producto
             producto.setDescripcion(dto.getDescripcion());
             producto.setPrecio(dto.getPrecio());
             producto.setMarca(dto.getMarca());
@@ -64,19 +109,8 @@ public class CatalogoService {
             producto.setEsPerecedero(dto.isEsPerecedero());
             producto.setUnidades(dto.getUnidades());
             producto.setFechaFabricacion(dto.getFechaFabricacion());
-            producto.setDimensiones(dto.getDimensiones());
             producto.setColores(dto.getColores());
-            producto.setSegundaMano(dto.isSegundaMano());
-
-            if (dto.getTitulo() != null) {
-                producto.setTitulo(dto.getTitulo());
-                producto.setAutor(dto.getAutor());
-                producto.setEditorial(dto.getEditorial());
-                producto.setTapa(dto.getTapa());
-                producto.setNumeroPaginas(dto.getNumeroPaginas());
-                producto.setSegundaMano(dto.isSegundaMano());
-                logger.debug("Producto con información de libro: Título '{}'", dto.getTitulo());
-            }
+            producto.setTipoProducto(dto.getTipoProducto());
 
             productoRepo.save(producto);
             logger.info("Producto '{}' guardado correctamente", producto.getDescripcion());
@@ -84,6 +118,7 @@ public class CatalogoService {
 
         logger.info("Procesamiento del catálogo finalizado con éxito.");
     }
+
 
     /**
      * Obtiene una lista de todos los productos almacenados en la base de datos.
