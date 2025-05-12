@@ -3,12 +3,16 @@ package org.grupof.administracionapp.controller;
 import org.grupof.administracionapp.services.CatalogoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import java.net.URI;
 
 /**
  * Controlador REST para manejar operaciones relacionadas con el catálogo de productos.
@@ -41,18 +45,20 @@ public class CatalogoController {
      * @return La redirección a la página de catálogo con el mensaje adecuado.
      */
     @PostMapping("/subir")
-    public String subirCatalogo(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
+    public ResponseEntity<Object> subirCatalogo(@RequestParam("file") MultipartFile file) {
         logger.info("Petición recibida para subir catálogo: nombre del archivo '{}'", file.getOriginalFilename());
 
         try {
             catalogoService.procesarCatalogo(file);
-            logger.info("Catálogo '{}' procesado correctamente", file.getOriginalFilename());
-            redirectAttributes.addFlashAttribute("mensaje", "Catálogo procesado correctamente.");
+            // Redirigir al endpoint "/catalogo/ver" después del procesamiento
+            HttpHeaders headers = new HttpHeaders();
+            headers.setLocation(URI.create("/dashboard/subida-catalogo?mensaje=Catalogo+procesado+correctamente"));
+            return new ResponseEntity<>(headers, HttpStatus.SEE_OTHER);
         } catch (Exception e) {
             logger.error("Error al procesar el catálogo '{}': {}", file.getOriginalFilename(), e.getMessage(), e);
-            redirectAttributes.addFlashAttribute("error", "Error al procesar el catálogo: " + e.getMessage());
+            HttpHeaders headers = new HttpHeaders();
+            headers.setLocation(URI.create("/dashboard/subida-catalogo?error=Error+al+procesar+el+catálogo"));
+            return new ResponseEntity<>(headers, HttpStatus.SEE_OTHER);
         }
-
-        return "empleado/main/catalogo";
     }
 }

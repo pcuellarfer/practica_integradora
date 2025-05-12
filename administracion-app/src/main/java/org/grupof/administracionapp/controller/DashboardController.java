@@ -35,7 +35,6 @@ public class DashboardController {
     public DashboardController(EmpleadoService empleadoService, CatalogoService catalogoService) {
         this.empleadoService = empleadoService;
         this.catalogoService = catalogoService;
-
     }
 
     /**
@@ -77,6 +76,7 @@ public class DashboardController {
 
     /**
      * Muestra el submenú de etiquetado para empleados.
+     *
      * @return vista del submenú de etiquetado
      */
     @GetMapping("dashboard/submenu-etiquetado")
@@ -86,6 +86,7 @@ public class DashboardController {
 
     /**
      * Muestra el submenú de productos para empleados.
+     *
      * @return vista del submenú de productos
      */
     @GetMapping("dashboard/submenu-productos")
@@ -93,10 +94,34 @@ public class DashboardController {
         return "empleado/main/empleado-submenu-productos";
     }
 
+    /**
+     * Controlador para mostrar la vista del catálogo tras la subida de un archivo.
+     * Si se proporciona un mensaje como parámetro en la URL, este se añade al modelo
+     * para que pueda mostrarse en la vista.
+     *
+     * @param mensaje Mensaje opcional que se mostrará en la vista, como confirmación o advertencia.
+     * @param model Modelo para pasar datos a la vista.
+     * @return Nombre de la vista que representa la página del catálogo.
+     */
     @GetMapping("dashboard/subida-catalogo")
-    public String mostrarSubidaCatalogo() {
+    public String mostrarSubidaCatalogo(@RequestParam(value = "mensaje", required = false) String mensaje,
+                                        @RequestParam(value = "error", required = false) String error,
+                                        Model model) {
+        Logger logger = LoggerFactory.getLogger(getClass());
+
+        if (mensaje != null) {
+            logger.info("Mostrando vista de catálogo con mensaje: {}", mensaje);
+            model.addAttribute("mensaje", mensaje);
+        }
+
+        if (error != null) {
+            logger.error("Error al procesar el catálogo: {}", error);
+            model.addAttribute("error", error);
+        }
+
         return "empleado/main/catalogo";
     }
+
 
     /**
      * Recupera todos los productos y los pasa a la vista para mostrarlos en una tabla.
@@ -110,6 +135,4 @@ public class DashboardController {
         model.addAttribute("productos", productos);
         return "empleado/main/empleado-mostrarCatalogo";
     }
-
-
 }
