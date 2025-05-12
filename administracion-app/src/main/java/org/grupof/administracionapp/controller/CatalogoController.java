@@ -41,7 +41,6 @@ public class CatalogoController {
      * Si ocurre un error, redirige con un mensaje de error.
      *
      * @param file El archivo de catálogo a subir.
-     * @param redirectAttributes Atributos para mostrar mensajes después de la redirección.
      * @return La redirección a la página de catálogo con el mensaje adecuado.
      */
     @PostMapping("/subir")

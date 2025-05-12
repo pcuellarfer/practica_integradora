@@ -6,6 +6,7 @@ import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
 import org.grupof.administracionapp.entity.producto.Producto;
 import org.grupof.administracionapp.services.CatalogoService;
 import org.grupof.administracionapp.services.Empleado.EmpleadoService;
+import org.grupof.administracionapp.services.Usuario.UsuarioService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -26,15 +27,17 @@ public class DashboardController {
 
     private final EmpleadoService empleadoService;
     private final CatalogoService catalogoService;
+    private final UsuarioService usuarioService;
 
     /**
      * Constructor que inyecta el servicio de empleado.
      *
      * @param empleadoService servicio para gestionar empleados
      */
-    public DashboardController(EmpleadoService empleadoService, CatalogoService catalogoService) {
+    public DashboardController(EmpleadoService empleadoService, CatalogoService catalogoService, UsuarioService usuarioService) {
         this.empleadoService = empleadoService;
         this.catalogoService = catalogoService;
+        this.usuarioService = usuarioService;
     }
 
     /**
@@ -67,7 +70,10 @@ public class DashboardController {
 
         logger.info("Usuario ID {} es también empleado. Mostrando dashboard de empleado.", usuarioDTO.getId());
 
-        modelo.addAttribute("contadorSesiones", session.getAttribute("contador"));
+        UsuarioDTO usuarioBBDD = usuarioService.buscarPorEmail(usuarioDTO.getEmail());
+        int contadorSesiones = usuarioService.getContadorInicios(usuarioBBDD.getEmail());
+
+        modelo.addAttribute("contadorSesiones", contadorSesiones);
         modelo.addAttribute("usuario", usuarioDTO);
         modelo.addAttribute("empleado", empleadoDTO);
 
