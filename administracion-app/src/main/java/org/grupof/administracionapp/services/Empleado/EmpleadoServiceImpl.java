@@ -159,7 +159,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 
     @Override
     public RegistroEmpleadoDTO obtenerRegistroEmpleadoParaEdicion(UUID usuarioId) {
-        return this.buscarEmpleadoPorUsuarioId(usuarioId); //convierte el empleado(entidad) en un RegistroEmpeladoDTO
+        return this.buscarEmpleadoPorUsuarioId(usuarioId); //rellena un RegistroEmpeladoDTO con los datos de empleado
     }
 
     @Override //usado en BusqedaEmpleadosController para la busqueda parametrizada

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Formulario de alta de nómina</title>
+</head>
+<body>
+<h2>Nómina para [[${empleado.nombre}]] [[${empleado.apellido}]]</h2>
+
+<form th:object="${altaNominaDTO}"  id="formularioAltaNomina">
+  <input type="hidden" th:field="*{empleadoId}" />
+
+  <label>Fecha inicio:</label>
+  <input type="text" th:field="*{fechaInicio}" class="form-control" />
+
+  <label>Fecha fin:</label>
+  <input type="text" th:field="*{fechaFin}" class="form-control" />
+
+  <h4>Líneas de Nómina</h4>
+
+  <div th:each="linea, i : *{lineasNomina}"> <!--la i representa el indice de la lista de la linea de nomina-->
+    <div class="row mb-2">                   <!--necesita indice porque al enviar el formulario spring necesita identificar-->
+      <div class="col">                      <!--que campos son de cada objeto para construirlos guays-->
+        <label>Concepto:</label>
+        <input type="text" th:field="*{lineasNomina[__${i.index}__].concepto}" class="form-control" />
+      </div>
+      <div class="col">
+        <label>Porcentaje:</label>
+        <input type="text" th:field="*{lineasNomina[__${i.index}__].porcentaje}" class="form-control"/>
+      </div>
+      <div class="col">
+        <label>Cantidad:</label>
+        <input type="text" th:field="*{lineasNomina[__${i.index}__].cantidad}" class="form-control"/>
+      </div>
+    </div>
+  </div>
+
+  <button type="button" onclick="enviarNomina()" class="btn btn-success mt-3">Guardar Nómina</button>
+</form>
+  <script>
+    function enviarNomina() {
+      const empleadoId = document.querySelector('input[name="empleadoId"]').value;
+      const fechaInicio = document.querySelector('input[name="fechaInicio"]').value;
+      const fechaFin = document.querySelector('input[name="fechaFin"]').value;
+
+      const lineas = [];
+      const conceptos = document.querySelectorAll('input[name^="lineasNomina"][name$=".concepto"]');
+      const porcentajes = document.querySelectorAll('input[name^="lineasNomina"][name$=".porcentaje"]');
+      const cantidades = document.querySelectorAll('input[name^="lineasNomina"][name$=".cantidad"]');
+
+      for (let i = 0; i < conceptos.length; i++) {
+        lineas.push({
+          concepto: conceptos[i].value,
+          porcentaje: porcentajes[i].value ? Number(porcentajes[i].value) : null,
+          cantidad: cantidades[i].value ? Number(cantidades[i].value) : null
+        });
+      }
+
+      const datos = {
+        empleadoId: empleadoId,
+        fechaInicio: fechaInicio,
+        fechaFin: fechaFin,
+        lineasNomina: lineas
+      };
+
+      fetch('/api/nominas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datos)
+      }).then(response => {
+        if (response.ok) {
+          alert("Nómina guardada correctamente");
+          window.location.href = "/dashboard"; // o donde quieras volver
+        } else {
+          response.json().then(err => alert("Error: " + err.error));
+        }
+      }).catch(error => {
+        alert("Error de conexión: " + error);
+      });
+    }
+  </script>
+</body>
+</html>

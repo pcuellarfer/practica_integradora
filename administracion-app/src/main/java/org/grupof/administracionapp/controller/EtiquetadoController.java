@@ -78,6 +78,7 @@ public class EtiquetadoController {
 
         List<Empleado> posiblesSubordinados = empleadoService.buscarTodosMenos(jefe.getId()); //mete en una lista todos los empleados menos el que se esta metiendo a la funcionalidad
 
+        //meter al modelo el jefe y sus posibles subordinados
         logger.info("Mostrando vista de asignación de subordinados para el jefe: {}", jefe.getNombre());
         modelo.addAttribute("jefe", jefe);
         modelo.addAttribute("empleados", posiblesSubordinados);
@@ -103,12 +104,12 @@ public class EtiquetadoController {
         }
 
         List<Empleado> subordinados = empleadoService.buscarPorIds(subordinadoIds); //mete en una lista los empleados con las ids que se hayan seleccionado
-        for (Empleado subordinado : subordinados) {
+        for (Empleado subordinado : subordinados) { //bucle para asignar jefe a los subordinados que lleguen de la vista
             subordinado.setJefe(jefe);
             logger.info("Asignado subordinado {} al jefe {}", subordinado.getNombre(), jefe.getNombre());
         }
 
-        empleadoService.guardarTodos(subordinados);
+        empleadoService.guardarTodos(subordinados); //guardar todos los subordinados
         logger.info("Asignación de subordinados completada para el jefe: {}", jefe.getNombre());
 
         return "redirect:/dashboard/submenu-etiquetado";
@@ -132,7 +133,7 @@ public class EtiquetadoController {
         }
 
         modelo.addAttribute("jefe", jefe);
-        modelo.addAttribute("etiquetas", jefe.getEtiquetasDefinidas());
+        modelo.addAttribute("etiquetas", jefe.getEtiquetasDefinidas()); //le pasa las etiquetas definidas que ya tenga el jefe
         //mandarle el objeto vacio para la vista
         modelo.addAttribute("nuevaEtiqueta", new Etiqueta());
 

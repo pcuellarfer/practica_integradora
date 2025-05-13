@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="fragments/header :: head('Gestión de nominas')"></head>
+
+<body>
+<div th:replace="/fragments/cabecera"></div>
+
+<main>
+  <div th:replace="/fragments/cuentaatras"></div>
+  <div class="absoluto mt-5">
+    <div class="container">
+      <!-- Título -->
+      <div class="row align-items-center mb-4">
+        <div class="col-2"></div>
+        <div class="col text-center">
+          <h1>Gestión de nominas</h1>
+        </div>
+        <div class="col-2"></div>
+      </div>
+
+      <!-- Opciones de gestión -->
+      <div class="d-grid gap-2 mb-3">
+        <a href="/nominas/seleccionar-empleado" class="btn btn-primary">Importar catalogo</a>
+        <a href="/dashboard" class="btn btn-secondary">Volver</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div th:replace="/fragments/pie"></div>
+</body>
+</html>

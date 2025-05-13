@@ -74,7 +74,7 @@ public class BusquedaEmpleadosController {
         }
 
         modelo.addAttribute("generos", generoService.getAllGeneros());
-        modelo.addAttribute("resultados", empleadoService.getEmpleadosOrdenados()); // o lo que tengas
+        modelo.addAttribute("resultados", empleadoService.getEmpleadosOrdenados());
         modelo.addAttribute("nombre", "");
         modelo.addAttribute("selectedGeneroId", null);
         return "empleado/main/empleado-buscar";
@@ -104,6 +104,7 @@ public class BusquedaEmpleadosController {
         }
 
         List<Empleado> resultados = empleadoService.buscarEmpleados(nombre, genero);
+
 
         modelo.addAttribute("resultados", resultados);
         modelo.addAttribute("nombre", nombre);

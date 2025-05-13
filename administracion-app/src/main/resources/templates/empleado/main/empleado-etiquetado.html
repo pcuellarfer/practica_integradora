@@ -20,7 +20,7 @@
 
         <!--barra para buscar la etiqueta-->
         <label for="etiquetas">Selecciona etiquetas:</label><br>
-        <input type="text" id="buscador" placeholder="Buscar etiqueta..." onkeyup="filtrarEtiquetas()"><br>
+        <input type="text" id="buscador" placeholder="Buscar etiqueta..." onkeyup="filtrarEtiquetas()"><br> <!--llama a la funcion cada vez que el usuario levante la trecla-->
 
         <select id="etiquetas" name="etiquetas" multiple size="4">
             <th:block th:each="etiqueta : ${etiquetas}">
@@ -36,13 +36,13 @@
 <!-- JS para filtrar etiquetas por texto -->
 <script>
     function filtrarEtiquetas() {
-        let input = document.getElementById("buscador");
-        let filtro = input.value.toLowerCase();
-        let opciones = document.getElementById("etiquetas").options;
+        let input = document.getElementById("buscador"); //mete en input el buscador
+        let filtro = input.value.toLowerCase(); //pasa lo que haya en buscador a minusculas
+        let opciones = document.getElementById("etiquetas").options; //mete el select de etiquetas en opciones
 
-        for (let i = 0; i < opciones.length; i++) {
-            let texto = opciones[i].text.toLowerCase();
-            opciones[i].style.display = texto.includes(filtro) ? "" : "none";
+        for (let i = 0; i < opciones.length; i++) { //hace un bucle sobre todas las opciones
+            let texto = opciones[i].text.toLowerCase();  //pasa lo que haya en opciones a minuscula
+            opciones[i].style.display = texto.includes(filtro) ? "" : "none";  //oculta ("none") o muestr ("") la opcion segun si esta en lo escrito por el usuario
         }
     }
 </script>

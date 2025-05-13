@@ -100,6 +100,12 @@ public class DashboardController {
         return "empleado/main/empleado-submenu-productos";
     }
 
+
+    @GetMapping("dashboard/submenu-nominas")
+    public String mostrarSubmenuNominas() {
+        return "empleado/main/empleado-submenu-nominas";
+    }
+
     /**
      * Controlador para mostrar la vista del catálogo tras la subida de un archivo.
      * Si se proporciona un mensaje como parámetro en la URL, este se añade al modelo

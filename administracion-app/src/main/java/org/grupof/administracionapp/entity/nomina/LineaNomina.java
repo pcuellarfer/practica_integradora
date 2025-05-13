@@ -1,4 +1,4 @@
-package org.grupof.administracionapp.entity;
+package org.grupof.administracionapp.entity.nomina;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,6 +10,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
+
 @Entity
 @Table(name = "linea_nomina")
 public class LineaNomina {
@@ -20,8 +21,12 @@ public class LineaNomina {
     private UUID id;
 
     private String concepto;
+
+    private BigDecimal porcentaje;
+
     private BigDecimal cantidad;
 
     @ManyToOne
+    @JoinColumn(name = "nomina_id")
     private Nomina nomina;
 }
