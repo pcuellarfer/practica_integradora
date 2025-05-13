@@ -1,5 +1,7 @@
 package org.grupof.administracionapp.dto.Producto;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +15,16 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "tipo"
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = LibroDTO.class, name = "LIBRO"),
+        @JsonSubTypes.Type(value = RopaDTO.class, name = "ROPA"),
+        @JsonSubTypes.Type(value = MuebleDTO.class, name = "MUEBLE")
+})
 public class ProductoDTO {
     private String descripcion;
     private double precio;

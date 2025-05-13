@@ -13,6 +13,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpHeaders;
 import java.net.URI;
+import java.util.List;
 
 /**
  * Controlador REST para manejar operaciones relacionadas con el catálogo de productos.
@@ -44,20 +45,25 @@ public class CatalogoController {
      * @return La redirección a la página de catálogo con el mensaje adecuado.
      */
     @PostMapping("/subir")
-    public ResponseEntity<Object> subirCatalogo(@RequestParam("file") MultipartFile file) {
-        logger.info("Petición recibida para subir catálogo: nombre del archivo '{}'", file.getOriginalFilename());
+    public ResponseEntity<Object> subirCatalogo(@RequestParam("files") List<MultipartFile> files) {
+        logger.info("Petición recibida para subir catálogos");
 
         try {
-            catalogoService.procesarCatalogo(file);
+            for (MultipartFile file : files) {
+                logger.info("Procesando archivo: '{}'", file.getOriginalFilename());
+                catalogoService.procesarCatalogo(file);
+            }
+
             // Redirigir al endpoint "/catalogo/ver" después del procesamiento
             HttpHeaders headers = new HttpHeaders();
-            headers.setLocation(URI.create("/dashboard/subida-catalogo?mensaje=Catalogo+procesado+correctamente"));
+            headers.setLocation(URI.create("/dashboard/subida-catalogo?mensaje=Catálogos+procesados+correctamente"));
             return new ResponseEntity<>(headers, HttpStatus.SEE_OTHER);
         } catch (Exception e) {
-            logger.error("Error al procesar el catálogo '{}': {}", file.getOriginalFilename(), e.getMessage(), e);
+            logger.error("Error al procesar los catálogos: {}", e.getMessage(), e);
             HttpHeaders headers = new HttpHeaders();
-            headers.setLocation(URI.create("/dashboard/subida-catalogo?error=Error+al+procesar+el+catálogo"));
+            headers.setLocation(URI.create("/dashboard/subida-catalogo?error=Error+al+procesar+los+catálogos"));
             return new ResponseEntity<>(headers, HttpStatus.SEE_OTHER);
         }
     }
+
 }

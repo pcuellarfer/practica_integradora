@@ -4,10 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.grupof.administracionapp.dto.CatalogoDTO;
 import org.grupof.administracionapp.dto.Producto.*;
-import org.grupof.administracionapp.entity.producto.Libro;
-import org.grupof.administracionapp.entity.producto.Mueble;
-import org.grupof.administracionapp.entity.producto.Producto;
-import org.grupof.administracionapp.entity.producto.Ropa;
+import org.grupof.administracionapp.entity.producto.*;
+import org.grupof.administracionapp.repository.CategoriaRepository;
 import org.grupof.administracionapp.repository.ProductoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,8 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
-import static org.grupof.administracionapp.entity.producto.enums.TipoProducto.*;
-
 /**
  * Servicio encargado de procesar archivos de catálogos de productos en formato JSON
  * y persistir los productos en la base de datos.
@@ -27,16 +23,17 @@ import static org.grupof.administracionapp.entity.producto.enums.TipoProducto.*;
 public class CatalogoService {
 
     private static final Logger logger = LoggerFactory.getLogger(CatalogoService.class);
-
     private final ProductoRepository productoRepo;
+    private final CategoriaRepository categoriaRepo;
 
     /**
      * Constructor con inyección del repositorio de productos.
      *
      * @param productoRepo Repositorio que permite guardar entidades {@link Producto}.
      */
-    public CatalogoService(ProductoRepository productoRepo) {
+    public CatalogoService(ProductoRepository productoRepo, CategoriaRepository categoriaRepo) {
         this.productoRepo = productoRepo;
+        this.categoriaRepo = categoriaRepo;
     }
 
     /**
@@ -101,11 +98,17 @@ public class CatalogoService {
                 }
             }
 
+            // CATEGORÍAS: buscar o crear por nombre
+            List<Categoria> categoriasPersistidas = dto.getCategorias().stream()
+                    .map(cat -> categoriaRepo.findByNombre(cat.getNombre())
+                            .orElseGet(() -> categoriaRepo.save(new Categoria(cat.getNombre()))))
+                    .toList();
+
             // Rellenar campos comunes del producto
             producto.setDescripcion(dto.getDescripcion());
             producto.setPrecio(dto.getPrecio());
             producto.setMarca(dto.getMarca());
-            producto.setCategorias(dto.getCategorias());
+            producto.setCategorias(categoriasPersistidas);
             producto.setEsPerecedero(dto.isEsPerecedero());
             producto.setUnidades(dto.getUnidades());
             producto.setFechaFabricacion(dto.getFechaFabricacion());
