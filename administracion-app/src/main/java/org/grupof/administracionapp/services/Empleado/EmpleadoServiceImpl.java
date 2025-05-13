@@ -154,6 +154,12 @@ public class EmpleadoServiceImpl implements EmpleadoService {
             detalle.setNombreFoto(nombreArchivo);//lo mete en el dto detalle
         }
 
+        Empleado jefe = empleadoEntidad.getJefe();
+        if (jefe != null) {
+            String nombreJefe = jefe.getNombre() + " " + jefe.getApellido();
+            detalle.setNombreJefe(nombreJefe);
+        }
+
         return detalle; //devuelve el dto llenito de datos
     }
 

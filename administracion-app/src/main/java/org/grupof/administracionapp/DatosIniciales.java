@@ -211,6 +211,7 @@ public class DatosIniciales {
             pacoE.setApellido("Paquito");
             pacoE.setFechaNacimiento(LocalDate.parse("1990-01-02"));
             pacoE.setFechaContratacion(LocalDate.parse("1985-06-15"));
+            pacoE.setJefe(empleado);
 
             Direccion direccion1 = new Direccion();
             direccion1.setTipoVia(UUID.randomUUID());
