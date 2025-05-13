@@ -108,7 +108,7 @@ public interface EmpleadoService {
      * @param id ID del empleado que se desea excluir.
      * @return Lista de empleados distintos al proporcionado.
      */
-    List<Empleado> buscarTodosMenos(UUID id);
+    List<Empleado>  buscarTodosMenosConJerarquia (UUID jefeId);
 
     /**
      * Busca una lista de empleados cuyos IDs se proporcionan.

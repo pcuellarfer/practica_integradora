@@ -508,10 +508,48 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         return empleadoRepository.findByUsuarioId(usuarioId);
     }
 
-    @Override
-    public List<Empleado> buscarTodosMenos(UUID id){
-        return empleadoRepository.findByIdNot(id);
+    //evitar jefes circulares
+
+    public Set<UUID> obtenerIdsSubordinadosRecursivos(Empleado jefe) {
+        Set<UUID> ids = new HashSet<>(); //crea un set vacío de IDs
+
+        // función recursiva integrada directamente
+        for (Empleado subordinado : jefe.getSubordinados()) { //recorre cada subordinado del jefe
+            if (ids.add(subordinado.getId())) { //si el ID no estaba, lo añade
+                ids.addAll(obtenerIdsSubordinadosRecursivos(subordinado)); //añade también los subordinados de ese subordinado
+            }
+        }
+
+        return ids; // devuelve el set con todos los IDs únicos
     }
+
+    public Set<UUID> obtenerIdsJefesRecursivos(Empleado empleado) {
+        Set<UUID> ids = new HashSet<>(); //crea un set vacio para UUIDs
+        Empleado actual = empleado.getJefe(); //mete al jefe del empleado en una variable
+        while (actual != null) { //mientras siga habiendo jefe,es decir, no hemos llegado al jefe jefazo
+            ids.add(actual.getId()); //mete al set el id del jefe 1
+            actual = actual.getJefe();//mete a actual su jefe, es decir, el jefe del jefe
+        }
+        return ids;
+    }
+
+    @Override
+    public List<Empleado> buscarTodosMenosConJerarquia(UUID jefeId){
+        Empleado jefe = empleadoRepository.findById(jefeId) //mete el empleado en una variable
+                .orElseThrow(() -> new IllegalArgumentException("Jefe no encontrado"));//si no esta, excepcion
+
+        //mete todos los ids que no deberian estar
+        Set<UUID> idsProhibidos = obtenerIdsSubordinadosRecursivos(jefe); // los de abajo
+        idsProhibidos.add(jefe.getId()); // él mismo
+        idsProhibidos.addAll(obtenerIdsJefesRecursivos(jefe)); // los de arriba
+
+        List<Empleado> todos = empleadoRepository.findAll(); //mete en una lista todos los empleados
+        todos.removeIf(emp -> idsProhibidos.contains(emp.getId())); //elimina los prohibidos
+
+        return todos; //alfinal devuelve una lista de empleados sin: el mismo, sus subordinados y sus jefes
+    }
+    /////////
+
 
     @Override
     public List<Empleado> buscarPorIds(List<UUID> ids) {

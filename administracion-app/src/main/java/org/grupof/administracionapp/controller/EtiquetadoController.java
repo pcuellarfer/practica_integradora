@@ -76,7 +76,7 @@ public class EtiquetadoController {
             return "redirect:/login/username";
         }
 
-        List<Empleado> posiblesSubordinados = empleadoService.buscarTodosMenos(jefe.getId()); //mete en una lista todos los empleados menos el que se esta metiendo a la funcionalidad
+        List<Empleado> posiblesSubordinados = empleadoService.buscarTodosMenosConJerarquia(jefe.getId());
 
         //meter al modelo el jefe y sus posibles subordinados
         logger.info("Mostrando vista de asignación de subordinados para el jefe: {}", jefe.getNombre());
@@ -96,11 +96,18 @@ public class EtiquetadoController {
      * @return redirección al submenú de etiquetado
      */
     @PostMapping("/asignar")
-    public String procesarAsignacion(@RequestParam List<UUID> subordinadoIds, HttpSession session) {
+    public String procesarAsignacion(@RequestParam (value=  "subordinadoIds", required = false) List<UUID> subordinadoIds,
+                                     HttpSession session) {
 
         Empleado jefe = obtenerJefeDesdeSesion(session);
         if (jefe == null) {
             return "redirect:/login/username";
+        }
+
+        if (subordinadoIds == null || subordinadoIds.isEmpty()) {
+            // No se seleccionó ningún empleado → volver a la vista con mensaje o simplemente redirigir
+            logger.warn("No se seleccionó ningún subordinado");
+            return "redirect:/asignar"; // o volver a mostrar la página actual
         }
 
         List<Empleado> subordinados = empleadoService.buscarPorIds(subordinadoIds); //mete en una lista los empleados con las ids que se hayan seleccionado
