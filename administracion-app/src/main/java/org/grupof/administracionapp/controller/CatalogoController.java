@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpHeaders;
 import java.net.URI;
@@ -37,12 +36,17 @@ public class CatalogoController {
     }
 
     /**
-     * Maneja la subida de un archivo de catálogo y lo procesa.
-     * Si el archivo se procesa correctamente, redirige a la página de catálogo con un mensaje de éxito.
-     * Si ocurre un error, redirige con un mensaje de error.
+     * Maneja la subida de múltiples archivos JSON que representan catálogos de productos.
+     * <p>
+     * Cada archivo es procesado individualmente mediante el servicio {@code catalogoService}.
+     * Si todos los archivos se procesan correctamente, se redirige al usuario con un mensaje de éxito.
+     * En caso de error durante el procesamiento de cualquiera de los archivos, se registra el error
+     * y se redirige con un mensaje de fallo.
+     * </p>
      *
-     * @param file El archivo de catálogo a subir.
-     * @return La redirección a la página de catálogo con el mensaje adecuado.
+     * @param files Lista de archivos JSON enviados en el formulario bajo el nombre "files".
+     * @return Una respuesta HTTP 303 See Other con redirección a la vista de resultado del dashboard,
+     *         incluyendo un mensaje de éxito o error como parámetro en la URL.
      */
     @PostMapping("/subir")
     public ResponseEntity<Object> subirCatalogo(@RequestParam("files") List<MultipartFile> files) {
@@ -53,8 +57,6 @@ public class CatalogoController {
                 logger.info("Procesando archivo: '{}'", file.getOriginalFilename());
                 catalogoService.procesarCatalogo(file);
             }
-
-            // Redirigir al endpoint "/catalogo/ver" después del procesamiento
             HttpHeaders headers = new HttpHeaders();
             headers.setLocation(URI.create("/dashboard/subida-catalogo?mensaje=Catálogos+procesados+correctamente"));
             return new ResponseEntity<>(headers, HttpStatus.SEE_OTHER);
