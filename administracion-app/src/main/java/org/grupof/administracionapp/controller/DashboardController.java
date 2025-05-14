@@ -3,9 +3,12 @@ package org.grupof.administracionapp.controller;
 import jakarta.servlet.http.HttpSession;
 import org.grupof.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
+import org.grupof.administracionapp.entity.Empleado;
 import org.grupof.administracionapp.entity.producto.Producto;
 import org.grupof.administracionapp.services.CatalogoService;
+import org.grupof.administracionapp.services.Categoria.CategoriaService;
 import org.grupof.administracionapp.services.Empleado.EmpleadoService;
+import org.grupof.administracionapp.services.Producto.ProductoService;
 import org.grupof.administracionapp.services.Usuario.UsuarioService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +16,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -28,17 +30,30 @@ public class DashboardController {
     private final EmpleadoService empleadoService;
     private final CatalogoService catalogoService;
     private final UsuarioService usuarioService;
+    private final ProductoService productoService;
+    private final CategoriaService categoriaService;
 
     /**
-     * Constructor que inyecta el servicio de empleado.
+     * Constructor para inyectar los servicios necesarios en el controlador del dashboard.
      *
-     * @param empleadoService servicio para gestionar empleados
+     * @param empleadoService servicio para operaciones relacionadas con empleados
+     * @param catalogoService servicio para gestionar el catálogo de productos
+     * @param usuarioService servicio para gestionar la información de usuarios
+     * @param productoService servicio para manejar lógica relacionada con productos
+     * @param categoriaService servicio para acceder y gestionar las categorías de productos
      */
-    public DashboardController(EmpleadoService empleadoService, CatalogoService catalogoService, UsuarioService usuarioService) {
+    public DashboardController(EmpleadoService empleadoService,
+                               CatalogoService catalogoService,
+                               UsuarioService usuarioService,
+                               ProductoService productoService,
+                               CategoriaService categoriaService) {
         this.empleadoService = empleadoService;
         this.catalogoService = catalogoService;
         this.usuarioService = usuarioService;
+        this.productoService = productoService;
+        this.categoriaService = categoriaService;
     }
+
 
     /**
      * Muestra la vista del dashboard principal dependiendo del tipo de usuario.
@@ -134,17 +149,53 @@ public class DashboardController {
         return "empleado/main/catalogo";
     }
 
-
     /**
-     * Recupera todos los productos y los pasa a la vista para mostrarlos en una tabla.
+     * Muestra el catálogo de productos en la vista del empleado.
+     * Carga todos los productos disponibles, los tipos de producto y las categorías.
      *
-     * @param model El modelo que se usará para enviar los productos a la vista.
-     * @return El nombre de la vista que muestra los productos.
+     * @param model el modelo de la vista que contiene los atributos a renderizar
+     * @return la ruta de la plantilla Thymeleaf que representa el catálogo
      */
     @GetMapping("/dashboard/mostrarCatalogo")
     public String mostrarCatalogo(Model model) {
+        logger.info("Accediendo a /dashboard/mostrarCatalogo");
+
         List<Producto> productos = catalogoService.obtenerTodosLosProductos();
+        logger.debug("Número de productos cargados: {}", productos.size());
+
         model.addAttribute("productos", productos);
+        model.addAttribute("tipoProducto", productoService.mostrarTiposProducto());
+        model.addAttribute("categorias", categoriaService.obtenerTodasLasCategorias());
+
+        return "empleado/main/empleado-mostrarCatalogo";
+    }
+
+
+    /**
+     * Procesa el formulario de filtrado del catálogo de productos.
+     * Filtra los productos según el tipo de producto y la categoría seleccionados.
+     *
+     * @param tipoProducto el tipo de producto seleccionado (puede estar vacío)
+     * @param categoria la categoría seleccionada (puede estar vacía)
+     * @param model el modelo que se pasa a la vista
+     * @return la plantilla Thymeleaf del catálogo con los productos filtrados
+     */
+    @PostMapping("/dashboard/mostrarCatalogo")
+    public String filtrarCatalogo(@RequestParam String tipoProducto,
+                                  @RequestParam String categoria,
+                                  Model model) {
+
+        logger.info("Filtrando catálogo con tipoProducto='{}' y categoria='{}'", tipoProducto, categoria);
+
+        List<Producto> productos = productoService.filtrarCatalogo(tipoProducto, categoria);
+        logger.debug("Número de productos encontrados tras el filtro: {}", productos.size());
+
+        model.addAttribute("productos", productos);
+        model.addAttribute("tipoProducto", productoService.mostrarTiposProducto());
+        model.addAttribute("categorias", categoriaService.obtenerTodasLasCategorias());
+        model.addAttribute("selectedTipoProducto", tipoProducto);
+        model.addAttribute("selectedCategoria", categoria);
+
         return "empleado/main/empleado-mostrarCatalogo";
     }
 }

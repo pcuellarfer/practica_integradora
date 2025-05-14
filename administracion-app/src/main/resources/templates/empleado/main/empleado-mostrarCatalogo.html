@@ -17,19 +17,34 @@
                     <h1 class="catalogo-titulo">Catálogo de Productos</h1>
                 </div>
             </div>
-            <form th:action="@{/buscar}" method="post">
+            <form th:action="@{/dashboard/mostrarCatalogo}" method="post">
+                <!-- Filtro por Tipo de Producto -->
                 <div class="mb-3">
                     <label for="tipoProducto" class="form-label">Tipo de producto:</label>
                     <select id="tipoProducto" name="tipoProducto" class="form-control">
                         <option value="">Seleccione un tipo de producto</option>
-                        <option th:each="tipo : ${tiposProducto}"
+                        <option th:each="tipo : ${tipoProducto}"
                                 th:value="${tipo.name()}"
                                 th:text="${tipo.name()}"
                                 th:selected="${tipo.name() == selectedTipoProducto}"></option>
                     </select>
                 </div>
+
+                <!-- Filtro por Categoría -->
+                <div class="mb-3">
+                    <label for="categoria" class="form-label">Categoría:</label>
+                    <select id="categoria" name="categoria" class="form-control">
+                        <option value="">Seleccione una categoría</option>
+                        <option th:each="cat : ${categorias}"
+                                th:value="${cat.nombre}"
+                                th:text="${cat.nombre}"
+                                th:selected="${cat.nombre == selectedCategoria}"></option>
+                    </select>
+                </div>
+
                 <button type="submit" class="btn btn-primary mt-4">Buscar</button>
             </form>
+
 
             <!-- Tabla de productos -->
             <div class="catalogo-tabla table-responsive mb-4">
@@ -44,15 +59,7 @@
                         <th>Unidades</th>
                         <th>Fecha Fabricación</th>
                         <th>Colores</th>
-                        <th>Título</th>
-                        <th>Autor</th>
-                        <th>Editorial</th>
-                        <th>Tapa</th>
-                        <th>Número de Páginas</th>
-                        <th>Segunda Mano</th>
                         <th>Dimensiones</th>
-                        <th>Tipo de madera</th>
-                        <th>Estilo</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -74,83 +81,17 @@
                                 <li th:each="color : ${producto.colores}" th:text="${color}"></li>
                             </ul>
                         </td>
-
-                        <!-- Libro -->
-                        <td th:if="${producto instanceof T(org.grupof.administracionapp.entity.producto.Libro)}"
-                            th:with="libro=${producto}">
-                            <span th:text="${libro.titulo}">-</span>
-                        </td>
-                        <td th:if="${producto instanceof T(org.grupof.administracionapp.entity.producto.Libro)}"
-                            th:with="libro=${producto}">
-                            <span th:text="${libro.autor}">-</span>
-                        </td>
-                        <td th:if="${producto instanceof T(org.grupof.administracionapp.entity.producto.Libro)}"
-                            th:with="libro=${producto}">
-                            <span th:text="${libro.editorial}">-</span>
-                        </td>
-                        <td th:if="${producto instanceof T(org.grupof.administracionapp.entity.producto.Libro)}"
-                            th:with="libro=${producto}">
-                            <span th:text="${libro.tapa}">-</span>
-                        </td>
-                        <td th:if="${producto instanceof T(org.grupof.administracionapp.entity.producto.Libro)}"
-                            th:with="libro=${producto}">
-                            <span th:text="${libro.numeroPaginas}">-</span>
-                        </td>
-                        <td th:if="${producto instanceof T(org.grupof.administracionapp.entity.producto.Libro)}"
-                            th:with="libro=${producto}">
-                            <span th:text="${libro.segundaMano ? 'Sí' : 'No'}">-</span>
-                        </td>
                         <td th:if="${producto instanceof T(org.grupof.administracionapp.entity.producto.Libro)}"
                             th:with="libro=${producto}">
                             <span th:text="${libro.dimensiones.ancho}">-</span> x
                             <span th:text="${libro.dimensiones.profundidad}">-</span> x
                             <span th:text="${libro.dimensiones.alto}">-</span>
                         </td>
-                        <td th:if="${producto instanceof T(org.grupof.administracionapp.entity.producto.Libro)}"
-                            th:with="libro=${producto}">
-                        </td>
-                        <td th:if="${producto instanceof T(org.grupof.administracionapp.entity.producto.Libro)}"
-                            th:with="libro=${producto}">
-                        </td>
-
-                        <!-- Mueble -->
-                        <td th:if="${producto instanceof T(org.grupof.administracionapp.entity.producto.Mueble)}"
-                            th:with="mueble=${producto}">
-                            <span></span>
-                        </td>
-                        <td th:if="${producto instanceof T(org.grupof.administracionapp.entity.producto.Mueble)}"
-                            th:with="mueble=${producto}">
-                            <span></span>
-                        </td>
-                        <td th:if="${producto instanceof T(org.grupof.administracionapp.entity.producto.Mueble)}"
-                            th:with="mueble=${producto}">
-                            <span></span>
-                        </td>
-                        <td th:if="${producto instanceof T(org.grupof.administracionapp.entity.producto.Mueble)}"
-                            th:with="mueble=${producto}">
-                            <span></span>
-                        </td>
-                        <td th:if="${producto instanceof T(org.grupof.administracionapp.entity.producto.Mueble)}"
-                            th:with="mueble=${producto}">
-                            <span></span>
-                        </td>
-                        <td th:if="${producto instanceof T(org.grupof.administracionapp.entity.producto.Mueble)}"
-                            th:with="mueble=${producto}">
-                            <span></span>
-                        </td>
                         <td th:if="${producto instanceof T(org.grupof.administracionapp.entity.producto.Mueble)}"
                             th:with="mueble=${producto}">
                             <span th:text="${mueble.dimensiones.ancho}">-</span> x
                             <span th:text="${mueble.dimensiones.profundidad}">-</span> x
                             <span th:text="${mueble.dimensiones.alto}">-</span>
-                        </td>
-                        <td th:if="${producto instanceof T(org.grupof.administracionapp.entity.producto.Mueble)}"
-                            th:with="mueble=${producto}">
-                            <span th:text="${mueble.tipoMadera}">-</span>
-                        </td>
-                        <td th:if="${producto instanceof T(org.grupof.administracionapp.entity.producto.Mueble)}"
-                            th:with="mueble=${producto}">
-                            <span th:text="${mueble.estilo}">-</span>
                         </td>
                     </tr>
                     </tbody>
