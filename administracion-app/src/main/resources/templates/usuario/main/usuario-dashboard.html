@@ -7,9 +7,10 @@
     <script th:src="@{/js/script.js}"></script>
 </head>
 <body>
-<div th:replace="~{/fragments/cabecera::cabecera}"></div>
+<div th:replace="/fragments/cabecera"></div>
 <main>
-    <div th:replace="~{/fragments/cuentaatras::cuentaatras}"></div>
+    <div th:replace="/fragments/cuentaatras"></div>
+    <div th:replace="/fragments/botonCss"></div>
 <div class="absoluto mt-5">
     <div class="container">
         <!-- Título -->
@@ -36,6 +37,6 @@
     </div>
 </div>
 </main>
-<div th:replace="~{/fragments/pie::pie}"></div>
+<div class="mt-5" th:replace="/fragments/pie"></div>
 </body>
 </html>

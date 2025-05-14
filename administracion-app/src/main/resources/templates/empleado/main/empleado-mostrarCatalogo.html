@@ -8,6 +8,7 @@
 
 <main>
     <div th:replace="/fragments/cuentaatras"></div>
+    <div th:replace="/fragments/botonCss"></div>
     <div class="absoluto mt-5">
         <div class="container-fluid px-5">
             <!-- Título -->
@@ -21,7 +22,7 @@
                 <div class="mb-3">
                     <label for="tipoProducto" class="form-label">Tipo de producto:</label>
                     <select id="tipoProducto" name="tipoProducto" class="form-control">
-                        <option value="">Seleccione un tipo de producto</option>
+                        <option value="">Mostrar todos los productos</option>
                         <option th:each="tipo : ${tipoProducto}"
                                 th:value="${tipo.name()}"
                                 th:text="${tipo.name()}"
@@ -33,7 +34,7 @@
                 <div class="mb-3">
                     <label for="categoria" class="form-label">Categoría:</label>
                     <select id="categoria" name="categoria" class="form-control">
-                        <option value="">Seleccione una categoría</option>
+                        <option value="">Mostrar todas las categorias</option>
                         <option th:each="cat : ${categorias}"
                                 th:value="${cat.nombre}"
                                 th:text="${cat.nombre}"
