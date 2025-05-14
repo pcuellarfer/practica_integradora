@@ -265,12 +265,18 @@ public class InicioSesionController {
         contador++;
         usuarioService.actualizarContadorInicios(usuarioBBDD.getEmail(), contador);
 
+        // Guardar el contador en una cookie persistente
+        Cookie contadorCookie = new Cookie("contador_sesiones", String.valueOf(contador));
+        contadorCookie.setMaxAge(60 * 60 * 24 * 365); // 1 año
+        contadorCookie.setPath("/");
+        response.addCookie(contadorCookie);
+
         logger.info("Número de accesos al dashboard en esta sesión: {}", contador);
 
         session.setAttribute("usuario", usuarioBBDD);
-        session.setAttribute("contador", contador);
+        session.setAttribute("contador", contadorCookie);
         redirectAttributes.addFlashAttribute("contador", contador);
-        redirectAttributes.addFlashAttribute("navegadorId", navegadorId);
+        redirectAttributes.addFlashAttribute("navegadorId", contadorCookie.getValue());
         session.removeAttribute("intentos");
         return "redirect:/dashboard";
     }

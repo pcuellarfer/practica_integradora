@@ -1,5 +1,7 @@
 package org.grupof.administracionapp.controller;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.websocket.Session;
 import org.grupof.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
@@ -57,19 +59,23 @@ public class DashboardController {
         this.categoriaService = categoriaService;
     }
 
-
     /**
-     * Muestra la vista del dashboard principal dependiendo del tipo de usuario.
-     * Si el usuario tiene un empleado asociado, se redirige al dashboard de empleado,
-     * en caso contrario, se muestra el dashboard genérico de usuario.
+     * Muestra el dashboard correspondiente según si el usuario es solo usuario o también empleado.
      *
-     * @param session sesión HTTP actual
-     * @param modelo  modelo de atributos para la vista
-     * @return vista correspondiente al dashboard
+     * <p>Verifica la sesión del usuario y, si es válida, comprueba si el usuario tiene un empleado asociado.
+     * En caso de no tenerlo, se muestra el dashboard general de usuario. Si lo tiene, se muestra el dashboard
+     * específico para empleados, incluyendo información del usuario, el empleado y el contador de accesos.
+     *
+     * <p>También se recupera la cookie 'contador_sesiones' para mostrar el número de sesiones desde el navegador actual.
+     *
+     * @param session la sesión HTTP actual
+     * @param modelo  el modelo para pasar atributos a la vista
+     * @param request la solicitud HTTP, usada para recuperar cookies
+     * @return el nombre de la vista del dashboard correspondiente
      */
     @GetMapping("/dashboard")
-    public String dashboard(HttpSession session, Model modelo) {
-        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario"); //casting
+    public String dashboard(HttpSession session, Model modelo, HttpServletRequest request) {
+        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
 
         if (usuarioDTO == null) {
             logger.warn("Intento de acceso al dashboard sin usuario en sesión");
@@ -91,12 +97,27 @@ public class DashboardController {
         UsuarioDTO usuarioBBDD = usuarioService.buscarPorEmail(usuarioDTO.getEmail());
         int contadorSesiones = usuarioService.getContadorInicios(usuarioBBDD.getEmail());
 
+        String contadorSesion = "0";
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("contador_sesiones".equals(cookie.getName())) {
+                    contadorSesion = cookie.getValue();
+                    logger.debug("Cookie 'contador_sesiones' encontrada con valor: {}", contadorSesion);
+                }
+            }
+        } else {
+            logger.debug("No se encontraron cookies en la solicitud");
+        }
+
         modelo.addAttribute("contadorSesiones", contadorSesiones);
+        modelo.addAttribute("navegadorId", contadorSesion);
         modelo.addAttribute("usuario", usuarioDTO);
         modelo.addAttribute("empleado", empleadoDTO);
 
         return "empleado/main/empleado-dashboard";
     }
+
 
     /**
      * Muestra el submenú de etiquetado para empleados.
