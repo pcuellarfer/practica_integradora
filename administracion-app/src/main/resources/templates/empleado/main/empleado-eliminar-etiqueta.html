@@ -11,7 +11,7 @@
 <!--Formulario 1: Seleccionar empleado (GET) -->
 <form th:action="@{/etiquetado/eliminar}" method="get">
     <label for="empleado">Empleado:</label>
-    <select id="empleado" name="empleadoId" onchange="this.form.submit()">
+    <select id="empleado" name="empleadoId" onchange="this.form.submit()"> <!--usa el this.form.submit para hacer la llamada a gert-->
         <option disabled selected value="">Selecciona un empleado</option>
         <th:block th:each="empleado : ${empleados}">
             <option th:value="${empleado.id}"

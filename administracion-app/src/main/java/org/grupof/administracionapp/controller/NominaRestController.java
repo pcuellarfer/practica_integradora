@@ -4,12 +4,10 @@ import org.grupof.administracionapp.dto.nominas.NominaDTO;
 import org.grupof.administracionapp.services.nomina.NominaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/nominas")
@@ -19,6 +17,11 @@ public class NominaRestController {
 
     public NominaRestController(NominaService nominaService) {
         this.nominaService = nominaService;
+    }
+
+    @GetMapping("{idEmple}/{idNomina}")
+    public ResponseEntity<?> devuelveNomina(@PathVariable UUID idEmple, @PathVariable UUID idNomina) {
+        return ResponseEntity.ok(nominaService.devuelveNominaPorEmpleadoId(idEmple, idNomina));
     }
 
     @PostMapping

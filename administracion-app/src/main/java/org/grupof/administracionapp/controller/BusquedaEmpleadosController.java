@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -68,6 +67,7 @@ public class BusquedaEmpleadosController {
      */
     @GetMapping("/buscar")
     public String mostrarFormularioBusqueda(Model modelo, HttpSession session) {
+
         Empleado empleado = obtenerEmpleadoDesdeSesion(session, logger);
         if (empleado == null) {
             return "redirect:/login/username";
