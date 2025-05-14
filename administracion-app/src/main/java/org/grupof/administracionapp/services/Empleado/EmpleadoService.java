@@ -176,4 +176,6 @@ public interface EmpleadoService {
      * @return una lista ordenada de empleados.
      */
     List<Empleado> getEmpleadosOrdenados();
+
+    boolean obtenerEstadoEmpleado(UUID empleadoId);
 }

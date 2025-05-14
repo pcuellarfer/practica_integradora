@@ -615,4 +615,23 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         logger.debug("Se han recuperado {} empleados.", empleadosOrdenados.size());
         return empleadosOrdenados;
     }
+
+    @Override
+    public boolean obtenerEstadoEmpleado(UUID empleadoId) {
+        Optional<Empleado> empleadoOpt = empleadoRepository.findById(empleadoId);
+
+        if (empleadoOpt.isPresent()) {
+            Empleado empleado = empleadoOpt.get();
+            Usuario usuario = empleado.getUsuario();
+
+            if (usuario != null) {
+                return empleadoOpt.get().getUsuario().isEstadoBloqueado();
+            } else {
+                throw new RuntimeException("El empleado no tiene un usuario asociado");
+            }
+        } else {
+            throw new RuntimeException("Empleado no encontrado");
+        }
+
+    }
 }

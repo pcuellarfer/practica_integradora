@@ -101,3 +101,17 @@ document.addEventListener('click', resetCountdown);
 
 // Iniciar la cuenta atrás cuando se carga la página
 window.onload = startCountdown;
+
+    function confirmarBloqueo(form) {
+    const motivo = form.querySelector('input[name="motivoBloqueo"]').value;
+    if (!motivo.trim()) {
+    alert("Por favor, indica el motivo del bloqueo.");
+    return false;
+}
+    return confirm("¿Estás seguro de que quieres bloquear a este empleado?");
+}
+
+    function confirmarDesbloqueo() {
+    return confirm("¿Estás seguro de que quieres desbloquear a este empleado?");
+}
+

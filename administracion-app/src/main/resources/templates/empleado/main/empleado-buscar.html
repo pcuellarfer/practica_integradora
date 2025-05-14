@@ -3,12 +3,12 @@
 
 <head th:replace="fragments/header :: head('Buscar Empleado')"></head>
 
-    <body>
-    <div th:replace="/fragments/cabecera"></div>
-    <main>
-        <div th:replace="/fragments/cuentaatras"></div>
-        <div th:replace="/fragments/botonCss"></div>
-        <div class="container mt-5">
+<body>
+<div th:replace="/fragments/cabecera"></div>
+<main>
+    <div th:replace="/fragments/cuentaatras"></div>
+    <div th:replace="/fragments/botonCss"></div>
+    <div class="container mt-5">
         <h2>Buscar Empleado por Nombre</h2>
 
 
@@ -33,29 +33,35 @@
         </form>
 
         <div th:if="${mensaje}" class="alert alert-success" role="alert" th:text="${mensaje}"></div>
-            <div>
-                <h4 th:if="${#lists.isEmpty(resultados)}">No se encontraron empleados.</h4>
+        <div>
+            <h4 th:if="${#lists.isEmpty(resultados)}">No se encontraron empleados.</h4>
 
-                <ul th:if="${!#lists.isEmpty(resultados)}" class="list-group mt-3">
-                    <li class="list-group-item d-flex justify-content-between align-items-center"
-                        th:each="empleado : ${resultados}">
-                        <span th:text="${empleado.nombre}"></span>
-                        <div>
-                            <form th:action="@{/bloquear}" method="post" style="display:inline;">
-                                <input type="text" name="motivoBloqueo" placeholder="Motivo de bloqueo"/>
-                                <input type="hidden" name="empleadoId" th:value="${empleado.id}" />
-                                <button type="submit" class="btn btn-sm btn-danger">Bloquear</button>
-                            </form>
-                            <form th:action="@{/desbloquear}" method="post" style="display:inline;">
-                                <input type="hidden" name="empleadoId" th:value="${empleado.id}" />
-                                <button type="submit" class="btn btn-sm btn-success">Desbloquear</button>
-                            </form>
-                        </div>
-                    </li>
-                </ul>
-            </div>
+            <ul th:if="${!#lists.isEmpty(resultados)}" class="list-group mt-3">
+                <li class="list-group-item d-flex justify-content-between align-items-center"
+                    th:each="empleado : ${resultados}">
+                    <span th:text="${empleado.nombre}"></span>
+                    <span th:text="${empleado.usuario.estadoBloqueado ? 'Bloqueado' : 'Desbloqueado'}"
+                          th:class="${empleado.usuario.estadoBloqueado ? 'text-danger fw-bold' : 'text-success fw-bold'}">
+                    </span>
+                    <div>
+                        <form th:action="@{/bloquear}" method="post" style="display:inline;"
+                              onsubmit="return confirmarBloqueo(this);">
+                            <input type="text" name="motivoBloqueo" placeholder="Motivo de bloqueo"/>
+                            <input type="hidden" name="empleadoId" th:value="${empleado.id}"/>
+                            <button type="submit" class="btn btn-sm btn-danger">Bloquear</button>
+                        </form>
+
+                        <form th:action="@{/desbloquear}" method="post" style="display:inline;"
+                              onsubmit="return confirmarDesbloqueo();">
+                            <input type="hidden" name="empleadoId" th:value="${empleado.id}"/>
+                            <button type="submit" class="btn btn-sm btn-success">Desbloquear</button>
+                        </form>
+                    </div>
+                </li>
+            </ul>
+        </div>
     </div>
-    </main>
-    <div th:replace="/fragments/pie"></div>
-    </body>
+</main>
+<div th:replace="/fragments/pie"></div>
+</body>
 </html>

@@ -73,6 +73,7 @@ public class BusquedaEmpleadosController {
             return "redirect:/login/username";
         }
 
+        modelo.addAttribute("estadoBloqueado", empleadoService.obtenerEstadoEmpleado(empleado.getId()));
         modelo.addAttribute("generos", generoService.getAllGeneros());
         modelo.addAttribute("resultados", empleadoService.getEmpleadosOrdenados());
         modelo.addAttribute("nombre", "");
@@ -105,7 +106,7 @@ public class BusquedaEmpleadosController {
 
         List<Empleado> resultados = empleadoService.buscarEmpleados(nombre, genero);
 
-
+        modelo.addAttribute("estadoBloqueado", empleadoService.obtenerEstadoEmpleado(empleado.getId()));
         modelo.addAttribute("resultados", resultados);
         modelo.addAttribute("nombre", nombre);
         modelo.addAttribute("selectedGeneroId", genero);
