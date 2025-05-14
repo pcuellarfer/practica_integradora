@@ -4,6 +4,7 @@ import org.grupof.administracionapp.entity.producto.Producto;
 import org.grupof.administracionapp.entity.producto.enums.TipoProducto;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Servicio para la gestión de productos y operaciones relacionadas con el catálogo.
@@ -27,5 +28,7 @@ public interface ProductoService {
      * @return una lista de productos que coinciden con los criterios de filtrado
      */
     List<Producto> filtrarCatalogo(String tipoProducto, String categoria);
+
+    Producto obtenerProductoPorId(UUID id);
 }
 

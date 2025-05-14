@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: head('Mostrar detalles')">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+</head>
+<body>
+<div th:replace="/fragments/cabecera"></div>
+<main>
+    <div th:replace="/fragments/cuentaatras"></div>
+    <div class="container mt-4">
+        <h1>Detalles del Producto</h1>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 th:text="${producto.descripcion}"></h3>
+            </div>
+            <div class="card-body">
+                <p><strong>Precio:</strong> <span th:text="${producto.precio}"></span></p>
+                <p><strong>Marca:</strong> <span th:text="${producto.marca}"></span></p>
+                <p><strong>Fecha de fabricación:</strong> <span th:text="${producto.fechaFabricacion}"></span></p>
+
+                <!-- Mostrar detalles de Mueble -->
+                <div th:if="${producto instanceof T(org.grupof.administracionapp.entity.producto.Mueble)}">
+                    <h4>Mueble</h4>
+                    <p><strong>Tipo de madera:</strong> <span th:text="${producto.tipoMadera}"></span></p>
+                    <p><strong>Estilo:</strong> <span th:text="${producto.estilo}"></span></p>
+                    <p><strong>Dimensiones:</strong> <span th:text="${producto.dimensiones}"></span></p>
+                </div>
+
+                <!-- Mostrar detalles de Libro -->
+                <div th:if="${producto instanceof T(org.grupof.administracionapp.entity.producto.Libro)}">
+                    <h4>Libro</h4>
+                    <p><strong>Título:</strong> <span th:text="${producto.titulo}"></span></p>
+                    <p><strong>Autor:</strong> <span th:text="${producto.autor}"></span></p>
+                    <p><strong>Editorial:</strong> <span th:text="${producto.editorial}"></span></p>
+                    <p><strong>Tapa:</strong> <span th:text="${producto.tapa}"></span></p>
+                    <p><strong>Número de páginas:</strong> <span th:text="${producto.numeroPaginas}"></span></p>
+                    <p><strong>¿Es de segunda mano?:</strong> <span th:text="${producto.segundaMano}"></span></p>
+                    <p><strong>Dimensiones:</strong> <span th:text="${producto.dimensiones}"></span></p>
+                </div>
+
+                <p><strong>Categorías:</strong>
+                    <span th:each="categoria : ${producto.categorias}" th:text="${categoria.nombre}"></span>
+                </p>
+
+                <a th:href="@{/dashboard/mostrarCatalogo}" class="btn btn-secondary">Volver al catálogo</a>
+            </div>
+        </div>
+    </div>
+</main>
+<div class="mt-5" th:replace="/fragments/pie"></div>
+</body>
+</html>

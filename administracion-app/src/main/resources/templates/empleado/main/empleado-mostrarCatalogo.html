@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="fragments/header :: head('Mostrar catálogo')">
-    <!-- Agrega DataTables CSS si no está en tu fragmento -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 </head>
 <body>
@@ -60,6 +59,7 @@
                         <th>Fecha Fabricación</th>
                         <th>Colores</th>
                         <th>Dimensiones</th>
+                        <th>Detalles</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -92,6 +92,14 @@
                             <span th:text="${mueble.dimensiones.ancho}">-</span> x
                             <span th:text="${mueble.dimensiones.profundidad}">-</span> x
                             <span th:text="${mueble.dimensiones.alto}">-</span>
+                        </td>
+                        <td th:if="${producto instanceof T(org.grupof.administracionapp.entity.producto.Mueble)}"
+                            th:with="mueble=${producto}">
+                            <a th:href="@{/dashboard/mostrarCatalogo/{id}(id=${mueble.id})}" class="btn btn-info">Detalles</a>
+                        </td>
+                        <td th:if="${producto instanceof T(org.grupof.administracionapp.entity.producto.Libro)}"
+                            th:with="libro=${producto}">
+                            <a th:href="@{/dashboard/mostrarCatalogo/{id}(id=${libro.id})}" class="btn btn-info">Detalles</a>
                         </td>
                     </tr>
                     </tbody>

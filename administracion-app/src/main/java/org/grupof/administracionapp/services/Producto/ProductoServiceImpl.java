@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -75,5 +77,11 @@ public class ProductoServiceImpl implements ProductoService {
 
         logger.debug("Total productos encontrados después del filtro: {}", productosFiltrados.size());
         return productosFiltrados;
+    }
+
+    @Override
+    public Producto obtenerProductoPorId(UUID id) {
+        Optional<Producto> producto = productoRepository.findById(id);
+        return producto.orElseThrow(() -> new RuntimeException("Producto no encontrado con el id: " + id));
     }
 }

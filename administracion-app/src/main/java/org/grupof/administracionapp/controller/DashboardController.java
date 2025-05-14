@@ -17,6 +17,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Controlador para gestionar las vistas del panel principal (dashboard)
@@ -170,7 +172,6 @@ public class DashboardController {
         return "empleado/main/empleado-mostrarCatalogo";
     }
 
-
     /**
      * Procesa el formulario de filtrado del catálogo de productos.
      * Filtra los productos según el tipo de producto y la categoría seleccionados.
@@ -198,4 +199,17 @@ public class DashboardController {
 
         return "empleado/main/empleado-mostrarCatalogo";
     }
+
+    @GetMapping("/dashboard/mostrarCatalogo/{id}")
+    public String mostrarDetalleProducto(@PathVariable UUID id, Model model) {
+        // Obtener el producto por su ID
+        Producto producto = productoService.obtenerProductoPorId(id);
+
+        // Añadir el producto al modelo
+        model.addAttribute("producto", producto);
+
+        // Devolver la vista con el detalle del producto
+        return "empleado/main/empleado-detalleProducto";
+    }
+
 }
