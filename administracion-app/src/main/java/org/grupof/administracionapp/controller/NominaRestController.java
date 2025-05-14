@@ -25,10 +25,27 @@ public class NominaRestController {
     }
 
 
+    /**
+     * Devuelve una nómina específica asociada a un empleado.
+     *
+     * @param idEmple UUID del empleado.
+     * @param idNomina UUID de la nómina.
+     * @return ResponseEntity con la nómina correspondiente en formato JSON si se encuentra.
+     */
     @GetMapping("{idEmple}/{idNomina}")
     public ResponseEntity<?> devuelveNomina(@PathVariable UUID idEmple, @PathVariable UUID idNomina) {
-        return ResponseEntity.ok(nominaService.devuelveNominaPorEmpleadoId(idEmple, idNomina));
+        logger.info("Solicitando nómina con ID {} para el empleado con ID {}", idNomina, idEmple);
+
+        try {
+            Object nomina = nominaService.devuelveNominaPorEmpleadoId(idEmple, idNomina);
+            logger.debug("Nómina recuperada correctamente para el empleado {}", idEmple);
+            return ResponseEntity.ok(nomina);
+        } catch (Exception e) {
+            logger.error("Error al obtener la nómina: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener la nómina.");
+        }
     }
+
 
     /**
      * Crea una nueva nómina a partir de los datos proporcionados.
