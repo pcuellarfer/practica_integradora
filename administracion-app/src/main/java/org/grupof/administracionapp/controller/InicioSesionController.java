@@ -92,9 +92,9 @@ public class InicioSesionController {
     @GetMapping("/username")
     public String mostrarFormularioNombre(@ModelAttribute("usuario") UsuarioDTO usuario,
                                           HttpSession session) {
-        if (session.getAttribute("usuario") != null && session.getAttribute("contraseña") != null) {
+        if (session.getAttribute("usuario") != null) {
             logger.info("Sesión activa detectada. Redirigiendo al dashboard.");
-            return "redirect:/dashboard"; // O la URL de la página que quieras redirigir
+            return "redirect:/dashboard";
         }
         logger.info("Mostrando formulario para ingresar email.");
         return "usuario/auth/login-nombre";

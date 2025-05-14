@@ -1,6 +1,7 @@
 package org.grupof.administracionapp.controller;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.websocket.Session;
 import org.grupof.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
 import org.grupof.administracionapp.entity.Empleado;
@@ -99,44 +100,78 @@ public class DashboardController {
 
     /**
      * Muestra el submenú de etiquetado para empleados.
-     *
+     * @param session sesión HTTP actual
      * @return vista del submenú de etiquetado
      */
     @GetMapping("dashboard/submenu-etiquetado")
-    public String mostrarSubmenuSubordinados() {
+    public String mostrarSubmenuSubordinados(HttpSession session) {
+        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario"); //casting
+
+        if (usuarioDTO == null) {
+            logger.warn("Intento de acceso al dashboard sin usuario en sesión /submenu-etiquetado");
+            return "redirect:/login/username";
+        }
         return "empleado/main/empleado-submenu-etiquetado";
     }
 
     /**
      * Muestra el submenú de productos para empleados.
-     *
+     * @param session sesión HTTP actual
      * @return vista del submenú de productos
      */
     @GetMapping("dashboard/submenu-productos")
-    public String mostrarSubmenuProductos() {
+    public String mostrarSubmenuProductos(HttpSession session) {
+        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario"); //casting
+
+        if (usuarioDTO == null) {
+            logger.warn("Intento de acceso al dashboard sin usuario en sesión /submenu-productos");
+            return "redirect:/login/username";
+        }
         return "empleado/main/empleado-submenu-productos";
     }
 
 
+    /**
+     * Muestra el submenú de nóminas del empleado si hay un usuario en sesión.
+     * Redirige al login si no hay sesión activa.
+     *
+     * @param session sesión HTTP actual
+     * @return vista del submenú de nóminas o redirección al login
+     */
     @GetMapping("dashboard/submenu-nominas")
-    public String mostrarSubmenuNominas() {
+    public String mostrarSubmenuNominas(HttpSession session) {
+        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
+
+        if (usuarioDTO == null) {
+            logger.warn("Acceso denegado: no hay usuario en sesión (/submenu-nominas)");
+            return "redirect:/login/username";
+        }
+
+        logger.info("Usuario {} accede al submenú de nóminas", usuarioDTO.getEmail());
         return "empleado/main/empleado-submenu-nominas";
     }
 
     /**
-     * Controlador para mostrar la vista del catálogo tras la subida de un archivo.
-     * Si se proporciona un mensaje como parámetro en la URL, este se añade al modelo
-     * para que pueda mostrarse en la vista.
+     * Muestra la vista de subida de catálogo, con mensajes de éxito o error si están presentes.
+     * Redirige al login si no hay usuario en sesión.
      *
-     * @param mensaje Mensaje opcional que se mostrará en la vista, como confirmación o advertencia.
-     * @param model Modelo para pasar datos a la vista.
-     * @return Nombre de la vista que representa la página del catálogo.
+     * @param mensaje mensaje opcional para mostrar en la vista (puede ser null)
+     * @param error mensaje de error opcional (puede ser null)
+     * @param model modelo para pasar atributos a la vista
+     * @param session sesión HTTP actual
+     * @return vista para la subida de catálogo o redirección al login si no hay sesión activa
      */
     @GetMapping("dashboard/subida-catalogo")
     public String mostrarSubidaCatalogo(@RequestParam(value = "mensaje", required = false) String mensaje,
                                         @RequestParam(value = "error", required = false) String error,
-                                        Model model) {
-        Logger logger = LoggerFactory.getLogger(getClass());
+                                        Model model,
+                                        HttpSession session) {
+        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
+
+        if (usuarioDTO == null) {
+            logger.warn("Intento de acceso al dashboard sin usuario en sesión (/subida-catalogo)");
+            return "redirect:/login/username";
+        }
 
         if (mensaje != null) {
             logger.info("Mostrando vista de catálogo con mensaje: {}", mensaje);
@@ -148,18 +183,27 @@ public class DashboardController {
             model.addAttribute("error", error);
         }
 
+        logger.info("Usuario {} accede al submenú de subida de catálogo", usuarioDTO.getEmail());
         return "empleado/main/catalogo";
     }
+
 
     /**
      * Muestra el catálogo de productos en la vista del empleado.
      * Carga todos los productos disponibles, los tipos de producto y las categorías.
      *
      * @param model el modelo de la vista que contiene los atributos a renderizar
+     * @param session sesión HTTP actual
      * @return la ruta de la plantilla Thymeleaf que representa el catálogo
      */
     @GetMapping("/dashboard/mostrarCatalogo")
-    public String mostrarCatalogo(Model model) {
+    public String mostrarCatalogo(Model model, HttpSession session) {
+        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario"); //casting
+
+        if (usuarioDTO == null) {
+            logger.warn("Intento de acceso al dashboard sin usuario en sesión /mostrarCatalogo");
+            return "redirect:/login/username";
+        }
         logger.info("Accediendo a /dashboard/mostrarCatalogo");
 
         List<Producto> productos = catalogoService.obtenerTodosLosProductos();
@@ -179,13 +223,20 @@ public class DashboardController {
      * @param tipoProducto el tipo de producto seleccionado (puede estar vacío)
      * @param categoria la categoría seleccionada (puede estar vacía)
      * @param model el modelo que se pasa a la vista
+     * @param session sesión HTTP actual
      * @return la plantilla Thymeleaf del catálogo con los productos filtrados
      */
     @PostMapping("/dashboard/mostrarCatalogo")
     public String filtrarCatalogo(@RequestParam String tipoProducto,
                                   @RequestParam String categoria,
-                                  Model model) {
+                                  Model model, HttpSession session) {
 
+        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario"); //casting
+
+        if (usuarioDTO == null) {
+            logger.warn("Intento de acceso al dashboard sin usuario en sesión /mostrarCatalogo POST");
+            return "redirect:/login/username";
+        }
         logger.info("Filtrando catálogo con tipoProducto='{}' y categoria='{}'", tipoProducto, categoria);
 
         List<Producto> productos = productoService.filtrarCatalogo(tipoProducto, categoria);
@@ -200,16 +251,37 @@ public class DashboardController {
         return "empleado/main/empleado-mostrarCatalogo";
     }
 
+    /**
+     * Muestra los detalles de un producto específico basado en su ID.
+     * Redirige al login si no hay usuario en sesión.
+     *
+     * @param id ID del producto que se va a mostrar
+     * @param model modelo para pasar atributos a la vista
+     * @param session sesión HTTP actual
+     * @return vista con los detalles del producto o redirección al login si no hay sesión activa
+     */
     @GetMapping("/dashboard/mostrarCatalogo/{id}")
-    public String mostrarDetalleProducto(@PathVariable UUID id, Model model) {
-        // Obtener el producto por su ID
+    public String mostrarDetalleProducto(@PathVariable UUID id, Model model, HttpSession session) {
+        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
+
+        if (usuarioDTO == null) {
+            logger.warn("Intento de acceso al dashboard sin usuario en sesión /mostrarCatalogo/{}", id);
+            return "redirect:/login/username";
+        }
+
         Producto producto = productoService.obtenerProductoPorId(id);
+
+        if (producto == null) {
+            logger.error("Producto con ID {} no encontrado", id);
+            return "redirect:/dashboard";
+        }
 
         // Añadir el producto al modelo
         model.addAttribute("producto", producto);
 
-        // Devolver la vista con el detalle del producto
+        logger.info("Usuario {} accede a los detalles del producto con ID {}", usuarioDTO.getEmail(), id);
         return "empleado/main/empleado-detalleProducto";
     }
+
 
 }

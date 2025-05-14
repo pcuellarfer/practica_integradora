@@ -60,6 +60,12 @@ public class DetalleController {
      */
     @GetMapping("/detalle")
     public String verDetalles(HttpSession session, Model modelo) {
+        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
+
+        if (usuarioDTO == null) {
+            logger.warn("Intento de acceso al dashboard sin usuario en sesión");
+            return "redirect:/login/username";
+        }
         logger.info("Accediendo a los detalles del empleado");
 
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario"); //recuperar el usuario(usuarioDTO) de la sesion

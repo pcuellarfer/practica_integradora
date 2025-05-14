@@ -177,5 +177,12 @@ public interface EmpleadoService {
      */
     List<Empleado> getEmpleadosOrdenados();
 
+    /**
+     * Obtiene el estado de bloqueo del usuario asociado al empleado con el ID proporcionado.
+     *
+     * @param empleadoId el identificador único del empleado.
+     * @return {@code true} si el usuario está bloqueado; {@code false} si no lo está.
+     * @throws RuntimeException si el empleado no existe o no tiene un usuario asociado.
+     */
     boolean obtenerEstadoEmpleado(UUID empleadoId);
 }

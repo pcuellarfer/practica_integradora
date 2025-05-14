@@ -4,6 +4,7 @@ import org.grupof.administracionapp.entity.producto.Categoria;
 import org.grupof.administracionapp.repository.CategoriaRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -37,8 +38,12 @@ public class CategoriaServiceImpl implements CategoriaService {
     public List<Categoria> obtenerTodasLasCategorias() {
         logger.info("Obteniendo todas las categorías desde la base de datos");
 
-        List<Categoria> categorias = categoriaRepository.findAll();
-
+        List<Categoria> categorias = categoriaRepository.findAll(Sort.by("nombre").ascending());
+        if (categorias.isEmpty()) {
+            logger.warn("No se encontraron categorías en la base de datos");
+        } else {
+            logger.info("Se encontraron {} categorías", categorias.size());
+        }
         logger.debug("Número de categorías encontradas: {}", categorias.size());
         return categorias;
     }

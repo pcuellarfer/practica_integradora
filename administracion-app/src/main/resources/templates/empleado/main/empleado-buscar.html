@@ -33,7 +33,7 @@
         </form>
 
         <div th:if="${mensaje}" class="alert alert-success" role="alert" th:text="${mensaje}"></div>
-        <div>
+        <div class="mb-5">
             <h4 th:if="${#lists.isEmpty(resultados)}">No se encontraron empleados.</h4>
 
             <ul th:if="${!#lists.isEmpty(resultados)}" class="list-group mt-3">

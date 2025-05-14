@@ -616,8 +616,17 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         return empleadosOrdenados;
     }
 
+    /**
+     * Verifica si el usuario asociado al empleado con el ID proporcionado está bloqueado.
+     *
+     * @param empleadoId el identificador único del empleado.
+     * @return {@code true} si el usuario está bloqueado, {@code false} si no lo está.
+     * @throws RuntimeException si no se encuentra el empleado o si no tiene un usuario asociado.
+     */
     @Override
     public boolean obtenerEstadoEmpleado(UUID empleadoId) {
+        logger.info("Consultando el estado de bloqueo del empleado con ID: {}", empleadoId);
+
         Optional<Empleado> empleadoOpt = empleadoRepository.findById(empleadoId);
 
         if (empleadoOpt.isPresent()) {
@@ -625,13 +634,17 @@ public class EmpleadoServiceImpl implements EmpleadoService {
             Usuario usuario = empleado.getUsuario();
 
             if (usuario != null) {
-                return empleadoOpt.get().getUsuario().isEstadoBloqueado();
+                boolean estado = usuario.isEstadoBloqueado();
+                logger.info("El estado de bloqueo del usuario con ID {} es: {}", usuario.getId(), estado);
+                return estado;
             } else {
+                logger.error("El empleado con ID {} no tiene un usuario asociado", empleadoId);
                 throw new RuntimeException("El empleado no tiene un usuario asociado");
             }
         } else {
+            logger.error("Empleado no encontrado con ID: {}", empleadoId);
             throw new RuntimeException("Empleado no encontrado");
         }
-
     }
+
 }
