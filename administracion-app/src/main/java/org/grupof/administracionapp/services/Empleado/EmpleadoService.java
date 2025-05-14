@@ -1,6 +1,7 @@
 package org.grupof.administracionapp.services.Empleado;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -38,7 +39,8 @@ public interface EmpleadoService {
     RegistroEmpleadoDTO obtenerRegistroEmpleadoParaEdicion(UUID usuarioId);
 
     //usado en BusqedaEmpleadosController para la busqueda parametrizada nombre+genero
-    List<Empleado> buscarEmpleados(String nombre, UUID generoId);
+    List<Empleado> buscarEmpleados(String nombre, UUID generoId, List<UUID> departamentoIds,
+                                   LocalDate fechaInicio, LocalDate fechaFin);
 
 
     /**
@@ -105,7 +107,7 @@ public interface EmpleadoService {
      * Este método es útil para excluir al empleado que está realizando una acción,
      * como por ejemplo en la vista de asignación de subordinados.
      *
-     * @param id ID del empleado que se desea excluir.
+     * @param jefeId ID del empleado que se desea excluir.
      * @return Lista de empleados distintos al proporcionado.
      */
     List<Empleado>  buscarTodosMenosConJerarquia (UUID jefeId);

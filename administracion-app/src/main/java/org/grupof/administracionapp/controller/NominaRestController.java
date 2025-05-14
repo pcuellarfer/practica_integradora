@@ -19,6 +19,7 @@ public class NominaRestController {
         this.nominaService = nominaService;
     }
 
+    //prueba
     @GetMapping("{idEmple}/{idNomina}")
     public ResponseEntity<?> devuelveNomina(@PathVariable UUID idEmple, @PathVariable UUID idNomina) {
         return ResponseEntity.ok(nominaService.devuelveNominaPorEmpleadoId(idEmple, idNomina));
