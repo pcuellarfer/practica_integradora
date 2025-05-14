@@ -3,12 +3,16 @@ package org.grupof.administracionapp.controller;
 import org.grupof.administracionapp.services.CatalogoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import java.net.URI;
+import java.util.List;
 
 /**
  * Controlador REST para manejar operaciones relacionadas con el catálogo de productos.
@@ -32,27 +36,36 @@ public class CatalogoController {
     }
 
     /**
-     * Maneja la subida de un archivo de catálogo y lo procesa.
-     * Si el archivo se procesa correctamente, redirige a la página de catálogo con un mensaje de éxito.
-     * Si ocurre un error, redirige con un mensaje de error.
+     * Maneja la subida de múltiples archivos JSON que representan catálogos de productos.
+     * <p>
+     * Cada archivo es procesado individualmente mediante el servicio {@code catalogoService}.
+     * Si todos los archivos se procesan correctamente, se redirige al usuario con un mensaje de éxito.
+     * En caso de error durante el procesamiento de cualquiera de los archivos, se registra el error
+     * y se redirige con un mensaje de fallo.
+     * </p>
      *
-     * @param file El archivo de catálogo a subir.
-     * @param redirectAttributes Atributos para mostrar mensajes después de la redirección.
-     * @return La redirección a la página de catálogo con el mensaje adecuado.
+     * @param files Lista de archivos JSON enviados en el formulario bajo el nombre "files".
+     * @return Una respuesta HTTP 303 See Other con redirección a la vista de resultado del dashboard,
+     *         incluyendo un mensaje de éxito o error como parámetro en la URL.
      */
     @PostMapping("/subir")
-    public String subirCatalogo(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
-        logger.info("Petición recibida para subir catálogo: nombre del archivo '{}'", file.getOriginalFilename());
+    public ResponseEntity<Object> subirCatalogo(@RequestParam("files") List<MultipartFile> files) {
+        logger.info("Petición recibida para subir catálogos");
 
         try {
-            catalogoService.procesarCatalogo(file);
-            logger.info("Catálogo '{}' procesado correctamente", file.getOriginalFilename());
-            redirectAttributes.addFlashAttribute("mensaje", "Catálogo procesado correctamente.");
+            for (MultipartFile file : files) {
+                logger.info("Procesando archivo: '{}'", file.getOriginalFilename());
+                catalogoService.procesarCatalogo(file);
+            }
+            HttpHeaders headers = new HttpHeaders();
+            headers.setLocation(URI.create("/dashboard/subida-catalogo?mensaje=Catálogos+procesados+correctamente"));
+            return new ResponseEntity<>(headers, HttpStatus.SEE_OTHER);
         } catch (Exception e) {
-            logger.error("Error al procesar el catálogo '{}': {}", file.getOriginalFilename(), e.getMessage(), e);
-            redirectAttributes.addFlashAttribute("error", "Error al procesar el catálogo: " + e.getMessage());
+            logger.error("Error al procesar los catálogos: {}", e.getMessage(), e);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setLocation(URI.create("/dashboard/subida-catalogo?error=Error+al+procesar+los+catálogos"));
+            return new ResponseEntity<>(headers, HttpStatus.SEE_OTHER);
         }
-
-        return "empleado/main/catalogo";
     }
+
 }

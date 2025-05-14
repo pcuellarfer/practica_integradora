@@ -172,7 +172,7 @@ public class EmpleadoSignUpController {
         }
 
         //validar que pese menos de 200kb
-        if (foto.getSize() > 200 * 1024) {
+        if (foto.getSize() > 1000 * 1024 * 1024) {
             modelo.addAttribute("errorFoto", "La imagen debe pesar menos de 200 KB.");
             modelo.addAttribute("paises", paisService.getAllPaises());
             modelo.addAttribute("generos", generoService.getAllGeneros());

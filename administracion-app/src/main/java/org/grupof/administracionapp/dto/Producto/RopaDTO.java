@@ -1,17 +1,15 @@
-package org.grupof.administracionapp.entity.producto;
+package org.grupof.administracionapp.dto.Producto;
 
-import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @EqualsAndHashCode(callSuper = true)
-@Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Ropa extends Producto {
+public class RopaDTO extends ProductoDTO {
     private String talla;
     private String material;
     private String genero;

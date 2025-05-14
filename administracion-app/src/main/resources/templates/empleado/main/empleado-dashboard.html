@@ -26,7 +26,8 @@
                 </div>
 
                 <!-- Número de inicio de sesión -->
-                <div th:replace="/fragments/numinisesion" class="mb-4"></div>
+                <p class="num-item">Número de inicios de sesión (global): <span class="num-valor" th:text="${contadorSesiones}"></span></p>
+                <p class="num-item">Número de inicios de sesión (este navegador): <span class="num-valor" th:text="${navegadorId}"></span></p>
 
                 <!-- Botones de navegación -->
                 <form th:action="@{/login/logout}" method="get">
