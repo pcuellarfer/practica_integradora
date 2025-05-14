@@ -7,6 +7,7 @@ import org.grupof.administracionapp.entity.nomina.LineaNomina;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -21,6 +22,6 @@ public class NominaDTO {
     private LocalDate fechaInicio; //cuando inicia
     private LocalDate fechaFin; //cuando acaba
 
-    private List<LineaNominaDTO> lineasNomina; //las lineas de nomina
+    private Set<LineaNominaDTO> lineasNomina; //las lineas de nomina
     //todos los demas datos los seteo en el backend
 }

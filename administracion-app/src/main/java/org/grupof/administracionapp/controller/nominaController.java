@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -85,7 +86,7 @@ public class nominaController {
 
         LineaNominaDTO lineaInicial = new LineaNominaDTO();
         lineaInicial.setConcepto("Sueldo base");
-        dto.setLineasNomina(List.of(lineaInicial));
+        dto.setLineasNomina(Set.of(lineaInicial));
 
         model.addAttribute("empleado", empleado);
         model.addAttribute("altaNominaDTO", dto);

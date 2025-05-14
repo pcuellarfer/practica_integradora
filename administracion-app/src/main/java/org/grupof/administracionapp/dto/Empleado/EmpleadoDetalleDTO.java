@@ -10,4 +10,5 @@ public class EmpleadoDetalleDTO {
     private String nombrePais;
     private String nombreDepartamento;
     private String nombreFoto;
+    private String nombreJefe;
 }

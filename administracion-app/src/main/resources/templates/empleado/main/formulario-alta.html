@@ -39,7 +39,8 @@
 </form>
   <script>
     function enviarNomina() {
-      const empleadoId = document.querySelector('input[name="empleadoId"]').value;
+      //const empleadoId = document.querySelector('input[name="empleadoId"]').value;
+      const empleadoId = document.getElementById("empleadoId").value;
       const fechaInicio = document.querySelector('input[name="fechaInicio"]').value;
       const fechaFin = document.querySelector('input[name="fechaFin"]').value;
 
@@ -52,7 +53,7 @@
         lineas.push({
           concepto: conceptos[i].value,
           porcentaje: porcentajes[i].value ? Number(porcentajes[i].value) : null,
-          cantidad: cantidades[i].value ? Number(cantidades[i].value) : null
+          cantidad: cantidades[i].value ? Number(cantidades[i].value) : null //siempre deberia aparecer
         });
       }
 
@@ -65,7 +66,7 @@
 
       fetch('/api/nominas', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' }, //omitible
         body: JSON.stringify(datos)
       }).then(response => {
         if (response.ok) {

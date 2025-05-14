@@ -12,8 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class NominaServiceImpl implements NominaService {
@@ -102,5 +101,28 @@ public class NominaServiceImpl implements NominaService {
 
         // 6. Guardar
         nominaRepository.save(nomina);
+    }
+
+    @Override
+    public NominaDTO devuelveNominaPorEmpleadoId(UUID emp, UUID nom) {
+
+        NominaDTO nominaDTO = new NominaDTO();
+        nominaDTO.setEmpleadoId(UUID.fromString("f6e6c3d6-fb3d-45e6-b08b-208e2854cde0"));
+        nominaDTO.setFechaInicio(LocalDate.of(2025,5,1));
+        nominaDTO.setFechaFin(LocalDate.of(2025,5,31));
+
+        Set<LineaNominaDTO> lineas = new HashSet<>();
+        LineaNominaDTO linea = new LineaNominaDTO();
+        linea.setConcepto("Sal inicial");
+        linea.setCantidad(BigDecimal.valueOf(1500));
+
+        lineas.add(linea);
+
+        // nominaDTO.setLineasNomina(lineas);
+        if(emp.equals(nominaDTO.getEmpleadoId())){
+            return nominaDTO;}
+        else{
+            return null;
+        }
     }
 }

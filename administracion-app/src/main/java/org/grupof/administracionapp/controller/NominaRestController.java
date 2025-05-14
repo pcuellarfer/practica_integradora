@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Controlador REST que maneja las operaciones relacionadas con la creación de nóminas.
@@ -22,6 +22,12 @@ public class NominaRestController {
 
     public NominaRestController(NominaService nominaService) {
         this.nominaService = nominaService;
+    }
+
+
+    @GetMapping("{idEmple}/{idNomina}")
+    public ResponseEntity<?> devuelveNomina(@PathVariable UUID idEmple, @PathVariable UUID idNomina) {
+        return ResponseEntity.ok(nominaService.devuelveNominaPorEmpleadoId(idEmple, idNomina));
     }
 
     /**

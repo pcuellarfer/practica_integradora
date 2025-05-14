@@ -22,6 +22,7 @@
                         <p><strong>Foto Usuario:</strong></p>
                         <img th:src="@{'/imagenes/' + ${detalle.nombreFoto}}" alt="Foto del usuario"
                              class="img-thumbnail d-block mx-auto" style="max-width: 200px;" />
+
                     </div>
                 </div>
 
@@ -40,6 +41,7 @@
 
                         <hr>
                         <h5 class="card-title">Empresarial</h5>
+                        <p><strong>Jefe:</strong> <span th:text="${detalle.nombreJefe}"></span></p>
                         <p><strong>Departamento:</strong> <span th:text="${detalle.nombreDepartamento}"></span></p>
                     </div>
                 </div>
