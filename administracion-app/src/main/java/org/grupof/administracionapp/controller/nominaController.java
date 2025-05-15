@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -25,7 +24,7 @@ public class nominaController {
         this.empleadoService = empleadoService;
     }
 
-    @GetMapping("/seleccionar-empleado")
+    @GetMapping("/seleccionar-empleado") //mostrar una vista con todos los empleados para seleccionar 1
     public String seleccionarEmpleado(Model model) {
         List<Empleado> empleados = empleadoService.getEmpleadosOrdenados();
         model.addAttribute("empleados", empleados);
@@ -33,22 +32,25 @@ public class nominaController {
     }
 
     @GetMapping("/alta")
-    public String mostrarFormularioAlta(@RequestParam UUID empleadoId, Model model) {
+    public String mostrarFormularioAlta(@RequestParam UUID empleadoId, //el RequestParam en el get recibe el UUID del usuario en la url
+                                        Model model) {
 
         Empleado empleado = empleadoService.buscarPorId(empleadoId)
                 .orElseThrow(() -> new IllegalArgumentException("Empleado no encontrado"));
 
-        NominaDTO dto = new NominaDTO();
-        dto.setEmpleadoId(empleadoId);
-        dto.setFechaInicio(LocalDate.now().withDayOfMonth(1));
-        dto.setFechaFin(LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()));
+        NominaDTO nominadto = new NominaDTO();
+        nominadto.setEmpleadoId(empleadoId);
 
+        nominadto.setFechaInicio(null);
+        nominadto.setFechaFin(null);
+
+        //primera linea de nomina del salario base
         LineaNominaDTO lineaInicial = new LineaNominaDTO();
         lineaInicial.setConcepto("Sueldo base");
-        dto.setLineasNomina(Set.of(lineaInicial));
+        nominadto.setLineasNomina(List.of(lineaInicial));
 
         model.addAttribute("empleado", empleado);
-        model.addAttribute("altaNominaDTO", dto);
+        model.addAttribute("altaNominaDTO", nominadto);
         return "empleado/main/formulario-alta";
     }
 
