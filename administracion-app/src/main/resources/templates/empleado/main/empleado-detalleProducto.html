@@ -43,6 +43,12 @@
                 <p><strong>Categorías:</strong>
                     <span th:each="categoria : ${producto.categorias}" th:text="${categoria.nombre}"></span>
                 </p>
+                <button type="button"
+                        class="btn btn-danger"
+                        th:attr="data-id=${producto.id}"
+                        onclick="eliminarProducto(this.getAttribute('data-id'))">
+                    Eliminar
+                </button>
 
                 <a th:href="@{/dashboard/mostrarCatalogo}" class="btn btn-secondary">Volver al catálogo</a>
             </div>

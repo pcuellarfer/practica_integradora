@@ -130,13 +130,15 @@ public class EmpleadoSignUpController {
     }
 
     /**
-     * Procesa los datos del Paso 1: Datos personales.
+     * Procesa los datos personales ingresados en el paso 1 del formulario de registro de empleado.
      *
-     * @param paso1            datos del formulario
-     * @param registroEmpleado objeto en sesión
-     * @param errores          errores de validación
-     * @param usuarioDTO       el usuario en sesión
-     * @return redirección al paso siguiente o vista actual en caso de error
+     * @param paso1 DTO con los datos personales del empleado validados.
+     * @param errores Contiene errores de validación del formulario.
+     * @param registroEmpleado Objeto del empleado en registro en proceso.
+     * @param modelo Modelo para pasar atributos a la vista.
+     * @param usuarioDTO Usuario actualmente en sesión.
+     * @param foto Imagen de perfil enviada en el formulario.
+     * @return Redirección al siguiente paso si es exitoso, o vuelve a la vista actual si hay errores.
      */
     @PostMapping("/paso1")
     public String procesarPaso2(
@@ -147,53 +149,63 @@ public class EmpleadoSignUpController {
             @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuarioDTO,
             @RequestParam("foto") MultipartFile foto) {
 
+        logger.info("Procesando paso 1 del formulario para usuario ID: {}",
+                usuarioDTO != null ? usuarioDTO.getId() : "desconocido");
+
         if (errores.hasErrors()) {
+            logger.warn("Errores de validación en formulario de datos personales para usuario ID: {}",
+                    usuarioDTO != null ? usuarioDTO.getId() : "desconocido");
             modelo.addAttribute("paises", paisService.getAllPaises());
             modelo.addAttribute("generos", generoService.getAllGeneros());
-            logger.warn("Errores en el formulario de datos personales para usuario ID: {}", usuarioDTO.getId());
             return "empleado/auth/FormDatosPersonales";
         }
 
-        //validar la foto, faltaria tamaño/tipo
         if (foto == null || foto.isEmpty()) {
+            logger.warn("No se subió una imagen para usuario ID: {}",
+                    usuarioDTO != null ? usuarioDTO.getId() : "desconocido");
             modelo.addAttribute("errorFoto", "Debe subir una foto.");
             modelo.addAttribute("paises", paisService.getAllPaises());
             modelo.addAttribute("generos", generoService.getAllGeneros());
             return "empleado/auth/FormDatosPersonales";
         }
 
-        //validar que sea o png o gif
         String tipo = foto.getContentType();
         if (!"image/png".equals(tipo) && !"image/gif".equals(tipo)) {
+            logger.warn("Imagen con tipo no permitido: {} para usuario ID: {}", tipo,
+                    usuarioDTO != null ? usuarioDTO.getId() : "desconocido");
             modelo.addAttribute("errorFoto", "Solo se permiten imágenes PNG o GIF.");
             modelo.addAttribute("paises", paisService.getAllPaises());
             modelo.addAttribute("generos", generoService.getAllGeneros());
             return "empleado/auth/FormDatosPersonales";
         }
 
-        //validar que pese menos de 200kb
-        if (foto.getSize() > 1000 * 1024 * 1024) {
-            modelo.addAttribute("errorFoto", "La imagen debe pesar menos de 200 KB.");
+        if (foto.getSize() > 10 * 1024 * 1024) {
+            logger.warn("Imagen demasiado grande ({} bytes) para usuario ID: {}", foto.getSize(),
+                    usuarioDTO != null ? usuarioDTO.getId() : "desconocido");
+            modelo.addAttribute("errorFoto", "La imagen debe pesar menos de 10 MB.");
             modelo.addAttribute("paises", paisService.getAllPaises());
             modelo.addAttribute("generos", generoService.getAllGeneros());
             return "empleado/auth/FormDatosPersonales";
         }
 
-
-        try { //getBytes puede soltar excepcion, por eso el try catch
+        try {
             registroEmpleado.setFotoBytes(foto.getBytes());
-            registroEmpleado.setFotoTipo(foto.getContentType());
+            registroEmpleado.setFotoTipo(tipo);
+            logger.info("Imagen subida correctamente para usuario ID: {}",
+                    usuarioDTO != null ? usuarioDTO.getId() : "desconocido");
         } catch (IOException e) {
-            logger.error("Error al leer la imagen", e);
+            logger.error("Error al leer la imagen para usuario ID: {}",
+                    usuarioDTO != null ? usuarioDTO.getId() : "desconocido", e);
             errores.rejectValue("foto", "foto.error", "Error al procesar la imagen.");
             return "empleado/auth/FormDatosPersonales";
         }
 
-        registroEmpleado.setEmpleadoId(UUID.randomUUID());
+        UUID empleadoId = UUID.randomUUID();
+        registroEmpleado.setEmpleadoId(empleadoId);
         registroEmpleado.setPaso1PersonalDTO(paso1);
+        logger.info("Paso 1 completado exitosamente para nuevo empleado ID: {}", empleadoId);
 
         return "redirect:/registro/paso2";
-
     }
 
     /**
