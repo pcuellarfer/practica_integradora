@@ -138,7 +138,7 @@ function eliminarProducto(id) {
             .then(response => {
                 if (response.ok) {
                     alert("Producto eliminado correctamente");
-                    location.reload(); // o redirigir a otro lado
+                    location.href = "/dashboard/mostrarCatalogo";
                 } else {
                     return response.text().then(text => { throw new Error(text); });
                 }
