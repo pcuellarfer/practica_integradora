@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  * relacionadas con productos, tipos de producto y filtrado de catálogo.
  */
 @Service
-public abstract class ProductoServiceImpl implements ProductoService {
+public class ProductoServiceImpl implements ProductoService {
 
     private final ProductoRepository productoRepository;
     private static final Logger logger = LoggerFactory.getLogger(ProductoServiceImpl.class);
