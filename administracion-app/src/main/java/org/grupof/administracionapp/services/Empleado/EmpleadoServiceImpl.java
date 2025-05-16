@@ -72,48 +72,66 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 
     }
 
+    /**
+     * Guarda un nuevo empleado en la base de datos.
+     *
+     * @param empleado el objeto {@link Empleado} a guardar.
+     */
     @Override
     public void guardarEmpleado(Empleado empleado) {
         empleadoRepository.save(empleado);
         logger.info("Empleado guardado en base de datos: {}", empleado.getId());
     }
 
+    /**
+     * Actualiza los datos de un empleado existente, incluyendo la posible actualización de la foto.
+     *
+     * @param usuarioId el UUID del usuario/empleado a actualizar.
+     * @param dto el DTO {@link RegistroEmpleadoDTO} con los datos a actualizar.
+     * @param foto archivo {@link MultipartFile} con la nueva foto (puede ser vacío).
+     * @param uploadDir ruta del directorio donde se guarda la foto.
+     * @throws IOException si ocurre un error al guardar la foto.
+     */
     @Override
     public void actualizarDatosEmpleado(UUID usuarioId,
                                         RegistroEmpleadoDTO dto,
                                         MultipartFile foto,
-                                        String uploadDir)
-            throws IOException {
-        Empleado empleado = empleadoRepository.findByUsuarioId(usuarioId) //mete el empleado con id_usuario
+                                        String uploadDir) throws IOException {
+        logger.info("Actualizando datos del empleado con usuarioId: {}", usuarioId);
+
+        Empleado empleado = empleadoRepository.findByUsuarioId(usuarioId)
                 .orElseThrow(() -> new IllegalArgumentException("Empleado no encontrado"));
 
-        if (!foto.isEmpty()) { //solo entra si el usuario ha subido una imagen nueva
+        if (!foto.isEmpty()) {
+            logger.info("Se detectó subida de nueva foto para empleado: {}", empleado.getId());
 
-            String tipo = foto.getContentType();//comprobar si es .png o .gif
+            String tipo = foto.getContentType();
             if (!"image/png".equals(tipo) && !"image/gif".equals(tipo)) {
+                logger.warn("Tipo de imagen no permitido: {}", tipo);
                 throw new IllegalArgumentException("Solo se permiten imágenes PNG o GIF.");
             }
 
-            // Validación del tamaño
-            if (foto.getSize() > 200 * 1024) {//comprobar que pese menos de 200kb
-                throw new IllegalArgumentException("La imagen debe pesar menos de 200 KB.");
+            if (foto.getSize() > 10 * 1024 * 1024) {
+                logger.warn("Imagen demasiado grande ({} bytes) para empleado: {}", foto.getSize(), empleado.getId());
+                throw new IllegalArgumentException("La imagen debe pesar menos de 10 MB.");
             }
 
-            dto.setFotoBytes(foto.getBytes()); //guardar en el dto los bytes de la imagen
-            dto.setFotoTipo(foto.getContentType()); //y su extension
+            dto.setFotoBytes(foto.getBytes());
+            dto.setFotoTipo(foto.getContentType());
 
             String extension = tipo.equals("image/png") ? ".png" : ".gif";
-            String nombreArchivo = empleado.getId() + extension; //crea un nombre para la imagen id_empleado+extension
+            String nombreArchivo = empleado.getId() + extension;
 
             File directorioBase = new File(uploadDir);
-            String rutaAbsoluta = directorioBase.getAbsolutePath();//crea el path donde se va a guardar el archivo
-            Path ruta = Paths.get(rutaAbsoluta, nombreArchivo);//ruta compleata del archivo con nombre
+            String rutaAbsoluta = directorioBase.getAbsolutePath();
+            Path ruta = Paths.get(rutaAbsoluta, nombreArchivo);
 
-            Files.createDirectories(ruta.getParent());//mira si el directorio existe, si no lo crea
-            Files.write(ruta, dto.getFotoBytes());//mete la imagen en la ruta
+            Files.createDirectories(ruta.getParent());
+            Files.write(ruta, dto.getFotoBytes());
 
             String urlFoto = "/uploads/empleados/" + nombreArchivo;
-            empleado.setFotoUrl(urlFoto);//mete al empleado la url de su foto
+            empleado.setFotoUrl(urlFoto);
+            logger.info("Foto actualizada y guardada en: {}", urlFoto);
         }
 
         Paso1PersonalDTO personal = dto.getPaso1PersonalDTO();
@@ -124,35 +142,42 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         empleado.setEdad(personal.getEdad());
         empleado.setPais(paisService.getPaisById(personal.getPais()));
         empleado.setComentarios(personal.getComentarios());
-        //mete los datos en el empleado
 
-        empleadoRepository.save(empleado); //y lo guarda
+        empleadoRepository.save(empleado);
+        logger.info("Datos del empleado {} actualizados correctamente.", empleado.getId());
     }
 
+    /**
+     * Obtiene el detalle completo de un empleado a partir del ID de usuario.
+     *
+     * @param usuarioId UUID del usuario/empleado.
+     * @return un {@link EmpleadoDetalleDTO} con los detalles completos del empleado.
+     */
     @Override
     public EmpleadoDetalleDTO obtenerDetalleEmpleado(UUID usuarioId) {
+        logger.info("Obteniendo detalles del empleado con usuarioId: {}", usuarioId);
 
-        Empleado empleadoEntidad = empleadoRepository.findByUsuarioId(usuarioId) //busca al empleado(entidad) a partir del id del usuario
+        Empleado empleadoEntidad = empleadoRepository.findByUsuarioId(usuarioId)
                 .orElseThrow(() -> new IllegalArgumentException("Empleado no encontrado"));
 
-        RegistroEmpleadoDTO dto = this.buscarEmpleadoPorUsuarioId(usuarioId); //obtiene el dto con todos los datos del usuario, en id
+        RegistroEmpleadoDTO dto = this.buscarEmpleadoPorUsuarioId(usuarioId);
 
-        EmpleadoDetalleDTO detalle = new EmpleadoDetalleDTO(); //crea un dto de los detalles, con nombres
-        detalle.setEmpleado(dto); //le mete el registroEmpleado a el detalle
+        EmpleadoDetalleDTO detalle = new EmpleadoDetalleDTO();
+        detalle.setEmpleado(dto);
 
-        UUID idGenero = dto.getPaso1PersonalDTO().getGenero(); //pilla el uuid del genero que tenga el dto
-        detalle.setNombreGenero(generoService.obtenerNombreGenero(idGenero));// y lo convierte en su nombre
+        UUID idGenero = dto.getPaso1PersonalDTO().getGenero();
+        detalle.setNombreGenero(generoService.obtenerNombreGenero(idGenero));
 
-        UUID idPais = dto.getPaso1PersonalDTO().getPais();//lo mismo qe con genero
+        UUID idPais = dto.getPaso1PersonalDTO().getPais();
         detalle.setNombrePais(paisService.obtenerNombrePais(idPais));
 
-        UUID idDepartamento = dto.getPaso3ProfesionalDTO().getDepartamento();//adivina que, lo mismo que genero
+        UUID idDepartamento = dto.getPaso3ProfesionalDTO().getDepartamento();
         detalle.setNombreDepartamento(departamentoService.obtenerNombreDepartamento(idDepartamento));
 
-        String rutaFoto = empleadoEntidad.getFotoUrl(); //pilla la ruta de la foto que tiene la entidad empleado
-        if (rutaFoto != null && !rutaFoto.isBlank()) { //si no esta nula y no esta vacia
-            String nombreArchivo = Paths.get(rutaFoto).getFileName().toString(); //pilla solo el nombre.extension del archivo
-            detalle.setNombreFoto(nombreArchivo);//lo mete en el dto detalle
+        String rutaFoto = empleadoEntidad.getFotoUrl();
+        if (rutaFoto != null && !rutaFoto.isBlank()) {
+            String nombreArchivo = Paths.get(rutaFoto).getFileName().toString();
+            detalle.setNombreFoto(nombreArchivo);
         }
 
         Empleado jefe = empleadoEntidad.getJefe();
@@ -161,41 +186,57 @@ public class EmpleadoServiceImpl implements EmpleadoService {
             detalle.setNombreJefe(nombreJefe);
         }
 
-        return detalle; //devuelve el dto llenito de datos
+        logger.info("Detalle del empleado con usuarioId {} obtenido correctamente", usuarioId);
+        return detalle;
     }
 
+    /**
+     * Obtiene los datos para editar el registro de un empleado.
+     *
+     * @param usuarioId UUID del empleado.
+     * @return un {@link RegistroEmpleadoDTO} con los datos para edición.
+     */
     @Override
     public RegistroEmpleadoDTO obtenerRegistroEmpleadoParaEdicion(UUID usuarioId) {
-        return this.buscarEmpleadoPorUsuarioId(usuarioId); //rellena un RegistroEmpeladoDTO con los datos de empleado
+        logger.info("Obteniendo datos para edición del empleado con usuarioId: {}", usuarioId);
+        return this.buscarEmpleadoPorUsuarioId(usuarioId);
     }
 
-    @Override //usado en BusqedaEmpleadosController para la busqueda parametrizada
+    /**
+     * Busca empleados filtrando por nombre, género, departamentos y rango de fechas de contratación.
+     *
+     * @param nombre nombre o parte del nombre para filtrar (puede ser null o vacío).
+     * @param generoId UUID del género para filtrar (puede ser null).
+     * @param departamentoIds lista de UUIDs de departamentos para filtrar (puede ser null o vacía).
+     * @param fechaInicio fecha mínima de contratación (puede ser null).
+     * @param fechaFin fecha máxima de contratación (puede ser null).
+     * @return lista de empleados que cumplen los filtros.
+     */
+    @Override
     public List<Empleado> buscarEmpleados(String nombre, UUID generoId, List<UUID> departamentoIds,
                                           LocalDate fechaInicio, LocalDate fechaFin) {
+        logger.info("Buscando empleados con filtros - nombre: {}, generoId: {}, departamentos: {}, fechaInicio: {}, fechaFin: {}",
+                nombre, generoId, departamentoIds, fechaInicio, fechaFin);
 
-        List<Empleado> empleados = empleadoRepository.findAll(); //obtener todos los empleados
+        List<Empleado> empleados = empleadoRepository.findAll();
 
-        return empleados.stream() //e representa cada empleado
-                //por nombre
+        List<Empleado> filtrados = empleados.stream()
                 .filter(e -> nombre == null || nombre.isBlank() ||
                         e.getNombre().toLowerCase().contains(nombre.toLowerCase()))
-                //por genero
                 .filter(e -> generoId == null ||
                         (e.getGenero() != null && e.getGenero().getId().equals(generoId)))
-                //por departamento
                 .filter(e -> departamentoIds == null || departamentoIds.isEmpty() ||
-                        //solo pasan los empleados que tienen un departamento asignado
-                        (e.getDepartamento() != null
-                                // y si su id esta dentro de la lista que se haya enviado en la busqqueda parametrizada
-                                && departamentoIds.contains(e.getDepartamento().getId())))
-                //fecha de contratacion principio
+                        (e.getDepartamento() != null && departamentoIds.contains(e.getDepartamento().getId())))
                 .filter(e -> fechaInicio == null ||
                         (e.getFechaContratacion() != null && !e.getFechaContratacion().isBefore(fechaInicio)))
-                //fecha de contratacion final
                 .filter(e -> fechaFin == null ||
                         (e.getFechaContratacion() != null && !e.getFechaContratacion().isAfter(fechaFin)))
-                .toList(); //pasar el stream a una lista
+                .toList();
+
+        logger.info("Se encontraron {} empleados que cumplen los criterios.", filtrados.size());
+        return filtrados;
     }
+
 
 
     /**
@@ -672,4 +713,36 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         logger.debug("Se han recuperado {} empleados.", empleadosOrdenados.size());
         return empleadosOrdenados;
     }
+
+    /**
+     * Verifica si el usuario asociado al empleado con el ID proporcionado está bloqueado.
+     *
+     * @param empleadoId el identificador único del empleado.
+     * @return {@code true} si el usuario está bloqueado, {@code false} si no lo está.
+     * @throws RuntimeException si no se encuentra el empleado o si no tiene un usuario asociado.
+     */
+    @Override
+    public boolean obtenerEstadoEmpleado(UUID empleadoId) {
+        logger.info("Consultando el estado de bloqueo del empleado con ID: {}", empleadoId);
+
+        Optional<Empleado> empleadoOpt = empleadoRepository.findById(empleadoId);
+
+        if (empleadoOpt.isPresent()) {
+            Empleado empleado = empleadoOpt.get();
+            Usuario usuario = empleado.getUsuario();
+
+            if (usuario != null) {
+                boolean estado = usuario.isEstadoBloqueado();
+                logger.info("El estado de bloqueo del usuario con ID {} es: {}", usuario.getId(), estado);
+                return estado;
+            } else {
+                logger.error("El empleado con ID {} no tiene un usuario asociado", empleadoId);
+                throw new RuntimeException("El empleado no tiene un usuario asociado");
+            }
+        } else {
+            logger.error("Empleado no encontrado con ID: {}", empleadoId);
+            throw new RuntimeException("Empleado no encontrado");
+        }
+    }
+
 }

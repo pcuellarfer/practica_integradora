@@ -1,18 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="fragments/header :: head('Gestión de nóminas')"></head>
 <body>
-  <h2>Selecciona un empleado para gestionar su nómina</h2>
-  <form th:action="@{/nominas/alta}" method="get">
-    <select name="empleadoId" class="form-control">
-      <option th:each="empleado : ${empleados}"
-              th:value="${empleado.id}"
-              th:text="${empleado.apellido + ' ' + empleado.nombre}"></option>
-    </select>
-    <button type="submit" class="btn btn-success mt-3">Crear Nómina</button>
-  </form>
+<div th:replace="/fragments/cabecera"></div>
+
+<main>
+    <div th:replace="/fragments/cuentaatras"></div>
+    <div th:replace="/fragments/botonCss"></div>
+
+    <div class="absoluto mt-5">
+        <div class="container">
+
+            <!-- Título -->
+            <div class="row align-items-center mb-4">
+                <div class="col-2"></div>
+                <div class="col text-center">
+                    <h1>Gestión de nóminas</h1>
+                </div>
+                <div class="col-2"></div>
+            </div>
+
+            <!-- Formulario para seleccionar empleado -->
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <h4 class="mb-3 text-center">Selecciona un empleado para gestionar su nómina</h4>
+                    <form th:action="@{/nominas/alta}" method="get">
+                        <div class="form-group">
+                            <label for="empleadoId">Empleado:</label>
+                            <select name="empleadoId" id="empleadoId" class="form-control" required>
+                                <option disabled selected value="">-- Selecciona un empleado --</option>
+                                <option th:each="empleado : ${empleados}"
+                                        th:value="${empleado.id}"
+                                        th:text="${empleado.apellido + ' ' + empleado.nombre}"></option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success mt-3 w-100">Crear Nómina</button>
+                        <a href="/dashboard" class="btn btn-secondary mt-2 w-100">Volver</a>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<div th:replace="/fragments/pie"></div>
 </body>
 </html>

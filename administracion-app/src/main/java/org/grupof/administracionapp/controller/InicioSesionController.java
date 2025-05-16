@@ -92,9 +92,9 @@ public class InicioSesionController {
     @GetMapping("/username")
     public String mostrarFormularioNombre(@ModelAttribute("usuario") UsuarioDTO usuario,
                                           HttpSession session) {
-        if (session.getAttribute("usuario") != null && session.getAttribute("contraseña") != null) {
+        if (session.getAttribute("usuario") != null) {
             logger.info("Sesión activa detectada. Redirigiendo al dashboard.");
-            return "redirect:/dashboard"; // O la URL de la página que quieras redirigir
+            return "redirect:/dashboard";
         }
         logger.info("Mostrando formulario para ingresar email.");
         return "usuario/auth/login-nombre";
@@ -265,12 +265,18 @@ public class InicioSesionController {
         contador++;
         usuarioService.actualizarContadorInicios(usuarioBBDD.getEmail(), contador);
 
+        // Guardar el contador en una cookie persistente
+        Cookie contadorCookie = new Cookie("contador_sesiones", String.valueOf(contador));
+        contadorCookie.setMaxAge(60 * 60 * 24 * 365); // 1 año
+        contadorCookie.setPath("/");
+        response.addCookie(contadorCookie);
+
         logger.info("Número de accesos al dashboard en esta sesión: {}", contador);
 
         session.setAttribute("usuario", usuarioBBDD);
-        session.setAttribute("contador", contador);
+        session.setAttribute("contador", contadorCookie);
         redirectAttributes.addFlashAttribute("contador", contador);
-        redirectAttributes.addFlashAttribute("navegadorId", navegadorId);
+        redirectAttributes.addFlashAttribute("navegadorId", contadorCookie.getValue());
         session.removeAttribute("intentos");
         return "redirect:/dashboard";
     }

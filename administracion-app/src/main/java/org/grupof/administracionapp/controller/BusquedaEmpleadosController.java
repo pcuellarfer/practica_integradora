@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Controller
@@ -43,20 +44,19 @@ public class BusquedaEmpleadosController {
      * Si no hay usuario o no se encuentra el empleado, se registra en el log y se devuelve null.
      *
      * @param session sesión HTTP actual
-     * @param logger  logger para registrar avisos y errores
      * @return el empleado correspondiente o null si no se encuentra
      */
-    private Empleado obtenerEmpleadoDesdeSesion(HttpSession session, Logger logger) {
+    private Empleado obtenerEmpleadoDesdeSesion(HttpSession session) {
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
 
         if (usuario == null) {
-            logger.warn("Sesión no activa.");
+            BusquedaEmpleadosController.logger.warn("Sesión no activa.");
             return null;
         }
 
         Empleado empleado = empleadoService.obtenerEmpleadoPorUsuarioId(usuario.getId()).orElse(null);
         if (empleado == null) {
-            logger.error("No se encontró el empleado para usuario ID: {}", usuario.getId());
+            BusquedaEmpleadosController.logger.error("No se encontró el empleado para usuario ID: {}", usuario.getId());
         }
 
         return empleado;
@@ -65,21 +65,32 @@ public class BusquedaEmpleadosController {
     /**
      * Muestra el formulario de búsqueda de empleados.
      * <p>
-     * Si no hay usuario en sesión, redirige al login.
-     * Carga la lista de géneros y todos los empleados ordenados.
+     * Si no hay un empleado en la sesión, redirige al formulario de login.
+     * Si hay sesión válida, carga los datos necesarios para el formulario:
+     * - Lista de géneros
+     * - Lista de empleados ordenados
+     * - Estado de bloqueo del empleado actual
      *
-     * @param modelo  modelo para pasar datos a la vista
-     * @param session sesión HTTP actual
-     * @return vista del formulario de búsqueda
+     * @param modelo  el modelo de Spring MVC para enviar atributos a la vista
+     * @param session la sesión HTTP actual para obtener el usuario autenticado
+     * @return la vista "empleado/main/empleado-buscar" o redirección al login si no hay sesión válida
      */
     @GetMapping("/buscar")
     public String mostrarFormularioBusqueda(Model modelo, HttpSession session) {
+        logger.info("Accediendo al formulario de búsqueda de empleados");
 
-        Empleado empleado = obtenerEmpleadoDesdeSesion(session, logger); //comprobar si existe empleado en sesion
+        Empleado empleado = obtenerEmpleadoDesdeSesion(session);
         if (empleado == null) {
+            logger.warn("No se encontró un empleado en sesión. Redirigiendo al login.");
             return "redirect:/login/username";
         }
 
+        logger.info("Empleado en sesión: {} - Cargando datos para búsqueda", empleado.getNombre());
+
+        boolean estadoBloqueado = empleadoService.obtenerEstadoEmpleado(empleado.getId());
+        logger.info("Estado de bloqueo del empleado actual: {}", estadoBloqueado ? "Bloqueado" : "Desbloqueado");
+
+        modelo.addAttribute("estadoBloqueado", estadoBloqueado);
         modelo.addAttribute("generos", generoService.getAllGeneros());
         modelo.addAttribute("departamentos", departamentoService.getAllDepartamentos());
         modelo.addAttribute("resultados", empleadoService.getEmpleadosOrdenados());
@@ -89,23 +100,23 @@ public class BusquedaEmpleadosController {
         modelo.addAttribute("selectedDepartamentoIds", null);
         modelo.addAttribute("fechaInicio", null);
         modelo.addAttribute("fechaFin", null);
+
         return "empleado/main/empleado-buscar";
     }
 
     /**
-     * Procesa la búsqueda de empleados por nombre y género.
+     * Procesa la búsqueda de empleados filtrando por nombre y género.
      * <p>
-     * Si no hay usuario en sesión, redirige al login.
-     * Añade al modelo los resultados de la búsqueda y los filtros aplicados.
+     * Si no hay un empleado en sesión, redirige al login.
+     * Si la sesión es válida, realiza la búsqueda y carga los resultados junto con los filtros aplicados.
      *
-     * @param nombre  texto a buscar en el nombre del empleado
-     * @param genero  ID del género seleccionado (opcional)
-     * @param modelo  modelo para pasar datos a la vista
-     * @param session sesión HTTP actual
-     * @return vista con los resultados de la búsqueda
+     * @param nombre  texto parcial o completo del nombre del empleado a buscar
+     * @param genero  identificador del género (opcional)
+     * @param modelo  el modelo de Spring MVC para pasar atributos a la vista
+     * @param session la sesión HTTP actual para verificar autenticación
+     * @return la vista "empleado/main/empleado-buscar" con los resultados o redirección al login
      */
     @PostMapping("/buscar")
-    //required en false para genero para que no salte excepcion
     public String procesarBusqueda(@RequestParam String nombre,
                                    @RequestParam(required = false) UUID genero,
                                    @RequestParam(required = false) List<UUID> departamentos,
@@ -113,9 +124,11 @@ public class BusquedaEmpleadosController {
                                    @RequestParam(required = false) String fechaFin,
                                    Model modelo,
                                    HttpSession session) {
+        logger.info("Procesando búsqueda de empleados. Nombre: '{}', Género ID: {}", nombre, genero);
 
-        Empleado empleado = obtenerEmpleadoDesdeSesion(session, logger);
+        Empleado empleado = obtenerEmpleadoDesdeSesion(session);
         if (empleado == null) {
+            logger.warn("No se encontró un empleado en sesión. Redirigiendo al login. /buscar POST");
             return "redirect:/login/username";
         }
 
@@ -133,16 +146,16 @@ public class BusquedaEmpleadosController {
         } catch (DateTimeParseException e) {
             modelo.addAttribute("mensaje", "Formato de fecha inválido. Usa aaaa-mm-dd");
         }
-
         List<Empleado> resultados = empleadoService.buscarEmpleados(nombre, genero, departamentos, fechaInicioBuena, fechaFinBuena);
+        logger.info("Se encontraron {} empleados que coinciden con los criterios de búsqueda", resultados.size());
+
+        boolean estadoBloqueado = empleadoService.obtenerEstadoEmpleado(empleado.getId());
+        logger.info("Estado de bloqueo del empleado actual /buscar POST: {}", estadoBloqueado ? "Bloqueado" : "Desbloqueado");
 
         List<UUID> depIds; //si llega null pasa una lista vacia, que no es lo mismo que un nulo, evitando nullpointerexception
-        if (departamentos != null) {
-            depIds = departamentos;
-        } else {
-            depIds = Collections.emptyList();
-        }
+        depIds = Objects.requireNonNullElse(departamentos, Collections.emptyList());
 
+        modelo.addAttribute("estadoBloqueado", estadoBloqueado);
         modelo.addAttribute("resultados", resultados);
         modelo.addAttribute("nombre", nombre);
         modelo.addAttribute("selectedGeneroId", genero);
@@ -154,6 +167,7 @@ public class BusquedaEmpleadosController {
 
         return "empleado/main/empleado-buscar";
     }
+
 
     /**
      * Maneja la solicitud POST para bloquear a un empleado específico.
@@ -173,7 +187,7 @@ public class BusquedaEmpleadosController {
                                   @RequestParam("motivoBloqueo") String motivoBloqueo,
                                   HttpSession session,
                                   RedirectAttributes redirectAttributes) {
-        Empleado empleado = obtenerEmpleadoDesdeSesion(session, logger);
+        Empleado empleado = obtenerEmpleadoDesdeSesion(session);
         if (empleado == null) {
             return "redirect:/login/username";
         }
@@ -197,7 +211,7 @@ public class BusquedaEmpleadosController {
     @PostMapping("/desbloquear")
     public String desbloquearUsuario(@RequestParam("empleadoId") UUID empleadoId, HttpSession session, RedirectAttributes redirectAttributes) {
 
-        Empleado empleado = obtenerEmpleadoDesdeSesion(session, logger);
+        Empleado empleado = obtenerEmpleadoDesdeSesion(session);
         if (empleado == null) {
             return "redirect:/login/username";
         }
