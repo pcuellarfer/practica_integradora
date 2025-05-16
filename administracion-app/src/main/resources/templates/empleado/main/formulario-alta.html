@@ -139,11 +139,12 @@
 
     function enviarNomina() {
 
-        const empleadoId = document.getElementById("empleadoId").value;
-        const fechaInicio = document.querySelector('input[name="fechaInicio"]').value;
-        const fechaFin = document.querySelector('input[name="fechaFin"]').value;
+        const empleadoId = document.getElementById("empleadoId").value; //mete en variable el valor del campo con el id = "empleadoId"
+        const fechaInicio = document.querySelector('input[name="fechaInicio"]').value; //mete en variable el valor del campo con el id = "fechaInicio"
+        const fechaFin = document.querySelector('input[name="fechaFin"]').value; //mete en variable el valor del campo con el id = "fechaFin"
 
-        const lineas = [];
+        const lineas = []; //crea un array vacio llamado lineas
+        //mete en variables
         const conceptos = document.querySelectorAll('input[name^="lineasNomina"][name$=".concepto"]');
         const porcentajes = document.querySelectorAll('input[name^="lineasNomina"][name$=".porcentaje"]');
         const cantidades = document.querySelectorAll('input[name^="lineasNomina"][name$=".cantidad"]');
