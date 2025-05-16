@@ -87,7 +87,7 @@ public class nominaController {
         //primera linea de nomina del salario base
         LineaNominaDTO lineaInicial = new LineaNominaDTO();
         lineaInicial.setConcepto("Sueldo base");
-        nominadto.setLineasNomina((Set<LineaNominaDTO>) List.of(lineaInicial));
+        nominadto.setLineasNomina(List.of(lineaInicial));
 
         model.addAttribute("empleado", empleado);
         model.addAttribute("altaNominaDTO", nominadto);
