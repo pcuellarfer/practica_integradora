@@ -13,11 +13,12 @@
 
 
         <form th:action="@{/buscar}" method="post">
+            <!--nombre-->
             <div class="mb-3">
                 <label for="nombre" class="form-label">Nombre:</label>
                 <input type="text" id="nombre" name="nombre" th:value="${nombre}" class="form-control"/>
             </div>
-
+            <!--genero-->
             <div class="mb-3">
                 <label for="genero" class="form-label">Género:</label>
                 <select id="genero" name="genero" class="form-control">
@@ -28,14 +29,70 @@
                 </select>
             </div>
 
+            <!--departamentos-->
+            <div class="mb-3">
+                <label for="departamentos" class="form-label">Departamentos:</label>
+                <select id="departamentos" name="departamentos" class="form-control" multiple>
+                    <option th:each="dep : ${departamentos}" th:value="${dep.id}"
+                            th:text="${dep.nombre}"
+                            th:selected="${selectedDepartamentoIds != null and selectedDepartamentoIds.contains(dep.id)}">
+                    </option>
+                </select>
+            </div>
+
+            <!-- Fecha de contratación -->
+            <div class="mb-3">
+                <label for="fechaInicio" class="form-label">Fecha de contratación desde:</label>
+                <input type="text" id="fechaInicio" name="fechaInicio" placeholder="aaaa-mm-dd"
+                       th:value="${fechaInicio}" class="form-control"/>
+            </div>
+
+            <div class="mb-3">
+                <label for="fechaFin" class="form-label">Fecha de contratación hasta:</label>
+                <input type="text" id="fechaFin" name="fechaFin" placeholder="aaaa-mm-dd" th:value="${fechaFin}"
+                       class="form-control"/>
+            </div>
+
             <button type="submit" class="btn btn-primary mt-4">Buscar</button>
             <a href="/dashboard" class="btn btn-secondary w-100 mt-4 mb-4">Volver al dashboard</a>
         </form>
 
         <div th:if="${mensaje}" class="alert alert-success" role="alert" th:text="${mensaje}"></div>
+
+        <h4 th:if="${#lists.isEmpty(resultados)}">No se encontraron empleados.</h4>
         <div class="mb-5">
             <h4 th:if="${#lists.isEmpty(resultados)}">No se encontraron empleados.</h4>
 
+        <table th:if="${!#lists.isEmpty(resultados)}" class="table table-striped mt-4">
+            <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Género</th>
+                <th>Departamento</th>
+                <th>Fecha de contratación</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="empleado : ${resultados}"> <!--crea una fila por cada empleado que llegue desde resultados-->
+                <td th:text="${empleado.nombre}"></td>
+                <td th:text="${empleado.genero != null ? empleado.genero.identidad : '—'}"></td> <!--si el genero no llega vacio, muestra identidad, si llega null + guion -->
+                <td th:text="${empleado.departamento != null ? empleado.departamento.nombre : '—'}"></td>
+                <td th:text="${empleado.fechaContratacion != null ? empleado.fechaContratacion : '—'}"></td>
+                <td>
+                    <form th:action="@{/bloquear}" method="post" style="display:inline;">
+                        <input type="text" name="motivoBloqueo" placeholder="Motivo de bloqueo"/>
+                        <input type="hidden" name="empleadoId" th:value="${empleado.id}"/>
+                        <button type="submit" class="btn btn-sm btn-danger">Bloquear</button>
+                    </form>
+                    <form th:action="@{/desbloquear}" method="post" style="display:inline;">
+                        <input type="hidden" name="empleadoId" th:value="${empleado.id}"/>
+                        <button type="submit" class="btn btn-sm btn-success">Desbloquear</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
             <ul th:if="${!#lists.isEmpty(resultados)}" class="list-group mt-3">
                 <li class="list-group-item d-flex justify-content-between align-items-center"
                     th:each="empleado : ${resultados}">

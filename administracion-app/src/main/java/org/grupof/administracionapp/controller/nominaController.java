@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -79,17 +78,19 @@ public class nominaController {
                     return new IllegalArgumentException("Empleado no encontrado");
                 });
 
-        NominaDTO dto = new NominaDTO();
-        dto.setEmpleadoId(empleadoId);
-        dto.setFechaInicio(LocalDate.now().withDayOfMonth(1));
-        dto.setFechaFin(LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()));
+        NominaDTO nominadto = new NominaDTO();
+        nominadto.setEmpleadoId(empleadoId);
 
+        nominadto.setFechaInicio(null);
+        nominadto.setFechaFin(null);
+
+        //primera linea de nomina del salario base
         LineaNominaDTO lineaInicial = new LineaNominaDTO();
         lineaInicial.setConcepto("Sueldo base");
-        dto.setLineasNomina(Set.of(lineaInicial));
+        nominadto.setLineasNomina((Set<LineaNominaDTO>) List.of(lineaInicial));
 
         model.addAttribute("empleado", empleado);
-        model.addAttribute("altaNominaDTO", dto);
+        model.addAttribute("altaNominaDTO", nominadto);
         logger.info("Formulario de alta de nómina cargado para empleado con ID {}", empleadoId);
         return "empleado/main/formulario-alta";
     }

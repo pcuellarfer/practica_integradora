@@ -33,25 +33,29 @@ public class NominaServiceImpl implements NominaService {
         Empleado empleado = empleadoRepository.findById(nominaDTO.getEmpleadoId())
                 .orElseThrow(() -> new IllegalArgumentException("Empleado no encontrado"));
 
-        // 2. Validar fechas
-        if (nominaDTO.getFechaFin().isBefore(nominaDTO.getFechaInicio())) {
+        // 2. Parsear fechas desde el DTO (String → LocalDate)
+        LocalDate fechaInicio = nominaDTO.getFechaInicio();
+        LocalDate fechaFin = nominaDTO.getFechaFin();
+
+        // 3. Validar fechas
+        if (fechaFin.isBefore(fechaInicio)) {
             throw new IllegalArgumentException("La fecha de fin debe ser posterior a la de inicio.");
         }
 
-        // 3. Verificar solapamiento con otras nóminas
+        // 4. Verificar solapamiento con otras nóminas
         for (Nomina existente : empleado.getNominas()) {
             LocalDate inicio = existente.getPeriodo().getFechaInicio();
             LocalDate fin = existente.getPeriodo().getFechaFin();
-            boolean solapa = !(nominaDTO.getFechaFin().isBefore(inicio) || nominaDTO.getFechaInicio().isAfter(fin));
+            boolean solapa = !(fechaFin.isBefore(inicio) || fechaInicio.isAfter(fin));
             if (solapa) {
                 throw new IllegalArgumentException("Ya existe una nómina que solapa con este período.");
             }
         }
 
-        // 4. Crear objeto Nomina
+        // 5. Crear objeto Nomina
         Nomina nomina = new Nomina();
         nomina.setEmpleado(empleado);
-        nomina.setPeriodo(new Periodo(nominaDTO.getFechaInicio(), nominaDTO.getFechaFin()));
+        nomina.setPeriodo(new Periodo(fechaInicio, fechaFin));
         nomina.setNombreEmpresa("EfeCorp");
         nomina.setCIF("A12345678");
         nomina.setFechaAltaEmp(empleado.getFechaContratacion());
@@ -62,7 +66,7 @@ public class NominaServiceImpl implements NominaService {
         nomina.setPerfilProfesional("Desconocido"); //falta en entidad empleado
         nomina.setDepartamento(empleado.getDepartamento().getNombre());
 
-        // 5. Procesar líneas
+        // 6. Procesar líneas
         BigDecimal devengos = BigDecimal.ZERO;
         BigDecimal deducciones = BigDecimal.ZERO;
         List<LineaNomina> lineas = new ArrayList<>();
@@ -99,7 +103,7 @@ public class NominaServiceImpl implements NominaService {
         }
         nomina.setSalarioNeto(neto);
 
-        // 6. Guardar
+        // 7. Guardar
         nominaRepository.save(nomina);
     }
 
@@ -108,8 +112,9 @@ public class NominaServiceImpl implements NominaService {
 
         NominaDTO nominaDTO = new NominaDTO();
         nominaDTO.setEmpleadoId(UUID.fromString("f6e6c3d6-fb3d-45e6-b08b-208e2854cde0"));
-        nominaDTO.setFechaInicio(LocalDate.of(2025,5,1));
-        nominaDTO.setFechaFin(LocalDate.of(2025,5,31));
+
+        nominaDTO.setFechaInicio(LocalDate.of(2025, 5, 1));
+        nominaDTO.setFechaFin(LocalDate.of(2025, 5, 31));
 
         Set<LineaNominaDTO> lineas = new HashSet<>();
         LineaNominaDTO linea = new LineaNominaDTO();

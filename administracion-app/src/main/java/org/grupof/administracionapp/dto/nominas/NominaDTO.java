@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.grupof.administracionapp.entity.nomina.LineaNomina;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,6 +23,7 @@ public class NominaDTO {
     private LocalDate fechaInicio; //cuando inicia
     private LocalDate fechaFin; //cuando acaba
 
-    private Set<LineaNominaDTO> lineasNomina; //las lineas de nomina
+    //he tenido que usar list para identificar las posiciones por que Set no garantiza ningún orden al iterar, lo que impide identificar de forma fiable la primera línea
+    private List<LineaNominaDTO> lineasNomina; //las lineas de nomina
     //todos los demas datos los seteo en el backend
 }

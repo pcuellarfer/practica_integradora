@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -169,19 +170,31 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     }
 
     @Override //usado en BusqedaEmpleadosController para la busqueda parametrizada
-    public List<Empleado> buscarEmpleados(String nombre, UUID generoId) {
-        boolean tieneNombre = nombre != null && !nombre.trim().isEmpty();
-        boolean tieneGenero = generoId != null;
+    public List<Empleado> buscarEmpleados(String nombre, UUID generoId, List<UUID> departamentoIds,
+                                          LocalDate fechaInicio, LocalDate fechaFin) {
 
-        if (tieneNombre && tieneGenero) {
-            return empleadoRepository.findByNombreContainingIgnoreCaseAndGeneroId(nombre, generoId);
-        } else if (tieneNombre) {
-            return empleadoRepository.findByNombreContainingIgnoreCase(nombre);
-        } else if (tieneGenero) {
-            return empleadoRepository.findByGeneroId(generoId);
-        } else {
-            return empleadoRepository.findAll();
-        }
+        List<Empleado> empleados = empleadoRepository.findAll(); //obtener todos los empleados
+
+        return empleados.stream() //e representa cada empleado
+                //por nombre
+                .filter(e -> nombre == null || nombre.isBlank() ||
+                        e.getNombre().toLowerCase().contains(nombre.toLowerCase()))
+                //por genero
+                .filter(e -> generoId == null ||
+                        (e.getGenero() != null && e.getGenero().getId().equals(generoId)))
+                //por departamento
+                .filter(e -> departamentoIds == null || departamentoIds.isEmpty() ||
+                        //solo pasan los empleados que tienen un departamento asignado
+                        (e.getDepartamento() != null
+                                // y si su id esta dentro de la lista que se haya enviado en la busqqueda parametrizada
+                                && departamentoIds.contains(e.getDepartamento().getId())))
+                //fecha de contratacion principio
+                .filter(e -> fechaInicio == null ||
+                        (e.getFechaContratacion() != null && !e.getFechaContratacion().isBefore(fechaInicio)))
+                //fecha de contratacion final
+                .filter(e -> fechaFin == null ||
+                        (e.getFechaContratacion() != null && !e.getFechaContratacion().isAfter(fechaFin)))
+                .toList(); //pasar el stream a una lista
     }
 
 

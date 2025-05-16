@@ -3,10 +3,12 @@ package org.grupof.administracionapp.controller;
 import jakarta.servlet.http.HttpSession;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
 import org.grupof.administracionapp.entity.Empleado;
+import org.grupof.administracionapp.services.Departamento.DepartamentoService;
 import org.grupof.administracionapp.services.Empleado.EmpleadoService;
 import org.grupof.administracionapp.services.Genero.GeneroService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +16,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,10 +29,12 @@ public class BusquedaEmpleadosController {
 
     private final GeneroService generoService;
     private final EmpleadoService empleadoService;
+    private final DepartamentoService departamentoService;
 
-    public BusquedaEmpleadosController(GeneroService generoService, EmpleadoService empleadoService) {
+    public BusquedaEmpleadosController(GeneroService generoService, EmpleadoService empleadoService, DepartamentoService departamentoService) {
         this.generoService = generoService;
         this.empleadoService = empleadoService;
+        this.departamentoService = departamentoService;
     }
 
     /**
@@ -84,9 +91,14 @@ public class BusquedaEmpleadosController {
 
         modelo.addAttribute("estadoBloqueado", estadoBloqueado);
         modelo.addAttribute("generos", generoService.getAllGeneros());
+        modelo.addAttribute("departamentos", departamentoService.getAllDepartamentos());
         modelo.addAttribute("resultados", empleadoService.getEmpleadosOrdenados());
+        //se los paso vacio porque sino thymeleaf espera esos objetos y se pone triste si no los tiene (excepcion)
         modelo.addAttribute("nombre", "");
         modelo.addAttribute("selectedGeneroId", null);
+        modelo.addAttribute("selectedDepartamentoIds", null);
+        modelo.addAttribute("fechaInicio", null);
+        modelo.addAttribute("fechaFin", null);
 
         return "empleado/main/empleado-buscar";
     }
@@ -106,6 +118,9 @@ public class BusquedaEmpleadosController {
     @PostMapping("/buscar")
     public String procesarBusqueda(@RequestParam String nombre,
                                    @RequestParam(required = false) UUID genero,
+                                   @RequestParam(required = false) List<UUID> departamentos,
+                                   @RequestParam(required = false) String fechaInicio,
+                                   @RequestParam(required = false) String fechaFin,
                                    Model modelo,
                                    HttpSession session) {
         logger.info("Procesando búsqueda de empleados. Nombre: '{}', Género ID: {}", nombre, genero);
@@ -116,17 +131,42 @@ public class BusquedaEmpleadosController {
             return "redirect:/login/username";
         }
 
+        //variables vacias para meter las fechas
+        LocalDate fechaInicioBuena = null;
+        LocalDate fechaFinBuena = null;
+        //intentar convertir las fechas de string a LocalDate
+        try {
+            if (fechaInicio != null && !fechaInicio.isBlank()) {
+                fechaInicioBuena = LocalDate.parse(fechaInicio);
+            }
+            if (fechaFin != null && !fechaFin.isBlank()) {
+                fechaFinBuena = LocalDate.parse(fechaFin);
+            }
+        } catch (DateTimeParseException e) {
+            modelo.addAttribute("mensaje", "Formato de fecha inválido. Usa aaaa-mm-dd");
+        }
         List<Empleado> resultados = empleadoService.buscarEmpleados(nombre, genero);
         logger.info("Se encontraron {} empleados que coinciden con los criterios de búsqueda", resultados.size());
 
         boolean estadoBloqueado = empleadoService.obtenerEstadoEmpleado(empleado.getId());
         logger.info("Estado de bloqueo del empleado actual /buscar POST: {}", estadoBloqueado ? "Bloqueado" : "Desbloqueado");
 
+        List<UUID> depIds; //si llega null pasa una lista vacia, que no es lo mismo que un nulo, evitando nullpointerexception
+        if (departamentos != null) {
+            depIds = departamentos;
+        } else {
+            depIds = Collections.emptyList();
+        }
+
         modelo.addAttribute("estadoBloqueado", estadoBloqueado);
         modelo.addAttribute("resultados", resultados);
         modelo.addAttribute("nombre", nombre);
         modelo.addAttribute("selectedGeneroId", genero);
         modelo.addAttribute("generos", generoService.getAllGeneros());
+        modelo.addAttribute("departamentos", departamentoService.getAllDepartamentos());
+        modelo.addAttribute("selectedDepartamentoIds", depIds);
+        modelo.addAttribute("fechaInicio", fechaInicio);
+        modelo.addAttribute("fechaFin", fechaFin);
 
         return "empleado/main/empleado-buscar";
     }
