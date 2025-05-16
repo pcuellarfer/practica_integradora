@@ -180,7 +180,7 @@ public class DatosIniciales {
             empleado.setTipoDocumento(DNI);
             empleado.setApellido("Lopez");
             empleado.setFechaNacimiento(LocalDate.parse("1990-01-01"));
-            empleado.setFotoUrl("/uploads/empleados/24396928-62ed-4df7-81d4-6d011779127c.png");
+            empleado.setFotoUrl("/uploads/empleados/d164fcfb-5047-4213-be21-d575d75462bd.gif");
             empleado.setFechaContratacion(LocalDate.parse("1985-07-15"));
 
             Direccion direccion = new Direccion();

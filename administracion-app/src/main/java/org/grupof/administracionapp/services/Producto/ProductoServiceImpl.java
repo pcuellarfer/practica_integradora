@@ -6,7 +6,6 @@ import org.grupof.administracionapp.repository.ProductoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -18,11 +17,9 @@ import java.util.stream.Collectors;
  * relacionadas con productos, tipos de producto y filtrado de catálogo.
  */
 @Service
-public class ProductoServiceImpl implements ProductoService {
+public abstract class ProductoServiceImpl implements ProductoService {
 
     private final ProductoRepository productoRepository;
-
-    // Logger para registrar mensajes
     private static final Logger logger = LoggerFactory.getLogger(ProductoServiceImpl.class);
 
     /**
@@ -79,9 +76,36 @@ public class ProductoServiceImpl implements ProductoService {
         return productosFiltrados;
     }
 
+    /**
+     * Obtiene un producto por su identificador único (UUID).
+     *
+     * @param id el UUID que identifica al producto a buscar.
+     * @return el objeto {@link Producto} correspondiente al ID proporcionado.
+     * @throws RuntimeException si no se encuentra ningún producto con el ID dado.
+     */
     @Override
     public Producto obtenerProductoPorId(UUID id) {
         Optional<Producto> producto = productoRepository.findById(id);
         return producto.orElseThrow(() -> new RuntimeException("Producto no encontrado con el id: " + id));
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param id el ID del producto a eliminar
+     * @return true si el producto fue eliminado, false si no se encontró
+     */
+    @Override
+    public boolean eliminarProductoPorId(UUID id) {
+        logger.info("Eliminando producto con ID: {}", id);
+        Optional<Producto> producto = productoRepository.findById(id);
+        if (producto.isPresent()) {
+            productoRepository.delete(producto.get());
+            logger.info("Producto con ID: {} eliminado correctamente", id);
+            return true;
+        } else {
+            logger.warn("No se encontró el producto con ID: {}", id);
+            return false;
+        }
     }
 }

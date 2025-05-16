@@ -1,216 +1,81 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Formulario de alta de nómina</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="fragments/header :: head('Alta de Nómina')"></head>
 <body>
-<h2>Nómina para [[${empleado.nombre}]] [[${empleado.apellido}]]</h2>
+<div th:replace="/fragments/cabecera"></div>
 
-<form th:object="${altaNominaDTO}" id="formularioAltaNomina">
-    <input type="hidden" th:field="*{empleadoId}" id="empleadoId"/> <!--uuid del empleado para pasarlo al post-->
+<main>
+    <div th:replace="/fragments/cuentaatras"></div>
+    <div th:replace="/fragments/botonCss"></div>
 
-    <input type="text" th:field="*{fechaInicio}" placeholder="aaaa-mm-dd"/>
-    <input type="text" th:field="*{fechaFin}" placeholder="aaaa-mm-dd"/>
+    <div class="container mt-5 mb-5">
+        <div class="row justify-content-center">
+            <div class="col-12 text-center mb-5">
+                <h1>Alta de Nómina</h1>
+                <h5 th:text="'Nómina para ' + ${empleado.nombre} + ' ' + ${empleado.apellido}"></h5>
+            </div>
 
-    <h4>Líneas de Nómina</h4>
+            <div class="col-12 w-75 mx-auto">
+                <form th:object="${altaNominaDTO}" id="formularioAltaNomina" class="mb-5">
+                    <input type="hidden" th:field="*{empleadoId}" id="empleadoId"/>
 
-    <div id="lineasNominaContainer">
-        <div th:each="linea, i : *{lineasNomina}" class="linea-nomina">
-            <label>Concepto:</label>
-            <input type="text"
-                   th:field="*{lineasNomina[__${i.index}__].concepto}"
-                   th:attr="readonly=${i.index == 0}"/> <!--si el indice es 0 (la primera linea de nomina) no se puede modificar el concepto-->
+                    <div class="form-group mb-4">
+                        <label>Fecha Inicio</label>
+                        <input type="text" class="form-control mt-3" th:field="*{fechaInicio}" placeholder="aaaa-mm-dd"/>
+                    </div>
+                    <div class="form-group mb-5">
+                        <label>Fecha Fin</label>
+                        <input type="text" class="form-control mt-3" th:field="*{fechaFin}" placeholder="aaaa-mm-dd"/>
+                    </div>
 
-            <label>Porcentaje:</label>
-            <input type="text"
-                   th:field="*{lineasNomina[__${i.index}__].porcentaje}"
-                   th:attr="readonly=${i.index == 0}"/> <!--si el indice es 0 (la primera linea de nomina) no se puede modificar el porcentaje-->
+                    <h4 class="mb-4">Líneas de Nómina</h4>
+                    <div id="lineasNominaContainer" class="mb-5">
+                        <div th:each="linea, i : *{lineasNomina}" class="linea-nomina mb-4 border p-4 rounded">
+                            <div class="form-group mb-3">
+                                <label>Concepto:</label>
+                                <input type="text" class="form-control mt-3"
+                                       th:field="*{lineasNomina[__${i.index}__].concepto}"
+                                       th:attr="readonly=${i.index == 0}"/>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label>Porcentaje:</label>
+                                <input type="text" class="form-control mt-3"
+                                       th:field="*{lineasNomina[__${i.index}__].porcentaje}"
+                                       th:attr="readonly=${i.index == 0}"/>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label>Cantidad:</label>
+                                <input type="text" class="form-control mt-3"
+                                       th:field="*{lineasNomina[__${i.index}__].cantidad}"/>
+                            </div>
+                            <button type="button"
+                                    class="btn btn-danger mt-3"
+                                    th:if="${i.index > 0}"
+                                    onclick="eliminarLinea(this)">–
+                            </button>
+                        </div>
+                    </div>
 
-            <label>Cantidad:</label>
-            <input type="text"
-                   th:field="*{lineasNomina[__${i.index}__].cantidad}"/>
-
-            <!-- Botón eliminar solo si no es la primera línea -->
-            <button type="button"
-                    th:if="${i.index > 0}"
-                    onclick="eliminarLinea(this)">–
-            </button>
+                    <div class="d-grid gap-3 mb-5">
+                        <button type="button" class="btn btn-outline-primary" onclick="anadirLineaNomina()">+ Añadir línea</button>
+                        <button type="button" class="btn btn-success" onclick="enviarNomina()" id="btnGuardar">Guardar Nómina</button>
+                        <a href="/dashboard" class="btn btn-secondary">Volver</a>
+                    </div>
+                </form>
+                <div class="mt-5 text-center">
+                    <h4 class="mb-4">Resumen</h4>
+                    <div class="d-flex justify-content-around flex-wrap p-3 bg-light border rounded">
+                        <p class="mb-2 me-3">Devengos: <span id="totalDevengos">0</span> €</p>
+                        <p class="mb-2 me-3">Deducciones: <span id="totalDeducciones">0</span> €</p>
+                        <p class="mb-2 mb-md-0">Salario Neto: <span id="salarioNeto">0</span> €</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+</main>
+<div th:replace="/fragments/pie"></div>
 
-    <button type="button" onclick="anadirLineaNomina()">+ Añadir línea</button>
-    <button type="button" onclick="enviarNomina()" id="btnGuardar">Guardar Nómina</button>
-</form>
-
-<div id="resumenNomina">
-    <p>Devengos: <span id="totalDevengos">0</span> €</p>
-    <p>Deducciones: <span id="totalDeducciones">0</span> €</p>
-    <p>Salario Neto: <span id="salarioNeto">0</span> €</p>
-</div>
-
-<script>
-
-    function anadirLineaNomina() {
-        const container = document.getElementById("lineasNominaContainer"); //mete el div de las lineas de nomina en una variable
-        const numLineas = container.querySelectorAll('.linea-nomina').length; //cuenta el numero de lineas de nomina
-
-        const nueva = document.createElement("div"); //crea un nuevo div
-        nueva.className = "linea-nomina"; //le pone al nuevo div el nombre de clase de las demas lineas de nomina
-        nueva.innerHTML = `
-      <label>Concepto:</label>
-      <input type="text" name="lineasNomina[${numLineas}].concepto" />
-      <label>Porcentaje:</label>
-      <input type="text" name="lineasNomina[${numLineas}].porcentaje" />
-      <label>Cantidad:</label>
-      <input type="text" name="lineasNomina[${numLineas}].cantidad" />
-      <button type="button" onclick="eliminarLinea(this)">–</button>
-    `; //mete dentro del div los campos de la linea de nomina  y en el nombre lo concatena CON EL ULTIMO NUMERO
-        container.appendChild(nueva);//mete el div de la nueva linea de nomina dentro del div que contiene TODAS las lineas de nomina
-    }
-
-    function actualizarCantidadesDesdePorcentajes() {
-        const cantidades = document.querySelectorAll('input[name^="lineasNomina"][name$=".cantidad"]'); //mete todos las las campos cantidades en una variable
-        const porcentajes = document.querySelectorAll('input[name^="lineasNomina"][name$=".porcentaje"]'); //mete todos los campos porcentajes en una variable
-
-        const sueldoBaseInput = cantidades[0]; //mete en variable el campo sueldo base que siempre va a estar en la posicion 0 de cantidades
-        const sueldoBase = parseFloat(sueldoBaseInput.value); //mete en variable el valor de ese campo
-
-        if (isNaN(sueldoBase)) return; //si no hay un numero valido en sueldo base no continua
-
-        for (let i = 1; i < porcentajes.length; i++) { //recorre el resto de lineas saltandose la primera (sueldo base)
-            const porcentajeVal = parseFloat(porcentajes[i].value); //guarda en variable el porcentaje en la posicion i
-
-            if (!isNaN(porcentajeVal)) { //solo entra si el porcentaje es un numero valido
-                if (porcentajeVal > 100) { //si el porcentaje es mayor que 100 entonces:
-                    alert(`El porcentaje en la línea ${i + 1} no puede superar el 100%.`);
-                    porcentajes[i].value = ""; //pone los valores de cantidad y porcentaje vacios
-                    cantidades[i].value = "";
-                    continue; //pasa directamente al siguiente i
-                }
-
-                const nuevaCantidad = (sueldoBase * porcentajeVal / 100).toFixed(2); //si el porcentaje es valido calcula la cantidad en base al sueldo base
-                cantidades[i].value = nuevaCantidad;
-            }
-        }
-    }
-
-
-    function eliminarLinea(boton) {
-        const fila = boton.closest(".linea-nomina"); //busca el div mas cercano con la clase .linea-nomina desde el boton pulsado
-        fila.remove(); //elimina la fila
-        actualizarIndices(); //llama a las funciones para actualizar los indices y el resumen
-        actualizarResumen();
-    }
-
-    function actualizarIndices() {
-        const filas = document.querySelectorAll(".linea-nomina"); //mete todas las filas en variable
-        filas.forEach((fila, i) => { //recorre todas las filas cambiandoles su nombre
-            fila.querySelector('input[name$=".concepto"]').name = `lineasNomina[${i}].concepto`;
-            fila.querySelector('input[name$=".porcentaje"]').name = `lineasNomina[${i}].porcentaje`;
-            fila.querySelector('input[name$=".cantidad"]').name = `lineasNomina[${i}].cantidad`;
-        });
-    }
-
-    document.addEventListener("input", () => { //añade un evento para que cada vez que el usuario modifique un campo llama a las dos funciones
-        actualizarCantidadesDesdePorcentajes();
-        actualizarResumen();
-    });
-
-    function actualizarResumen() {
-        let devengos = 0; //inicializa los valores para devengos y deducciones
-        let deducciones = 0;
-
-        document.querySelectorAll('input[name^="lineasNomina"][name$=".cantidad"]').forEach(input => { //selecciona todas las cantidades
-            const val = parseFloat(input.value); //lo pasa a un numero
-            if (!isNaN(val)) { //si tiene un numero valido:
-                if (val >= 0) devengos += val; //si es positivo o cero lo suma a devengos
-                else deducciones += Math.abs(val); //si es negativo suma el valor absoluto a dedducciones
-            }
-        });
-
-        const neto = devengos - deducciones; //calcula el neto a partir de devengos y deducciones
-        //actualiza los resultados con 2 decimales
-        document.getElementById("totalDevengos").innerText = devengos.toFixed(2);
-        document.getElementById("totalDeducciones").innerText = deducciones.toFixed(2);
-        document.getElementById("salarioNeto").innerText = neto.toFixed(2);
-    }
-
-
-    function enviarNomina() {
-
-        const empleadoId = document.getElementById("empleadoId").value;
-        const fechaInicio = document.querySelector('input[name="fechaInicio"]').value;
-        const fechaFin = document.querySelector('input[name="fechaFin"]').value;
-
-        const lineas = [];
-        const conceptos = document.querySelectorAll('input[name^="lineasNomina"][name$=".concepto"]');
-        const porcentajes = document.querySelectorAll('input[name^="lineasNomina"][name$=".porcentaje"]');
-        const cantidades = document.querySelectorAll('input[name^="lineasNomina"][name$=".cantidad"]');
-
-        if (!fechaInicio || !fechaFin) {
-            alert("Introduce las fechas de inicio y fin.");
-            btnGuardar.disabled = false;
-            return;
-        }
-
-        const formatoFechaRegex = /^\d{4}-\d{2}-\d{2}$/;
-        if (!formatoFechaRegex.test(fechaInicio) || !formatoFechaRegex.test(fechaFin)) {
-            alert("Las fechas deben tener formato AAAA-MM-DD");
-            btnGuardar.disabled = false;
-            return;
-        }
-
-        for (let i = 0; i < conceptos.length; i++) {
-            const concepto = conceptos[i].value;
-            const porcentaje = porcentajes[i].value ? Number(porcentajes[i].value) : null;
-            const cantidad = cantidades[i].value ? Number(cantidades[i].value) : null;
-
-            if (!concepto || concepto.trim() === "") {
-                alert(`La línea ${i + 1} necesita un concepto.`);
-                btnGuardar.disabled = false;
-                return;
-            }
-
-            if (cantidad === null || isNaN(cantidad)) {
-                alert(`La línea ${i + 1} tiene una cantidad inválida.`);
-                btnGuardar.disabled = false;
-                return;
-            }
-
-            lineas.push({concepto, porcentaje, cantidad});
-        }
-
-        if (lineas.length === 0) {
-            alert("Debes añadir al menos una línea.");
-            btnGuardar.disabled = false;
-            return;
-        }
-
-        const datos = {
-            empleadoId,
-            fechaInicio,
-            fechaFin,
-            lineasNomina: lineas
-        };
-
-        fetch('/api/nominas', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(datos)
-        }).then(response => {
-            btnGuardar.disabled = false;
-            if (response.ok) {
-                alert("Nómina guardada correctamente");
-                window.location.href = "/dashboard";
-            } else {
-                response.json().then(err => alert("Error: " + err.error));
-            }
-        }).catch(error => {
-            btnGuardar.disabled = false;
-            alert("Error de conexión: " + error);
-        });
-    }
-</script>
+<script th:src="@{/js/script-nominas.js}"></script>
 </body>
 </html>

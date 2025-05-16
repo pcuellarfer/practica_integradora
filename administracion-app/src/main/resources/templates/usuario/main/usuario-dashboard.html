@@ -1,11 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Dashboard</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
-    <script th:src="@{/js/script.js}"></script>
-</head>
+
+<head th:replace="fragments/header :: head('Usuario Dashboard')"></head>
 <body>
 <div th:replace="/fragments/cabecera"></div>
 <main>

@@ -2,14 +2,12 @@ package org.grupof.administracionapp.services.Producto;
 
 import org.grupof.administracionapp.entity.producto.Producto;
 import org.grupof.administracionapp.entity.producto.enums.TipoProducto;
-import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
 /**
  * Servicio para la gestión de productos y operaciones relacionadas con el catálogo.
  */
-@Service
 public interface ProductoService {
 
     /**
@@ -29,6 +27,21 @@ public interface ProductoService {
      */
     List<Producto> filtrarCatalogo(String tipoProducto, String categoria);
 
+    /**
+     * Obtiene un producto a partir de su identificador único.
+     *
+     * @param id el UUID que identifica de forma única al producto.
+     * @return el {@link Producto} correspondiente al ID proporcionado.
+     * @throws RuntimeException si no se encuentra ningún producto con el ID especificado.
+     */
     Producto obtenerProductoPorId(UUID id);
+
+    /**
+     * Elimina un producto del catálogo por su ID.
+     *
+     * @param id el ID del producto a eliminar
+     * @return true si el producto fue eliminado, false si no se encontró
+     */
+    boolean eliminarProductoPorId(UUID id);
 }
 

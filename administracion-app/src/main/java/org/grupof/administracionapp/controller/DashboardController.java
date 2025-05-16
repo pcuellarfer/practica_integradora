@@ -3,10 +3,9 @@ package org.grupof.administracionapp.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import jakarta.websocket.Session;
+import lombok.RequiredArgsConstructor;
 import org.grupof.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
-import org.grupof.administracionapp.entity.Empleado;
 import org.grupof.administracionapp.entity.producto.Producto;
 import org.grupof.administracionapp.services.CatalogoService;
 import org.grupof.administracionapp.services.Categoria.CategoriaService;
@@ -18,9 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -28,14 +25,15 @@ import java.util.UUID;
  * tanto para usuarios como para empleados.
  */
 @Controller
+// @RequiredArgsConstructor
 public class DashboardController {
 
     private static final Logger logger = LoggerFactory.getLogger(DashboardController.class);
 
     private final EmpleadoService empleadoService;
     private final CatalogoService catalogoService;
-    private final UsuarioService usuarioService;
     private final ProductoService productoService;
+    private final UsuarioService usuarioService;
     private final CategoriaService categoriaService;
 
     /**
@@ -299,10 +297,8 @@ public class DashboardController {
 
         // Añadir el producto al modelo
         model.addAttribute("producto", producto);
-
+        model.addAttribute("productoId", id);
         logger.info("Usuario {} accede a los detalles del producto con ID {}", usuarioDTO.getEmail(), id);
         return "empleado/main/empleado-detalleProducto";
     }
-
-
 }

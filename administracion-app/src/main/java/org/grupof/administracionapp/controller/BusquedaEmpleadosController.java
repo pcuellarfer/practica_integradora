@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Controller
@@ -145,18 +146,14 @@ public class BusquedaEmpleadosController {
         } catch (DateTimeParseException e) {
             modelo.addAttribute("mensaje", "Formato de fecha inválido. Usa aaaa-mm-dd");
         }
-        List<Empleado> resultados = empleadoService.buscarEmpleados(nombre, genero);
+        List<Empleado> resultados = empleadoService.buscarEmpleados(nombre, genero, departamentos, fechaInicioBuena, fechaFinBuena);
         logger.info("Se encontraron {} empleados que coinciden con los criterios de búsqueda", resultados.size());
 
         boolean estadoBloqueado = empleadoService.obtenerEstadoEmpleado(empleado.getId());
         logger.info("Estado de bloqueo del empleado actual /buscar POST: {}", estadoBloqueado ? "Bloqueado" : "Desbloqueado");
 
         List<UUID> depIds; //si llega null pasa una lista vacia, que no es lo mismo que un nulo, evitando nullpointerexception
-        if (departamentos != null) {
-            depIds = departamentos;
-        } else {
-            depIds = Collections.emptyList();
-        }
+        depIds = Objects.requireNonNullElse(departamentos, Collections.emptyList());
 
         modelo.addAttribute("estadoBloqueado", estadoBloqueado);
         modelo.addAttribute("resultados", resultados);

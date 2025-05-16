@@ -44,6 +44,10 @@
                     <span th:each="categoria : ${producto.categorias}" th:text="${categoria.nombre}"></span>
                 </p>
 
+                <button class="btn btn-danger"
+                        onclick="borrarProducto('${producto.id}')">
+                    Borrar producto
+                </button>
                 <a th:href="@{/dashboard/mostrarCatalogo}" class="btn btn-secondary">Volver al catálogo</a>
             </div>
         </div>
