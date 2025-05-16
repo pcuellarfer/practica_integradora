@@ -63,59 +63,42 @@
         <div class="mb-5">
             <h4 th:if="${#lists.isEmpty(resultados)}">No se encontraron empleados.</h4>
 
-        <table th:if="${!#lists.isEmpty(resultados)}" class="table table-striped mt-4">
-            <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Género</th>
-                <th>Departamento</th>
-                <th>Fecha de contratación</th>
-                <th>Acciones</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="empleado : ${resultados}"> <!--crea una fila por cada empleado que llegue desde resultados-->
-                <td th:text="${empleado.nombre}"></td>
-                <td th:text="${empleado.genero != null ? empleado.genero.identidad : '—'}"></td> <!--si el genero no llega vacio, muestra identidad, si llega null + guion -->
-                <td th:text="${empleado.departamento != null ? empleado.departamento.nombre : '—'}"></td>
-                <td th:text="${empleado.fechaContratacion != null ? empleado.fechaContratacion : '—'}"></td>
-                <td>
-                    <form th:action="@{/bloquear}" method="post" style="display:inline;">
-                        <input type="text" name="motivoBloqueo" placeholder="Motivo de bloqueo"/>
-                        <input type="hidden" name="empleadoId" th:value="${empleado.id}"/>
-                        <button type="submit" class="btn btn-sm btn-danger">Bloquear</button>
-                    </form>
-                    <form th:action="@{/desbloquear}" method="post" style="display:inline;">
-                        <input type="hidden" name="empleadoId" th:value="${empleado.id}"/>
-                        <button type="submit" class="btn btn-sm btn-success">Desbloquear</button>
-                    </form>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-            <ul th:if="${!#lists.isEmpty(resultados)}" class="list-group mt-3">
-                <li class="list-group-item d-flex justify-content-between align-items-center"
-                    th:each="empleado : ${resultados}">
-                    <span th:text="${empleado.nombre}"></span>
-                    <span th:text="${empleado.usuario.estadoBloqueado ? 'Bloqueado' : 'Desbloqueado'}"
-                          th:class="${empleado.usuario.estadoBloqueado ? 'text-danger fw-bold' : 'text-success fw-bold'}">
-                    </span>
-                    <div>
+            <table th:if="${!#lists.isEmpty(resultados)}" class="table table-striped mt-4">
+                <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Género</th>
+                    <th>Departamento</th>
+                    <th>Fecha de contratación</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="empleado : ${resultados}">
+                    <!--crea una fila por cada empleado que llegue desde resultados-->
+                    <td th:text="${empleado.nombre}"></td>
+                    <td th:text="${empleado.genero != null ? empleado.genero.identidad : '—'}"></td>
+                    <!--si el genero no llega vacio, muestra identidad, si llega null + guion -->
+                    <td th:text="${empleado.departamento != null ? empleado.departamento.nombre : '—'}"></td>
+                    <td th:text="${empleado.fechaContratacion != null ? empleado.fechaContratacion : '—'}"></td>
+                    <td th:text="${empleado.usuario.estadoBloqueado ? 'Bloqueado' : 'Desbloqueado'}"
+                        th:class="${empleado.usuario.estadoBloqueado ? 'text-danger fw-bold' : 'text-success fw-bold'}"></td>
+                    <td>
                         <form th:action="@{/bloquear}" method="post" style="display:inline;"
                               onsubmit="return confirmarBloqueo(this);">
                             <input type="text" name="motivoBloqueo" placeholder="Motivo de bloqueo"/>
                             <input type="hidden" name="empleadoId" th:value="${empleado.id}"/>
                             <button type="submit" class="btn btn-sm btn-danger">Bloquear</button>
                         </form>
-
                         <form th:action="@{/desbloquear}" method="post" style="display:inline;"
                               onsubmit="return confirmarDesbloqueo();">
                             <input type="hidden" name="empleadoId" th:value="${empleado.id}"/>
                             <button type="submit" class="btn btn-sm btn-success">Desbloquear</button>
                         </form>
-                    </div>
-                </li>
-            </ul>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </main>
