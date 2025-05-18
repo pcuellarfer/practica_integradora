@@ -95,4 +95,9 @@ public class nominaController {
         return "empleado/main/formulario-alta";
     }
 
+    @GetMapping("/buscarNominas")
+    public String buscarNominas() {
+        return "empleado/main/empleado-buscar-nominas";
+    }
+
 }

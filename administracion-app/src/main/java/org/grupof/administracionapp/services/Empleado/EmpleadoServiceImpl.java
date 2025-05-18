@@ -2,6 +2,7 @@ package org.grupof.administracionapp.services.Empleado;
 
 
 import org.grupof.administracionapp.dto.Empleado.*;
+import org.grupof.administracionapp.dto.nominas.NombreApellidoEmpleadoDTO;
 import org.grupof.administracionapp.entity.embeddable.CuentaCorriente;
 import org.grupof.administracionapp.entity.embeddable.Direccion;
 import org.grupof.administracionapp.entity.embeddable.TarjetaCredito;
@@ -413,6 +414,13 @@ public class EmpleadoServiceImpl implements EmpleadoService {
                     BeanUtils.copyProperties(emp, dto);
                     return dto;
                 }).collect(Collectors.toList());
+    }
+
+    @Override //una lista con el id, nombre y apellido de todos los empleados
+    public List<NombreApellidoEmpleadoDTO> obtenerNombreYApellidoEmpleados() {
+        return empleadoRepository.findAll().stream()
+                .map(emp -> new NombreApellidoEmpleadoDTO(emp.getId(), emp.getNombre(), emp.getApellido()))
+                .toList();
     }
 
     /**

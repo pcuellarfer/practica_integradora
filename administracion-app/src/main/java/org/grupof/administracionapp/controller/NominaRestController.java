@@ -1,12 +1,20 @@
 package org.grupof.administracionapp.controller;
 
+import org.grupof.administracionapp.dto.nominas.BusquedaNominaDTO;
+import org.grupof.administracionapp.dto.nominas.NombreApellidoEmpleadoDTO;
 import org.grupof.administracionapp.dto.nominas.NominaDTO;
+import org.grupof.administracionapp.entity.Empleado;
+import org.grupof.administracionapp.services.Empleado.EmpleadoService;
 import org.grupof.administracionapp.services.nomina.NominaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -19,14 +27,16 @@ public class NominaRestController {
 
     private final NominaService nominaService;
     private static final Logger logger = LoggerFactory.getLogger(NominaRestController.class);
+    private final EmpleadoService empleadoService;
 
-    public NominaRestController(NominaService nominaService) {
+    public NominaRestController(NominaService nominaService, EmpleadoService empleadoService) {
         this.nominaService = nominaService;
+        this.empleadoService = empleadoService;
     }
 
 
     /**
-     * Devuelve una nómina específica asociada a un empleado.
+     * Devuelve una nómina específica asociada a un empleado. hecho como prueba con José Ramon
      *
      * @param idEmple UUID del empleado.
      * @param idNomina UUID de la nómina.
@@ -66,6 +76,20 @@ public class NominaRestController {
             logger.error("Error al crear la nómina: {}", e.getMessage());
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
+    }
+
+    @GetMapping("/devuelveEmpleados") //metodo que devuelve una lista con el nombre, apellido e id de todos los empleados
+    public List<NombreApellidoEmpleadoDTO> devuelveEmpleados(){
+        return empleadoService.obtenerNombreYApellidoEmpleados();
+    }
+
+    @GetMapping("/buscar")
+    public List<BusquedaNominaDTO> buscarNominas(
+            @RequestParam(required = false) UUID empleadoId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin
+    ) {
+        return nominaService.buscarNominas(empleadoId, fechaInicio, fechaFin);
     }
 }
 
