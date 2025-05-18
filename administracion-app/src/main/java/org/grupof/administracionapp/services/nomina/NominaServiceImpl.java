@@ -1,6 +1,7 @@
 package org.grupof.administracionapp.services.nomina;
 
 import org.grupof.administracionapp.dto.nominas.BusquedaNominaDTO;
+import org.grupof.administracionapp.dto.nominas.DetalleNominaDTO;
 import org.grupof.administracionapp.dto.nominas.LineaNominaDTO;
 import org.grupof.administracionapp.dto.nominas.NominaDTO;
 import org.grupof.administracionapp.entity.Empleado;
@@ -145,5 +146,28 @@ public class NominaServiceImpl implements NominaService {
                         n.getPeriodo().getFechaFin()
                 ))
                 .toList();
+    }
+
+    @Override
+    public DetalleNominaDTO obtenerDetalleNomina(UUID id) {
+        Nomina nomina = nominaRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Nómina no encontrada"));
+
+        List<LineaNominaDTO> lineasDTO = nomina.getLineasNomina().stream()
+                .map(l -> new LineaNominaDTO(
+                        l.getConcepto(),
+                        l.getPorcentaje(),
+                        l.getCantidad()
+                ))
+                .toList();
+
+        return new DetalleNominaDTO(
+                nomina.getId(),
+                nomina.getNombreEmp(),
+                nomina.getPeriodo().getFechaInicio(),
+                nomina.getPeriodo().getFechaFin(),
+                nomina.getSalarioNeto(),
+                lineasDTO
+        );
     }
 }

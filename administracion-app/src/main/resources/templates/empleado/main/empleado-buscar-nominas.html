@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Buscar Nóminas</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 
@@ -35,6 +36,7 @@
     <th>Empleado</th>
     <th>Fecha inicio</th>
     <th>Fecha fin</th>
+    <th>detalle</th>
   </tr>
   </thead>
   <tbody>
@@ -104,9 +106,21 @@
                 const tdFin = document.createElement('td');
                 tdFin.textContent = nomina.fechaFin;
 
+                const tdDetalle = document.createElement('td');
+                const botonDetalle = document.createElement('button');
+                botonDetalle.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i>';
+                botonDetalle.title = 'Ver detalle';
+                botonDetalle.onclick = () => {
+                  window.location.href = `/nominas/detalle?id=${nomina.idNomina}`;
+                };
+
+                tdDetalle.appendChild(botonDetalle);
+
                 row.appendChild(tdNombre);
                 row.appendChild(tdInicio);
                 row.appendChild(tdFin);
+                row.appendChild(tdDetalle);
+
 
                 tbody.appendChild(row);
               });

@@ -1,6 +1,7 @@
 package org.grupof.administracionapp.controller;
 
 import org.grupof.administracionapp.dto.nominas.BusquedaNominaDTO;
+import org.grupof.administracionapp.dto.nominas.DetalleNominaDTO;
 import org.grupof.administracionapp.dto.nominas.NombreApellidoEmpleadoDTO;
 import org.grupof.administracionapp.dto.nominas.NominaDTO;
 import org.grupof.administracionapp.entity.Empleado;
@@ -91,5 +92,11 @@ public class NominaRestController {
     ) {
         return nominaService.buscarNominas(empleadoId, fechaInicio, fechaFin);
     }
+
+    @GetMapping("/{id}")
+    public DetalleNominaDTO obtenerDetalleNomina(@PathVariable UUID id) {
+        return nominaService.obtenerDetalleNomina(id);
+    }
+
 }
 

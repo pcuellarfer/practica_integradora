@@ -100,4 +100,9 @@ public class nominaController {
         return "empleado/main/empleado-buscar-nominas";
     }
 
+    @GetMapping("/detalle")
+    public String mostrarDetalleNomina(@RequestParam UUID id) {
+        return "empleado/main/empleado-detalle-nomina";
+    }
+
 }
