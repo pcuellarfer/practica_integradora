@@ -130,29 +130,22 @@ function confirmarDesbloqueo() {
 }
 
 // Función para mostrar un mensaje de confirmación antes de borrar un producto
-function borrarProducto(id) {
-    if (!confirm('¿Seguro que quieres borrar este producto?')) {
-        return;
-    }
-
-    // Si el usuario confirma, envía una petición DELETE al servidor
-    fetch(`/api/productos/${id}`, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-        .then(response => {
-            if (response.ok) {
-                alert('Producto borrado correctamente');
-                // Recargar la página o eliminar el elemento de la lista dinámicamente
-                location.reload();
-            } else {
-                response.text().then(text => alert('Error: ' + text));
-            }
+function eliminarProducto(id) {
+    if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
+        fetch(`/api/productos/${id}`, {
+            method: 'DELETE'
         })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error al borrar el producto');
-        });
+            .then(response => {
+                if (response.ok) {
+                    alert("Producto eliminado correctamente");
+                    location.href = "/dashboard/mostrarCatalogo";
+                } else {
+                    return response.text().then(text => { throw new Error(text); });
+                }
+            })
+            .catch(error => {
+                console.error("Error al eliminar producto:", error);
+                alert("Error al eliminar producto: " + error.message);
+            });
+    }
 }

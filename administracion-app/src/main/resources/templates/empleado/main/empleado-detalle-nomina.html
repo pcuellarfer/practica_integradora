@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="fragments/header :: head('Detalle de Nómina')"></head>
+<body>
+
+<div th:replace="/fragments/cabecera"></div>
+
+<main>
+    <div th:replace="/fragments/cuentaatras"></div>
+    <div th:replace="/fragments/botonCss"></div>
+
+    <div class="absoluto mt-5">
+        <div class="container">
+
+            <!-- Título -->
+            <div class="row align-items-center mb-4">
+                <div class="col-2"></div>
+                <div class="col text-center">
+                    <h1>Detalle de la Nómina</h1>
+                </div>
+                <div class="col-2"></div>
+            </div>
+
+            <!-- Detalle de Nómina -->
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card p-4 shadow">
+                        <p><strong>Empleado:</strong> <span id="nombre-empleado"></span></p>
+                        <p><strong>Fecha inicio:</strong> <span id="fecha-inicio"></span></p>
+                        <p><strong>Fecha fin:</strong> <span id="fecha-fin"></span></p>
+                        <p><strong>Salario neto:</strong> <span id="salario-neto"></span></p>
+
+                        <h4 class="mt-4">Líneas de Nómina</h4>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped mt-2 mb-5">
+                                <thead class="thead-dark">
+                                <tr>
+                                    <th>Concepto</th>
+                                    <th>Porcentaje</th>
+                                    <th>Cantidad</th>
+                                </tr>
+                                </thead>
+                                <tbody id="lineas-nomina">
+                                <!-- Contenido dinámico -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <a href="/nominas/buscarNominas" class="btn btn-secondary mt-3 w-100">Volver</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<div th:replace="/fragments/pie"></div>
+
+<script>
+    window.addEventListener('DOMContentLoaded', function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+
+        if (!id) {
+            alert("ID de nómina no proporcionado.");
+            return;
+        }
+
+        fetch('/api/nominas/' + id)
+            .then(response => response.json())
+            .then(nomina => {
+                document.getElementById('nombre-empleado').textContent = nomina.nombreEmpleado;
+                document.getElementById('fecha-inicio').textContent = nomina.fechaInicio;
+                document.getElementById('fecha-fin').textContent = nomina.fechaFin;
+                document.getElementById('salario-neto').textContent = nomina.salarioNeto + " €";
+
+                const tbody = document.getElementById('lineas-nomina');
+                tbody.innerHTML = '';
+
+                nomina.lineasNomina.forEach(linea => {
+                    const row = document.createElement('tr');
+
+                    const tdConcepto = document.createElement('td');
+                    tdConcepto.textContent = linea.concepto;
+
+                    const tdPorcentaje = document.createElement('td');
+                    tdPorcentaje.textContent = linea.porcentaje + " %";
+
+                    const tdCantidad = document.createElement('td');
+                    tdCantidad.textContent = linea.cantidad + " €";
+
+                    row.appendChild(tdConcepto);
+                    row.appendChild(tdPorcentaje);
+                    row.appendChild(tdCantidad);
+
+                    tbody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Error al cargar detalle de nómina:', error);
+                alert("No se pudo cargar el detalle de la nómina.");
+            });
+    });
+</script>
+
+</body>
+</html>
