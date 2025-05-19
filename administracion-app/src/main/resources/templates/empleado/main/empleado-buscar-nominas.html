@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="fragments/header :: head('Buscar Nóminas')">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-</head>
+<head th:replace="fragments/header :: head('Buscar Nóminas')"></head>
 <body>
 
 <div th:replace="/fragments/cabecera"></div>
@@ -53,11 +51,11 @@
             </div>
 
             <!-- Resultados -->
-            <div class="row justify-content-center mb-5">
+            <div class="row justify-content-center">
                 <div class="col-md-10">
-                    <div class="card p-4 shadow">
+                    <div class="card p-4 shadow mb-5">
                         <h4 class="text-center mb-4">Resultados</h4>
-                        <div class="table-responsive">
+                        <div class="table-responsive mb">
                             <table class="table table-bordered table-striped" id="tabla-nominas">
                                 <thead class="thead-dark">
                                 <tr>
@@ -84,6 +82,7 @@
 <div th:replace="/fragments/pie"></div>
 
 <script>
+    //llamada para recivir todos los empleados
     window.addEventListener('DOMContentLoaded', function () {
         fetch('/api/nominas/devuelveEmpleados')
             .then(response => response.json())
@@ -99,6 +98,7 @@
             .catch(error => console.error('Error cargando empleados:', error));
     });
 
+    //enviar lo que metas en los campos y recibir los resultados
     document.getElementById('filtroNominas').addEventListener('submit', function (event) {
         event.preventDefault();
 
@@ -114,13 +114,15 @@
         fetch('/api/nominas/buscar?' + params.toString())
             .then(response => response.json())
             .then(nominas => {
+                console.log("Nóminas recibidas:", nominas);
+
                 const tbody = document.querySelector('#tabla-nominas tbody');
-                tbody.innerHTML = '';
+                tbody.innerHTML = ''; //Limpiar tabla anterior
 
                 if (nominas.length === 0) {
                     const row = document.createElement('tr');
                     const cell = document.createElement('td');
-                    cell.colSpan = 4;
+                    cell.colSpan = 3;
                     cell.textContent = 'No se encontraron nóminas.';
                     row.appendChild(cell);
                     tbody.appendChild(row);
@@ -128,6 +130,8 @@
                 }
 
                 nominas.forEach(nomina => {
+                    console.log("Nomina individual:", nomina);
+
                     const row = document.createElement('tr');
 
                     const tdNombre = document.createElement('td');
@@ -141,8 +145,7 @@
 
                     const tdDetalle = document.createElement('td');
                     const botonDetalle = document.createElement('button');
-                    botonDetalle.className = "btn btn-outline-info";
-                    botonDetalle.innerHTML = '<i class="fas fa-search">Mostrar Detalle</i>';
+                    botonDetalle.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i>';
                     botonDetalle.title = 'Ver detalle';
                     botonDetalle.onclick = () => {
                         window.location.href = `/nominas/detalle?id=${nomina.idNomina}`;
@@ -154,6 +157,7 @@
                     row.appendChild(tdInicio);
                     row.appendChild(tdFin);
                     row.appendChild(tdDetalle);
+
 
                     tbody.appendChild(row);
                 });
