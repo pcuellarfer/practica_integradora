@@ -401,3 +401,65 @@ INSERT INTO genero (id, identidad) VALUES
 (UUID_TO_BIN('1a7f8be7-9f94-4692-a0b2-f0e730f045fc'), 'Femenino'),
 (UUID_TO_BIN('8b5a67dc-e6f6-4ff2-9098-5c89d04123b6'), 'Otro');
 
+INSERT INTO especialidad (id, nombre) VALUES
+(UUID_TO_BIN('5c3ab843-d693-4e7d-8507-f518b7c2aa26'), 'Programación'),
+(UUID_TO_BIN('c4fc7dd0-8b48-4c86-ae74-9d1e7fa279fb'), 'Contabilidad');
+
+INSERT INTO pais (id, nombre, prefijo_telefonico) VALUES
+(UUID_TO_BIN('a2f4b930-68b6-4b59-9a9f-06f00b0b52ef'), 'España', '+34'),
+(UUID_TO_BIN('f0e3f6d5-4934-4b4b-b60c-7c90c132a0e2'), 'México', '+52');
+
+INSERT INTO tipo_documento (id, tipo) VALUES
+(UUID_TO_BIN('95c2d693-4713-4bc2-ae02-329b74118f33'), 'DNI'),
+(UUID_TO_BIN('40e3bb04-c305-4a7e-9a5a-4c1c05b447d7'), 'Pasaporte');
+
+INSERT INTO tipo_tarjeta (id, nombre) VALUES
+(UUID_TO_BIN('14df4e87-38a4-4de1-8d3e-8d86b4cbff1d'), 'Débito'),
+(UUID_TO_BIN('635228ad-5148-4d75-9499-79a62eb5b0c5'), 'Crédito');
+
+INSERT INTO tipo_via (id, tipo) VALUES
+(UUID_TO_BIN('6e77b6e5-ef45-4051-853c-707b7b5888c1'), 'Calle'),
+(UUID_TO_BIN('23b2cc29-5d52-4421-90d4-65d30cc9d51b'), 'Avenida');
+
+-- Insertar el usuario
+INSERT INTO usuario (
+    pk_usuario, contador_inicios, estado_bloqueado, bloqueado_hasta,
+    contrasena, contrasena_recuperacion, email, motivo_bloqueo,
+    nombre, archivo
+) VALUES (
+    UUID_TO_BIN('f6e02a3d-7d58-4f9b-b56d-6cbf3a35c178'), 0, 0, NULL,
+    '$2a$10$Q9kD4Mmf6gBMhTvAxWCEzu24ylfig1Z3dJGO5TzN61OIzOWy6YS8m',
+    NULL, 'davidsmh23@gmail.com', NULL,
+    'Juan', NULL
+);
+
+-- Insertar el empleado
+INSERT INTO integradora_compose.empleado (
+    pk_empleado,
+    usuario_id,
+    nombre,
+    apellido,
+    foto_url,
+    genero_id,
+    departamento_id,
+    fecha_nacimiento,
+    pais_id,
+    tipo_documento_id,
+    fecha_contratacion,
+    tipo_via
+    -- Puedes añadir más columnas si tienes valores, ejemplo: codigo_postal, telefono, etc.
+) VALUES (
+    UUID_TO_BIN('bc35e776-801f-40dc-b3ff-95e12b9c3d41'), -- UUID empleado
+    UUID_TO_BIN('f6e02a3d-7d58-4f9b-b56d-6cbf3a35c178'), -- UUID usuario
+    'Juan',
+    'Lopez',
+    '/uploads/empleados/d164fcfb-5047-4213-be21-d575d75462bd.gif',
+    UUID_TO_BIN('dcd80d61-5e1c-4f60-b4d2-92d3c37f6d41'), -- género masculino (ejemplo)
+    UUID_TO_BIN('a1b2c3d4-e5f6-4789-90ab-cdef01234567'),
+    '1990-01-01',
+    UUID_TO_BIN('a2f4b930-68b6-4b59-9a9f-06f00b0b52ef'), -- país España (ejemplo)
+    UUID_TO_BIN('95c2d693-4713-4bc2-ae02-329b74118f33'), -- tipo documento DNI (ejemplo)
+    '1985-07-15',
+    UUID_TO_BIN('3c53f94b-d518-4f94-9689-6f7c7a4e3145') -- tipo vía (ejemplo)
+);
+
