@@ -95,14 +95,37 @@ public class nominaController {
         return "empleado/main/formulario-alta";
     }
 
+    /**
+     * Muestra la vista para buscar nóminas si el usuario está en sesión.
+     * Si no hay usuario, redirige al login.
+     *
+     * @param session sesión HTTP actual
+     * @return vista de búsqueda de nóminas o redirección al login
+     */
     @GetMapping("/buscarNominas")
-    public String buscarNominas() {
+    public String buscarNominas(HttpSession session) {
+        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
+        if (usuarioDTO == null) {
+            logger.warn("Intento de acceso a /buscarNominas sin usuario en sesión");
+            return "redirect:/login/username";
+        }
         return "empleado/main/empleado-buscar-nominas";
     }
 
+    /**
+     * Muestra la vista con el detalle de una nómina si el usuario está en sesión.
+     * Si no hay usuario, redirige al login.
+     *
+     * @param session sesión HTTP actual
+     * @return vista de detalle de nómina o redirección al login
+     */
     @GetMapping("/detalle")
-    public String mostrarDetalleNomina(@RequestParam UUID id) {
+    public String mostrarDetalleNomina(HttpSession session) {
+        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
+        if (usuarioDTO == null) {
+            logger.warn("Intento de acceso a /detalle sin usuario en sesión");
+            return "redirect:/login/username";
+        }
         return "empleado/main/empleado-detalle-nomina";
     }
-
 }

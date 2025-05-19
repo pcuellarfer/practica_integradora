@@ -35,7 +35,6 @@ public class NominaRestController {
         this.empleadoService = empleadoService;
     }
 
-
     /**
      * Devuelve una nómina específica asociada a un empleado. hecho como prueba con José Ramon
      *
@@ -56,7 +55,6 @@ public class NominaRestController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener la nómina.");
         }
     }
-
 
     /**
      * Crea una nueva nómina a partir de los datos proporcionados.
@@ -79,11 +77,24 @@ public class NominaRestController {
         }
     }
 
-    @GetMapping("/devuelveEmpleados") //metodo que devuelve una lista con el nombre, apellido e id de todos los empleados
+    /**
+     * Devuelve una lista con los nombres y apellidos de todos los empleados.
+     *
+     * @return lista de empleados (nombre y apellido)
+     */
+    @GetMapping("/devuelveEmpleados")
     public List<NombreApellidoEmpleadoDTO> devuelveEmpleados(){
         return empleadoService.obtenerNombreYApellidoEmpleados();
     }
 
+    /**
+     * Busca nóminas según los filtros opcionales: empleado, fecha de inicio y fecha de fin.
+     *
+     * @param empleadoId ID del empleado (opcional)
+     * @param fechaInicio fecha de inicio del periodo (opcional)
+     * @param fechaFin fecha de fin del periodo (opcional)
+     * @return lista de nóminas que cumplen los filtros
+     */
     @GetMapping("/buscar")
     public List<BusquedaNominaDTO> buscarNominas(
             @RequestParam(required = false) UUID empleadoId,
@@ -93,10 +104,14 @@ public class NominaRestController {
         return nominaService.buscarNominas(empleadoId, fechaInicio, fechaFin);
     }
 
+    /**
+     * Devuelve el detalle completo de una nómina por su ID.
+     *
+     * @param id identificador de la nómina
+     * @return detalle de la nómina
+     */
     @GetMapping("/{id}")
     public DetalleNominaDTO obtenerDetalleNomina(@PathVariable UUID id) {
         return nominaService.obtenerDetalleNomina(id);
     }
-
 }
-
