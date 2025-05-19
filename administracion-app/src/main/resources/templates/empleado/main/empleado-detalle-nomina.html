@@ -45,8 +45,8 @@
                                 </tbody>
                             </table>
                         </div>
-
-                        <a href="/nominas/buscarNominas" class="btn btn-secondary mt-3 w-100">Volver</a>
+                        <button id="descargar-pdf" class="btn btn-primary mt-3 w-100">Descargar PDF</button>
+                        <a href="/nominas/buscarNominas" class="btn btn-secondary mt-3 w-100 mb-5">Volver</a>
                     </div>
                 </div>
             </div>
@@ -56,6 +56,9 @@
 </main>
 
 <div th:replace="/fragments/pie"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
     window.addEventListener('DOMContentLoaded', function () {
@@ -101,6 +104,41 @@
                 console.error('Error al cargar detalle de nómina:', error);
                 alert("No se pudo cargar el detalle de la nómina.");
             });
+    });
+
+    document.getElementById('descargar-pdf').addEventListener('click', () => {
+        const { jsPDF } = window.jspdf;
+
+        const card = document.querySelector('.card'); // área que queremos capturar
+        const btnDescargar = document.getElementById('descargar-pdf');
+        const btnVolver = document.querySelector('a.btn-secondary'); // botón "Volver"
+
+        // Ocultamos los botones antes de capturar
+        btnDescargar.style.display = 'none';
+        btnVolver.style.display = 'none';
+
+        html2canvas(card, { scale: 2 }).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'pt',
+                format: 'a4'
+            });
+
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save('detalle-nomina.pdf');
+        }).catch(err => {
+            console.error("Error generando PDF:", err);
+            alert("No se pudo generar el PDF.");
+        }).finally(() => {
+            // Volvemos a mostrar los botones después de la captura
+            btnDescargar.style.display = 'inline-block';
+            btnVolver.style.display = 'inline-block';
+        });
     });
 </script>
 
