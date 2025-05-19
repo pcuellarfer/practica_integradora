@@ -114,4 +114,23 @@ public class NominaRestController {
     public DetalleNominaDTO obtenerDetalleNomina(@PathVariable UUID id) {
         return nominaService.obtenerDetalleNomina(id);
     }
+
+    //modificacion de una nomina
+    @PutMapping("/{id}")
+    public ResponseEntity<?> editarNomina(@PathVariable UUID id, @RequestBody NominaDTO dto) {
+        logger.info("Solicitud de edición de nómina ID: {}", id);
+
+        try {
+            nominaService.editarNomina(id, dto);
+            logger.info("Nómina ID {} actualizada correctamente", id);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            logger.error("Error de validación al editar nómina: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Error inesperado al editar nómina: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error al actualizar la nómina."));
+        }
+    }
 }

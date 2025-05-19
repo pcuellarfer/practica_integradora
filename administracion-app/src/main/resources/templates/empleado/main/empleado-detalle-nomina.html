@@ -46,6 +46,7 @@
                             </table>
                         </div>
                         <button id="descargar-pdf" class="btn btn-primary mt-3 w-100">Descargar PDF</button>
+                        <a id="editar-nomina" class="btn btn-warning mt-3 w-100">Editar Nómina</a>
                         <a href="/nominas/buscarNominas" class="btn btn-secondary mt-3 w-100 mb-5">Volver</a>
                     </div>
                 </div>
@@ -99,12 +100,16 @@
 
                     tbody.appendChild(row);
                 });
+                document.getElementById("editar-nomina").addEventListener("click", function () {
+                    window.location.href = `/nominas/formulario?id=${id}`;
+                });
             })
             .catch(error => {
                 console.error('Error al cargar detalle de nómina:', error);
                 alert("No se pudo cargar el detalle de la nómina.");
             });
     });
+
 
     document.getElementById('descargar-pdf').addEventListener('click', () => {
         const { jsPDF } = window.jspdf;

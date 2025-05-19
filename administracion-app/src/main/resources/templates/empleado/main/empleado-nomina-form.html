@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${id} ? 'Editar Nómina' : 'Alta Nómina'">Formulario Nómina</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 id="titulo-formulario" class="text-center"></h1>
+
+    <input type="hidden" id="empleadoId-hidden" name="empleadoId" />
+
+    <form id="form-nomina">
+        <div class="form-group">
+            <label for="select-empleado">Empleado:</label>
+            <select id="select-empleado" class="form-control" required></select>
+        </div>
+
+        <div class="form-group">
+            <label for="fecha-inicio">Fecha inicio:</label>
+            <input type="text" id="fecha-inicio" class="form-control" placeholder="aaaa-mm-dd" required>
+        </div>
+
+        <div class="form-group">
+            <label for="fecha-fin">Fecha fin:</label>
+            <input type="text" id="fecha-fin" class="form-control" placeholder="aaaa-mm-dd" required>
+        </div>
+
+        <h4 class="mt-4">Líneas de Nómina</h4>
+        <div id="lineasNominaContainer"></div>
+        <button type="button" class="btn btn-secondary mb-3" onclick="anadirLineaNomina()">+ Añadir Línea</button>
+
+        <div class="mb-3">
+            <p><strong>Total Devengos:</strong> <span id="totalDevengos">0.00</span> €</p>
+            <p><strong>Total Deducciones:</strong> <span id="totalDeducciones">0.00</span> €</p>
+            <p><strong>Salario Neto:</strong> <span id="salarioNeto">0.00</span> €</p>
+        </div>
+
+        <button id="btnGuardar" type="submit" class="btn btn-primary w-100">Guardar Nómina</button>
+        <a href="/nominas/buscarNominas" class="btn btn-secondary w-100 mt-2">Volver</a>
+    </form>
+</div>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const idNomina = urlParams.get('id');
+
+    async function cargarEmpleados() {
+        const select = document.getElementById("select-empleado");
+        const res = await fetch("/api/nominas/devuelveEmpleados");
+        const empleados = await res.json();
+        empleados.forEach(emp => {
+            const opt = document.createElement("option");
+            opt.value = emp.id;
+            opt.textContent = `${emp.nombre} ${emp.apellido}`;
+            select.appendChild(opt);
+        });
+    }
+
+    async function cargarNomina() {
+        const res = await fetch(`/api/nominas/${idNomina}`);
+        const data = await res.json();
+        document.getElementById("fecha-inicio").value = data.fechaInicio;
+        document.getElementById("fecha-fin").value = data.fechaFin;
+        const select = document.getElementById("select-empleado");
+        select.innerHTML = `<option value="${data.empleadoId}" selected>${data.nombreEmpleado}</option>`;
+        document.getElementById("empleadoId-hidden").value = data.empleadoId;
+        select.disabled = true;
+        data.lineasNomina.forEach((linea, index) => anadirLineaNomina(linea, index === 0));
+    }
+
+    function anadirLineaNomina(linea = {}, esPrimera = false) {
+        const container = document.getElementById("lineasNominaContainer");
+        const numLineas = container.querySelectorAll('.linea-nomina').length;
+        const nueva = document.createElement("div");
+        nueva.className = "linea-nomina d-flex align-items-center gap-3 mb-3 border p-3 rounded";
+        const concepto = esPrimera ? "Sueldo base" : (linea.concepto || '');
+        const porcentaje = esPrimera ? "" : (linea.porcentaje ?? '');
+        const cantidad = linea.cantidad ?? '';
+        nueva.innerHTML = `
+            <div class="flex-fill">
+                <label class="form-label mb-1">Concepto:</label>
+                <input type="text" class="form-control form-control-sm" name="lineasNomina[${numLineas}].concepto" value="${concepto}" ${esPrimera ? 'readonly' : ''} />
+            </div>
+            <div style="width: 120px;">
+                <label class="form-label mb-1">Porcentaje:</label>
+                <input type="text" class="form-control form-control-sm" name="lineasNomina[${numLineas}].porcentaje" value="${porcentaje}" ${esPrimera ? 'readonly' : ''} />
+            </div>
+            <div style="width: 120px;">
+                <label class="form-label mb-1">Cantidad:</label>
+                <input type="text" class="form-control form-control-sm" name="lineasNomina[${numLineas}].cantidad" value="${cantidad}" />
+            </div>
+            ${esPrimera ? '' : '<button type="button" class="btn btn-danger btn-sm mt-4" onclick="eliminarLinea(this)">–</button>'}
+        `;
+        container.appendChild(nueva);
+    }
+
+    function eliminarLinea(boton) {
+        const fila = boton.closest(".linea-nomina");
+        fila.remove();
+        actualizarIndices();
+        actualizarResumen();
+    }
+
+    function actualizarIndices() {
+        const filas = document.querySelectorAll(".linea-nomina");
+        filas.forEach((fila, i) => {
+            fila.querySelector('input[name$=".concepto"]').name = `lineasNomina[${i}].concepto`;
+            fila.querySelector('input[name$=".porcentaje"]').name = `lineasNomina[${i}].porcentaje`;
+            fila.querySelector('input[name$=".cantidad"]').name = `lineasNomina[${i}].cantidad`;
+        });
+    }
+
+    function actualizarCantidadesDesdePorcentajes() {
+        const cantidades = document.querySelectorAll('input[name^="lineasNomina"][name$=".cantidad"]');
+        const porcentajes = document.querySelectorAll('input[name^="lineasNomina"][name$=".porcentaje"]');
+        const sueldoBaseInput = cantidades[0];
+        const sueldoBase = parseFloat(sueldoBaseInput.value);
+        if (isNaN(sueldoBase)) return;
+        for (let i = 1; i < porcentajes.length; i++) {
+            const porcentajeVal = parseFloat(porcentajes[i].value);
+            if (!isNaN(porcentajeVal)) {
+                if (porcentajeVal > 100) {
+                    alert(`El porcentaje en la línea ${i + 1} no puede superar el 100%.`);
+                    porcentajes[i].value = "";
+                    cantidades[i].value = "";
+                    continue;
+                }
+                const nuevaCantidad = (sueldoBase * porcentajeVal / 100).toFixed(2);
+                cantidades[i].value = nuevaCantidad;
+            }
+        }
+    }
+
+    function actualizarResumen() {
+        let devengos = 0;
+        let deducciones = 0;
+        document.querySelectorAll('input[name^="lineasNomina"][name$=".cantidad"]').forEach(input => {
+            const val = parseFloat(input.value);
+            if (!isNaN(val)) {
+                if (val >= 0) devengos += val;
+                else deducciones += Math.abs(val);
+            }
+        });
+        const neto = devengos - deducciones;
+        document.getElementById("totalDevengos").innerText = devengos.toFixed(2);
+        document.getElementById("totalDeducciones").innerText = deducciones.toFixed(2);
+        document.getElementById("salarioNeto").innerText = neto.toFixed(2);
+    }
+
+    document.addEventListener("input", () => {
+        actualizarCantidadesDesdePorcentajes();
+        actualizarResumen();
+    });
+
+    document.getElementById("select-empleado").addEventListener("change", function () {
+        document.getElementById("empleadoId-hidden").value = this.value;
+    });
+
+    document.getElementById("form-nomina").addEventListener("submit", async function (e) {
+        e.preventDefault();
+        const btnGuardar = document.getElementById("btnGuardar");
+        btnGuardar.disabled = true;
+
+        const empleadoId = document.getElementById("empleadoId-hidden").value;
+        const fechaInicio = document.getElementById("fecha-inicio").value;
+        const fechaFin = document.getElementById("fecha-fin").value;
+
+        const lineas = [];
+        const conceptos = document.querySelectorAll('input[name^="lineasNomina"][name$=".concepto"]');
+        const porcentajes = document.querySelectorAll('input[name^="lineasNomina"][name$=".porcentaje"]');
+        const cantidades = document.querySelectorAll('input[name^="lineasNomina"][name$=".cantidad"]');
+
+        const formatoFechaRegex = /^\d{4}-\d{2}-\d{2}$/;
+        if (!formatoFechaRegex.test(fechaInicio) || !formatoFechaRegex.test(fechaFin)) {
+            alert("Las fechas deben tener formato AAAA-MM-DD");
+            btnGuardar.disabled = false;
+            return;
+        }
+
+        for (let i = 0; i < conceptos.length; i++) {
+            const concepto = conceptos[i].value;
+            const porcentaje = porcentajes[i].value ? Number(porcentajes[i].value) : null;
+            const cantidad = cantidades[i].value ? Number(cantidades[i].value) : null;
+            if (!concepto || concepto.trim() === "" || cantidad === null || isNaN(cantidad)) {
+                alert(`Revisa los datos en la línea ${i + 1}`);
+                btnGuardar.disabled = false;
+                return;
+            }
+            lineas.push({ concepto, porcentaje, cantidad });
+        }
+
+        if (lineas.length === 0) {
+            alert("Debes añadir al menos una línea.");
+            btnGuardar.disabled = false;
+            return;
+        }
+
+        const datos = {
+            empleadoId,
+            fechaInicio,
+            fechaFin,
+            lineasNomina: lineas
+        };
+
+        const method = idNomina ? "PUT" : "POST";
+        const url = idNomina ? `/api/nominas/${idNomina}` : "/api/nominas";
+
+        fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos)
+        })
+            .then(res => {
+                btnGuardar.disabled = false;
+                if (res.ok) {
+                    alert("Nómina guardada correctamente");
+                    window.location.href = "/nominas/buscarNominas";
+                } else {
+                    res.json().then(err => alert("Error: " + err.error));
+                }
+            })
+            .catch(error => {
+                btnGuardar.disabled = false;
+                alert("Error de conexión: " + error);
+            });
+    });
+
+    window.addEventListener("DOMContentLoaded", async () => {
+        document.getElementById("titulo-formulario").textContent = idNomina ? "Editar Nómina" : "Alta de Nómina";
+        await cargarEmpleados();
+        if (idNomina) {
+            await cargarNomina();
+        } else {
+            anadirLineaNomina({}, true);
+            const primerEmpleadoId = document.getElementById("select-empleado").value;
+            document.getElementById("empleadoId-hidden").value = primerEmpleadoId;
+        }
+    });
+</script>
+</body>
+</html>

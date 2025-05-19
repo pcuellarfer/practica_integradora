@@ -11,6 +11,7 @@ import org.grupof.administracionapp.entity.nomina.Nomina;
 import org.grupof.administracionapp.repository.EmpleadoRepository;
 import org.grupof.administracionapp.repository.NominaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -163,6 +164,7 @@ public class NominaServiceImpl implements NominaService {
 
         return new DetalleNominaDTO(
                 nomina.getId(),
+                nomina.getEmpleado().getId(),
                 nomina.getNombreEmp(),
                 nomina.getPeriodo().getFechaInicio(),
                 nomina.getPeriodo().getFechaFin(),
@@ -170,4 +172,53 @@ public class NominaServiceImpl implements NominaService {
                 lineasDTO
         );
     }
+
+    @Override
+    @Transactional
+    public void editarNomina(UUID id, NominaDTO dto) {
+        Nomina nomina = nominaRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("No se encontró la nómina con ID: " + id));
+
+        if (dto.getFechaInicio() == null || dto.getFechaFin() == null) {
+            throw new IllegalArgumentException("Las fechas no pueden estar vacías.");
+        }
+
+        if (dto.getFechaFin().isBefore(dto.getFechaInicio())) {
+            throw new IllegalArgumentException("La fecha de fin no puede ser anterior a la de inicio.");
+        }
+
+        if (dto.getLineasNomina() == null || dto.getLineasNomina().isEmpty()) {
+            throw new IllegalArgumentException("Debe incluir al menos una línea.");
+        }
+
+        //sctualizar solo fechas y líneas
+        nomina.setPeriodo(new Periodo(dto.getFechaInicio(), dto.getFechaFin()));
+        nomina.getLineasNomina().clear();
+
+        BigDecimal devengos = BigDecimal.ZERO;
+        BigDecimal deducciones = BigDecimal.ZERO;
+
+        for (LineaNominaDTO lineaDTO : dto.getLineasNomina()) {
+            LineaNomina linea = new LineaNomina();
+            linea.setConcepto(lineaDTO.getConcepto());
+            linea.setCantidad(lineaDTO.getCantidad());
+            linea.setPorcentaje(lineaDTO.getPorcentaje());
+            linea.setNomina(nomina);
+
+            if (linea.getCantidad().compareTo(BigDecimal.ZERO) >= 0) {
+                devengos = devengos.add(linea.getCantidad());
+            } else {
+                deducciones = deducciones.add(linea.getCantidad().abs());
+            }
+
+            nomina.getLineasNomina().add(linea);
+        }
+
+        nomina.setDevengos(devengos);
+        nomina.setDeducciones(deducciones);
+        nomina.setSalarioNeto(devengos.subtract(deducciones));
+
+        nominaRepository.save(nomina);
+    }
+
 }

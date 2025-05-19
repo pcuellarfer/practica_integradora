@@ -128,4 +128,16 @@ public class nominaController {
         }
         return "empleado/main/empleado-detalle-nomina";
     }
+
+    //devuelve el formulario de alta o edicion de una nomina dependiendo si tienes usuario o NOOOOO
+    @GetMapping("/formulario")
+    public String mostrarFormularioGeneral(HttpSession session) {
+        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
+        if (usuarioDTO == null) {
+            logger.warn("Intento de acceso a /formulario sin usuario en sesión");
+            return "redirect:/login/username";
+        }
+        return "empleado/main/empleado-nomina-form"; // esta es tu nueva vista JS
+    }
+
 }

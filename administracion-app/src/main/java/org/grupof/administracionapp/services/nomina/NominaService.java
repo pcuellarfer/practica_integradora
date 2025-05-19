@@ -16,4 +16,5 @@ public interface NominaService {
     NominaDTO devuelveNominaPorEmpleadoId(UUID emp, UUID nom);
     List<BusquedaNominaDTO> buscarNominas(UUID empleadoId, LocalDate fechaInicio, LocalDate fechaFin);
     DetalleNominaDTO obtenerDetalleNomina(UUID id);
+    void editarNomina(UUID id, NominaDTO dto);
 }
