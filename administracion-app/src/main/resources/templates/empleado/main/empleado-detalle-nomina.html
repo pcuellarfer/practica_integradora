@@ -1,37 +1,64 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Detalle de Nómina</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="fragments/header :: head('Detalle de Nómina')"></head>
 <body>
 
-<h1>Detalle de la Nómina</h1>
+<div th:replace="/fragments/cabecera"></div>
 
-<div id="detalle-container">
-    <p><strong>Empleado:</strong> <span id="nombre-empleado"></span></p>
-    <p><strong>Fecha inicio:</strong> <span id="fecha-inicio"></span></p>
-    <p><strong>Fecha fin:</strong> <span id="fecha-fin"></span></p>
-    <p><strong>Salario neto:</strong> <span id="salario-neto"></span></p>
+<main>
+    <div th:replace="/fragments/cuentaatras"></div>
+    <div th:replace="/fragments/botonCss"></div>
 
-    <h2>Líneas de Nómina</h2>
-    <table border="1">
-        <thead>
-        <tr>
-            <th>Concepto</th>
-            <th>Porcentaje</th>
-            <th>Cantidad</th>
-        </tr>
-        </thead>
-        <tbody id="lineas-nomina">
-            <!--lineas de nominas asi pum-->
-        </tbody>
-    </table>
-</div>
+    <div class="absoluto mt-5">
+        <div class="container">
+
+            <!-- Título -->
+            <div class="row align-items-center mb-4">
+                <div class="col-2"></div>
+                <div class="col text-center">
+                    <h1>Detalle de la Nómina</h1>
+                </div>
+                <div class="col-2"></div>
+            </div>
+
+            <!-- Detalle de Nómina -->
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card p-4 shadow">
+                        <p><strong>Empleado:</strong> <span id="nombre-empleado"></span></p>
+                        <p><strong>Fecha inicio:</strong> <span id="fecha-inicio"></span></p>
+                        <p><strong>Fecha fin:</strong> <span id="fecha-fin"></span></p>
+                        <p><strong>Salario neto:</strong> <span id="salario-neto"></span></p>
+
+                        <h4 class="mt-4">Líneas de Nómina</h4>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped mt-2 mb-5">
+                                <thead class="thead-dark">
+                                <tr>
+                                    <th>Concepto</th>
+                                    <th>Porcentaje</th>
+                                    <th>Cantidad</th>
+                                </tr>
+                                </thead>
+                                <tbody id="lineas-nomina">
+                                <!-- Contenido dinámico -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <a href="/nominas/buscarNominas" class="btn btn-secondary mt-3 w-100">Volver</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<div th:replace="/fragments/pie"></div>
 
 <script>
     window.addEventListener('DOMContentLoaded', function () {
-        //pillar el ID de la nómina desde la URL
         const urlParams = new URLSearchParams(window.location.search);
         const id = urlParams.get('id');
 
@@ -76,5 +103,6 @@
             });
     });
 </script>
+
 </body>
 </html>
