@@ -1,5 +1,7 @@
 package org.grupof.administracionapp.services.nomina;
 
+import org.grupof.administracionapp.dto.nominas.BusquedaNominaDTO;
+import org.grupof.administracionapp.dto.nominas.DetalleNominaDTO;
 import org.grupof.administracionapp.dto.nominas.LineaNominaDTO;
 import org.grupof.administracionapp.dto.nominas.NominaDTO;
 import org.grupof.administracionapp.entity.Empleado;
@@ -129,5 +131,43 @@ public class NominaServiceImpl implements NominaService {
         else{
             return null;
         }
+    }
+
+    @Override
+    public List<BusquedaNominaDTO> buscarNominas(UUID empleadoId, LocalDate fechaInicio, LocalDate fechaFin) {
+        return nominaRepository.findAll().stream()
+                .filter(n -> empleadoId == null || n.getEmpleado().getId().equals(empleadoId))
+                .filter(n -> fechaInicio == null || !n.getPeriodo().getFechaInicio().isBefore(fechaInicio))
+                .filter(n -> fechaFin == null || !n.getPeriodo().getFechaFin().isAfter(fechaFin))
+                .map(n -> new BusquedaNominaDTO(
+                        n.getId(),
+                        n.getNombreEmp(),
+                        n.getPeriodo().getFechaInicio(),
+                        n.getPeriodo().getFechaFin()
+                ))
+                .toList();
+    }
+
+    @Override
+    public DetalleNominaDTO obtenerDetalleNomina(UUID id) {
+        Nomina nomina = nominaRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Nómina no encontrada"));
+
+        List<LineaNominaDTO> lineasDTO = nomina.getLineasNomina().stream()
+                .map(l -> new LineaNominaDTO(
+                        l.getConcepto(),
+                        l.getPorcentaje(),
+                        l.getCantidad()
+                ))
+                .toList();
+
+        return new DetalleNominaDTO(
+                nomina.getId(),
+                nomina.getNombreEmp(),
+                nomina.getPeriodo().getFechaInicio(),
+                nomina.getPeriodo().getFechaFin(),
+                nomina.getSalarioNeto(),
+                lineasDTO
+        );
     }
 }

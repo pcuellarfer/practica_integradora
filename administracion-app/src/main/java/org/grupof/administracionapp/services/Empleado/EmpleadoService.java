@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.grupof.administracionapp.dto.Empleado.EmpleadoDetalleDTO;
 import org.grupof.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
+import org.grupof.administracionapp.dto.nominas.NombreApellidoEmpleadoDTO;
 import org.grupof.administracionapp.entity.Empleado;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -117,6 +118,8 @@ public interface EmpleadoService {
      * @return Lista de DTOs de todos los empleados.
      */
     List<RegistroEmpleadoDTO> listarEmpleados();
+
+    List<NombreApellidoEmpleadoDTO> obtenerNombreYApellidoEmpleados();
 
     /**
      * Busca un empleado por el identificador del usuario al que está asociado.

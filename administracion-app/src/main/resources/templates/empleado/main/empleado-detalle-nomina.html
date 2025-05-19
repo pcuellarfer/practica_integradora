@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle de Nómina</title>
+</head>
+<body>
+
+<h1>Detalle de la Nómina</h1>
+
+<div id="detalle-container">
+    <p><strong>Empleado:</strong> <span id="nombre-empleado"></span></p>
+    <p><strong>Fecha inicio:</strong> <span id="fecha-inicio"></span></p>
+    <p><strong>Fecha fin:</strong> <span id="fecha-fin"></span></p>
+    <p><strong>Salario neto:</strong> <span id="salario-neto"></span></p>
+
+    <h2>Líneas de Nómina</h2>
+    <table border="1">
+        <thead>
+        <tr>
+            <th>Concepto</th>
+            <th>Porcentaje</th>
+            <th>Cantidad</th>
+        </tr>
+        </thead>
+        <tbody id="lineas-nomina">
+            <!--lineas de nominas asi pum-->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    window.addEventListener('DOMContentLoaded', function () {
+        //pillar el ID de la nómina desde la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+
+        if (!id) {
+            alert("ID de nómina no proporcionado.");
+            return;
+        }
+
+        fetch('/api/nominas/' + id)
+            .then(response => response.json())
+            .then(nomina => {
+                document.getElementById('nombre-empleado').textContent = nomina.nombreEmpleado;
+                document.getElementById('fecha-inicio').textContent = nomina.fechaInicio;
+                document.getElementById('fecha-fin').textContent = nomina.fechaFin;
+                document.getElementById('salario-neto').textContent = nomina.salarioNeto + " €";
+
+                const tbody = document.getElementById('lineas-nomina');
+                tbody.innerHTML = '';
+
+                nomina.lineasNomina.forEach(linea => {
+                    const row = document.createElement('tr');
+
+                    const tdConcepto = document.createElement('td');
+                    tdConcepto.textContent = linea.concepto;
+
+                    const tdPorcentaje = document.createElement('td');
+                    tdPorcentaje.textContent = linea.porcentaje + " %";
+
+                    const tdCantidad = document.createElement('td');
+                    tdCantidad.textContent = linea.cantidad + " €";
+
+                    row.appendChild(tdConcepto);
+                    row.appendChild(tdPorcentaje);
+                    row.appendChild(tdCantidad);
+
+                    tbody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Error al cargar detalle de nómina:', error);
+                alert("No se pudo cargar el detalle de la nómina.");
+            });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Buscar Nóminas</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<h1>Filtrar Nóminas</h1>
+
+<form id="filtroNominas">
+  <label for="select-empleados">Empleado:</label>
+  <select id="select-empleados" name="empleadoId">
+    <option value="">selecciona empleado</option>
+  </select>
+
+  <br><br>
+
+  <label for="fechaInicio">Desde (aaaa-mm-dd):</label>
+  <input type="text" id="fechaInicio" name="fechaInicio" placeholder="aaaa-mm-dd">
+
+  <label for="fechaFin">Hasta (aaaa-mm-dd):</label>
+  <input type="text" id="fechaFin" name="fechaFin" placeholder="aaaa-mm-dd">
+
+  <br><br>
+
+  <button type="submit">Buscar</button>
+</form>
+
+<h2>Resultados</h2>
+
+<table id="tabla-nominas" border="1">
+  <thead>
+  <tr>
+    <th>Empleado</th>
+    <th>Fecha inicio</th>
+    <th>Fecha fin</th>
+    <th>detalle</th>
+  </tr>
+  </thead>
+  <tbody>
+  <!--aqui meto los resultados-->
+  </tbody>
+</table>
+
+<script>
+  //llamada para recivir todos los empleados
+  window.addEventListener('DOMContentLoaded', function () {
+    fetch('/api/nominas/devuelveEmpleados')
+            .then(response => response.json())
+            .then(empleados => {
+              const select = document.getElementById('select-empleados');
+              empleados.forEach(emp => {
+                const option = document.createElement('option');
+                option.value = emp.id;
+                option.textContent = emp.nombre + ' ' + emp.apellido;
+                select.appendChild(option);
+              });
+            })
+            .catch(error => console.error('Error cargando empleados:', error));
+  });
+
+  //enviar lo que metas en los campos y recibir los resultados
+  document.getElementById('filtroNominas').addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    const empleadoId = document.getElementById('select-empleados').value;
+    const fechaInicio = document.getElementById('fechaInicio').value;
+    const fechaFin = document.getElementById('fechaFin').value;
+
+    const params = new URLSearchParams();
+    if (empleadoId) params.append('empleadoId', empleadoId);
+    if (fechaInicio) params.append('fechaInicio', fechaInicio);
+    if (fechaFin) params.append('fechaFin', fechaFin);
+
+    fetch('/api/nominas/buscar?' + params.toString())
+            .then(response => response.json())
+            .then(nominas => {
+              console.log("Nóminas recibidas:", nominas);
+
+              const tbody = document.querySelector('#tabla-nominas tbody');
+              tbody.innerHTML = ''; //Limpiar tabla anterior
+
+              if (nominas.length === 0) {
+                const row = document.createElement('tr');
+                const cell = document.createElement('td');
+                cell.colSpan = 3;
+                cell.textContent = 'No se encontraron nóminas.';
+                row.appendChild(cell);
+                tbody.appendChild(row);
+                return;
+              }
+
+              nominas.forEach(nomina => {
+                console.log("Nomina individual:", nomina);
+
+                const row = document.createElement('tr');
+
+                const tdNombre = document.createElement('td');
+                tdNombre.textContent = nomina.nombreEmpleado;
+
+                const tdInicio = document.createElement('td');
+                tdInicio.textContent = nomina.fechaInicio;
+
+                const tdFin = document.createElement('td');
+                tdFin.textContent = nomina.fechaFin;
+
+                const tdDetalle = document.createElement('td');
+                const botonDetalle = document.createElement('button');
+                botonDetalle.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i>';
+                botonDetalle.title = 'Ver detalle';
+                botonDetalle.onclick = () => {
+                  window.location.href = `/nominas/detalle?id=${nomina.idNomina}`;
+                };
+
+                tdDetalle.appendChild(botonDetalle);
+
+                row.appendChild(tdNombre);
+                row.appendChild(tdInicio);
+                row.appendChild(tdFin);
+                row.appendChild(tdDetalle);
+
+
+                tbody.appendChild(row);
+              });
+            })
+            .catch(error => console.error('Error al buscar nóminas:', error));
+  });
+</script>
+
+</body>
+</html>
