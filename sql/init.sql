@@ -396,8 +396,8 @@ INSERT INTO especialidad (id, nombre) VALUES
 (UUID_TO_BIN('23456789-abcd-ef01-2345-6789abcdef01'), 'Trabajo en equipo'),
 (UUID_TO_BIN('bcde0123-4567-89ab-cdef-0123456789ab'), 'Rapido');
 
-INSERT INTO genero (id, nombre) VALUES
-(UUID_TO_BIN('11111111-1111-1111-1111-111111111111'), 'Masculino'),
-(UUID_TO_BIN('22222222-2222-2222-2222-222222222222'), 'Femenino'),
-(UUID_TO_BIN('33333333-3333-3333-3333-333333333333'), 'Otro');
+INSERT INTO genero (id, identidad) VALUES
+(UUID_TO_BIN('dcd80d61-5e1c-4f60-b4d2-92d3c37f6d41'), 'Masculino'),
+(UUID_TO_BIN('1a7f8be7-9f94-4692-a0b2-f0e730f045fc'), 'Femenino'),
+(UUID_TO_BIN('8b5a67dc-e6f6-4ff2-9098-5c89d04123b6'), 'Otro');
 
