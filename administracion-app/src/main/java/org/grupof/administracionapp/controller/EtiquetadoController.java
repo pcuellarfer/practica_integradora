@@ -312,7 +312,7 @@ public class EtiquetadoController {
      */
     @PostMapping("/etiquetado/eliminar")
     public String eliminarEtiquetas(@RequestParam UUID empleadoId,
-                                    @RequestParam List<UUID> etiquetasIds,
+                                    @RequestParam(required = false) List<UUID> etiquetasIds,
                                     HttpSession session) {
         logger.info("Inicio de eliminación de etiquetas para empleado ID: {}", empleadoId);
 
@@ -327,12 +327,12 @@ public class EtiquetadoController {
             return "redirect:/etiquetado/eliminar";
         }
 
-        logger.info("Empleado encontrado: {}. Etiquetas a eliminar: {}", empleado.getId(), etiquetasIds.size());
-
-        if (etiquetasIds.isEmpty()) {
+        if (etiquetasIds == null || etiquetasIds.isEmpty()) {
             logger.warn("No se proporcionaron etiquetas para eliminar.");
             return "redirect:/etiquetado/eliminar?empleadoId=" + empleadoId;
         }
+
+        logger.info("Empleado encontrado: {}. Etiquetas a eliminar: {}", empleado.getId(), etiquetasIds.size());
 
         for (UUID etiquetaId : etiquetasIds) {
             Etiqueta etiqueta = etiquetaService.buscarPorId(etiquetaId).orElse(null);

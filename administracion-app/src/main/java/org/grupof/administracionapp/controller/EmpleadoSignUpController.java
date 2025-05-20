@@ -152,6 +152,7 @@ public class EmpleadoSignUpController {
         logger.info("Procesando paso 1 del formulario para usuario ID: {}",
                 usuarioDTO != null ? usuarioDTO.getId() : "desconocido");
 
+        //esta validacion de foto solo sale si todas las demas validaciones del campo 1 estan correctas
         if (errores.hasErrors()) {
             logger.warn("Errores de validación en formulario de datos personales para usuario ID: {}",
                     usuarioDTO != null ? usuarioDTO.getId() : "desconocido");

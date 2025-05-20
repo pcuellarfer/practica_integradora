@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.grupof.administracionapp.validations.ConfContrasena.CoincidirContrasenas;
+import org.grupof.administracionapp.validations.paso1DTO.ConfContrasena.CoincidirContrasenas;
 
 @AllArgsConstructor @NoArgsConstructor  @Data
 @CoincidirContrasenas(contrasena = "contrasena", confirmContrasena = "confirmContrasena", message = "Las contraseñas no coinciden ")

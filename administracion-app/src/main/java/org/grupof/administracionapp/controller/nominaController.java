@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -51,48 +50,6 @@ public class nominaController {
         model.addAttribute("empleados", empleados);
         logger.info("Vista de selección de empleado cargada con {} empleados", empleados.size());
         return "empleado/main/seleccionar-empleado";
-    }
-
-    /**
-     * Muestra el formulario para dar de alta una nueva nómina para un empleado.
-     * Si no hay usuario en sesión, redirige al login.
-     * Si el empleado no existe, lanza excepción.
-     *
-     * @param empleadoId ID del empleado para quien se crea la nómina
-     * @param model      modelo para pasar datos a la vista
-     * @param session    sesión HTTP actual
-     * @return vista del formulario de alta de nómina o redirección al login
-     */
-    @GetMapping("/alta")
-    public String mostrarFormularioAlta(@RequestParam UUID empleadoId, Model model, HttpSession session) {
-        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
-
-        if (usuarioDTO == null) {
-            logger.warn("Intento de acceso a /nominas/alta sin usuario en sesión");
-            return "redirect:/login/username";
-        }
-
-        Empleado empleado = empleadoService.buscarPorId(empleadoId)
-                .orElseThrow(() -> {
-                    logger.error("Empleado con ID {} no encontrado para alta de nómina", empleadoId);
-                    return new IllegalArgumentException("Empleado no encontrado");
-                });
-
-        NominaDTO nominadto = new NominaDTO();
-        nominadto.setEmpleadoId(empleadoId);
-
-        nominadto.setFechaInicio(null);
-        nominadto.setFechaFin(null);
-
-        //primera linea de nomina del salario base
-        LineaNominaDTO lineaInicial = new LineaNominaDTO();
-        lineaInicial.setConcepto("Sueldo base");
-        nominadto.setLineasNomina(List.of(lineaInicial));
-
-        model.addAttribute("empleado", empleado);
-        model.addAttribute("altaNominaDTO", nominadto);
-        logger.info("Formulario de alta de nómina cargado para empleado con ID {}", empleadoId);
-        return "empleado/main/formulario-alta";
     }
 
     /**

@@ -1,4 +1,4 @@
-package org.grupof.administracionapp.validations.fechaPasada;
+package org.grupof.administracionapp.validations.paso1DTO.fechaPasada;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

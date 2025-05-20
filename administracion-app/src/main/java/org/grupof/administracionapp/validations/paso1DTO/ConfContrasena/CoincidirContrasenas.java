@@ -1,4 +1,4 @@
-package org.grupof.administracionapp.validations.ConfContrasena;
+package org.grupof.administracionapp.validations.paso1DTO.ConfContrasena;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
