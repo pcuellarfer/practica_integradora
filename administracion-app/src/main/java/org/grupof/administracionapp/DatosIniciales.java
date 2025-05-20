@@ -55,7 +55,7 @@ public class DatosIniciales {
                                     EspecialidadRepository especialidadRepository,
                                     BancoRepository bancoRepository,
                                     TipoTarjetaRepository tipoTarjetaRepository) {
-        return _ -> {
+        return args -> {
 
             //crea la carpeta uploads/empleados si no existe
             try {

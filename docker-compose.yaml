@@ -12,8 +12,40 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ./sql:/docker-entrypoint-initdb.d
+    networks:
+      - red_integradora
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-padmin"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  tomcat:
+    build:
+      context: ./tomcat
+      dockerfile: Dockerfile
+    container_name: tomcat_integradora
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=integradora_compose
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=admin
+    networks:
+      - red_integradora
+    restart: unless-stopped
+    volumes:
+      - ./tomcat/logs:/usr/local/tomcat/logs
 
 volumes:
   mysql_data:
 
+networks:
+  red_integradora:
+    driver: bridge
