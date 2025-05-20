@@ -221,4 +221,11 @@ public class NominaServiceImpl implements NominaService {
         nominaRepository.save(nomina);
     }
 
+    @Override
+    public void eliminarNomina(UUID id) {
+        Nomina nomina = nominaRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Nómina no encontrada con ID: " + id));
+
+        nominaRepository.delete(nomina);
+    }
 }
