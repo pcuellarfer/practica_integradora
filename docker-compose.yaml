@@ -2,7 +2,10 @@ version: '3.8'
 
 services:
   mysql:
-    image: mysql:8.0
+    image: davidsmh233/integradora-mysql:1.0
+    build:
+      context: ./sql
+      dockerfile: Dockerfile
     container_name: mysql_integradora
     environment:
       MYSQL_ROOT_PASSWORD: admin
@@ -11,17 +14,17 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./sql:/docker-entrypoint-initdb.d
     networks:
       - red_integradora
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-padmin"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-padmin" ]
       interval: 10s
       timeout: 5s
       retries: 5
 
   tomcat:
+    image: davidsmh233/integradora-tomcat:1.0
     build:
       context: ./tomcat
       dockerfile: Dockerfile
