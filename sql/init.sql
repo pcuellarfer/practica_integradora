@@ -376,90 +376,48 @@ create table if not exists usuario_contador_navegador
 
 -- Insert data into banco table
 INSERT INTO banco (id, nombre) VALUES
-(UUID_TO_BIN('f47ac10b-58cc-4372-a567-0e02b2c3d479'), 'BBVA'),
-(UUID_TO_BIN('550e8400-e29b-41d4-a716-446655440000'), 'Caixa'),
-(UUID_TO_BIN('6ba7b810-9dad-11d1-80b4-00c04fd430c8'), 'Sabadell');
-
--- Insert data into categoria table (assuming no data provided in the Java code)
--- INSERT INTO categoria (id, nombre) VALUES (UUID_TO_BIN('...'), '...');
-
+(UUID_TO_BIN('123e4567-e89b-12d3-a456-426614174000'), 'Bankinter'),
+(UUID_TO_BIN('123e4567-e89b-12d3-a456-426614174001'), 'ING'),
+(UUID_TO_BIN('123e4567-e89b-12d3-a456-426614174002'), 'Santander'),
+(UUID_TO_BIN('123e4567-e89b-12d3-a456-426614174003'), 'Openbank'),
+(UUID_TO_BIN('123e4567-e89b-12d3-a456-426614174004'), 'Evo Banco');
 -- Insert data into departamento table
 INSERT INTO departamento (id, nombre) VALUES
-(UUID_TO_BIN('a1b2c3d4-e5f6-4789-90ab-cdef01234567'), 'Informatica'),
-(UUID_TO_BIN('123e4567-e89b-12d3-a456-426614174000'), 'Universidad'),
-(UUID_TO_BIN('abcdef90-1234-5678-9abc-def012345678'), 'Marketing'),
-(UUID_TO_BIN('fedcba09-8765-4321-bcde-f0123456789a'), 'Departamento');
+(UUID_TO_BIN('321e4567-e89b-12d3-a456-426614174005'), 'Recursos Humanos'),
+(UUID_TO_BIN('456e7890-a12b-34cd-56ef-123456789abc'), 'Finanzas'),
+(UUID_TO_BIN('789abcde-1234-5678-abcd-ef0123456789'), 'Logística'),
+(UUID_TO_BIN('9876abcd-4321-1abc-def0-1234567890ab'), 'Atención al Cliente'),
+(UUID_TO_BIN('01234567-89ab-cdef-0123-456789abcdef'), 'Ventas');
 
 -- Insert data into especialidad table
 INSERT INTO especialidad (id, nombre) VALUES
-(UUID_TO_BIN('98765432-10fe-dcba-9876-543210fedcba'), 'Creativo'),
-(UUID_TO_BIN('23456789-abcd-ef01-2345-6789abcdef01'), 'Trabajo en equipo'),
-(UUID_TO_BIN('bcde0123-4567-89ab-cdef-0123456789ab'), 'Rapido');
-
-INSERT INTO genero (id, identidad) VALUES
-(UUID_TO_BIN('dcd80d61-5e1c-4f60-b4d2-92d3c37f6d41'), 'Masculino'),
-(UUID_TO_BIN('1a7f8be7-9f94-4692-a0b2-f0e730f045fc'), 'Femenino'),
-(UUID_TO_BIN('8b5a67dc-e6f6-4ff2-9098-5c89d04123b6'), 'Otro');
-
-INSERT INTO especialidad (id, nombre) VALUES
-(UUID_TO_BIN('5c3ab843-d693-4e7d-8507-f518b7c2aa26'), 'Programación'),
-(UUID_TO_BIN('c4fc7dd0-8b48-4c86-ae74-9d1e7fa279fb'), 'Contabilidad');
+(UUID_TO_BIN('11112222-3333-4444-5555-666677778888'), 'Resolutivo'),
+(UUID_TO_BIN('99998888-7777-6666-5555-444433332222'), 'Analítico'),
+(UUID_TO_BIN('aaaa1111-bbbb-2222-cccc-3333dddd4444'), 'Empático'),
+(UUID_TO_BIN('12344321-4321-1234-5678-876543210000'), 'Resistente al estrés'),
+(UUID_TO_BIN('abcdabcd-abcd-abcd-abcd-abcdabcdabcd'), 'Organizado'),
+(UUID_TO_BIN('deadbeef-dead-beef-dead-beefdeadbeef'), 'Multitarea');
 
 INSERT INTO pais (id, nombre, prefijo_telefonico) VALUES
-(UUID_TO_BIN('a2f4b930-68b6-4b59-9a9f-06f00b0b52ef'), 'España', '+34'),
-(UUID_TO_BIN('f0e3f6d5-4934-4b4b-b60c-7c90c132a0e2'), 'México', '+52');
-
-INSERT INTO tipo_documento (id, tipo) VALUES
-(UUID_TO_BIN('95c2d693-4713-4bc2-ae02-329b74118f33'), 'DNI'),
-(UUID_TO_BIN('40e3bb04-c305-4a7e-9a5a-4c1c05b447d7'), 'Pasaporte');
+(UUID_TO_BIN('60f7a1cb-3f5e-41d0-9c91-0182e9fcd98a'), 'Alemania', '+49'),
+(UUID_TO_BIN('3c96f6e8-9c45-4379-8617-ea2b44f15693'), 'Italia', '+39'),
+(UUID_TO_BIN('8f7dc59d-2a76-47fb-a4b6-3f99a6e5bb71'), 'Portugal', '+351'),
+(UUID_TO_BIN('e1c7bde1-3e57-4abf-896f-2c75dbf8a998'), 'Países Bajos', '+31'),
+(UUID_TO_BIN('7b9a6f62-1ec2-4d3b-a7e2-dfc78d1a5df2'), 'Suiza', '+41'),
+(UUID_TO_BIN('23d2d2a1-b95f-4c3e-a51b-e5d3f624ac5b'), 'Austria', '+43'),
+(UUID_TO_BIN('ee58e4ad-8e4f-4077-8f85-bf0b79a290cd'), 'Suecia', '+46');
 
 INSERT INTO tipo_tarjeta (id, nombre) VALUES
-(UUID_TO_BIN('14df4e87-38a4-4de1-8d3e-8d86b4cbff1d'), 'Débito'),
-(UUID_TO_BIN('635228ad-5148-4d75-9499-79a62eb5b0c5'), 'Crédito');
+(UUID_TO_BIN('87df48ac-947f-4e3a-9444-ea9d97cd75d1'), 'Maestro'),
+(UUID_TO_BIN('4be90ea2-8a3c-4b7c-a0a6-3384d1932f9c'), 'Discover'),
+(UUID_TO_BIN('bfa0174d-1667-4053-9a3f-5d2a97dbd109'), 'Diners Club'),
+(UUID_TO_BIN('c8ed3a6a-9d8e-48e6-b15f-8d2f9f885a40'), 'JCB'),
+(UUID_TO_BIN('113b5e41-e2e5-42a3-b54c-162901ed2bce'), 'UnionPay');
 
 INSERT INTO tipo_via (id, tipo) VALUES
-(UUID_TO_BIN('6e77b6e5-ef45-4051-853c-707b7b5888c1'), 'Calle'),
-(UUID_TO_BIN('23b2cc29-5d52-4421-90d4-65d30cc9d51b'), 'Avenida');
-
--- Insertar el usuario
-INSERT INTO usuario (
-    pk_usuario, contador_inicios, estado_bloqueado, bloqueado_hasta,
-    contrasena, contrasena_recuperacion, email, motivo_bloqueo,
-    nombre, archivo
-) VALUES (
-    UUID_TO_BIN('f6e02a3d-7d58-4f9b-b56d-6cbf3a35c178'), 0, 0, NULL,
-    '$2a$10$Q9kD4Mmf6gBMhTvAxWCEzu24ylfig1Z3dJGO5TzN61OIzOWy6YS8m',
-    NULL, 'davidsmh23@gmail.com', NULL,
-    'Juan', NULL
-);
-
--- Insertar el empleado
-INSERT INTO integradora_compose.empleado (
-    pk_empleado,
-    usuario_id,
-    nombre,
-    apellido,
-    foto_url,
-    genero_id,
-    departamento_id,
-    fecha_nacimiento,
-    pais_id,
-    tipo_documento_id,
-    fecha_contratacion,
-    tipo_via
-    -- Puedes añadir más columnas si tienes valores, ejemplo: codigo_postal, telefono, etc.
-) VALUES (
-    UUID_TO_BIN('bc35e776-801f-40dc-b3ff-95e12b9c3d41'), -- UUID empleado
-    UUID_TO_BIN('f6e02a3d-7d58-4f9b-b56d-6cbf3a35c178'), -- UUID usuario
-    'Juan',
-    'Lopez',
-    '/uploads/empleados/d164fcfb-5047-4213-be21-d575d75462bd.gif',
-    UUID_TO_BIN('dcd80d61-5e1c-4f60-b4d2-92d3c37f6d41'), -- género masculino (ejemplo)
-    UUID_TO_BIN('a1b2c3d4-e5f6-4789-90ab-cdef01234567'),
-    '1990-01-01',
-    UUID_TO_BIN('a2f4b930-68b6-4b59-9a9f-06f00b0b52ef'), -- país España (ejemplo)
-    UUID_TO_BIN('95c2d693-4713-4bc2-ae02-329b74118f33'), -- tipo documento DNI (ejemplo)
-    '1985-07-15',
-    UUID_TO_BIN('3c53f94b-d518-4f94-9689-6f7c7a4e3145') -- tipo vía (ejemplo)
-);
+(UUID_TO_BIN('b3a7c8a5-bfd9-4c6c-b456-9d3a5f7fc1cd'), 'Camino'),
+(UUID_TO_BIN('c1f98f2e-8ea6-4b91-bba7-8d4765ae1f2e'), 'Plaza'),
+(UUID_TO_BIN('d213fab4-e3e4-4d6f-8a2b-3e4b7289b9fa'), 'Carretera'),
+(UUID_TO_BIN('e5f6d7c1-723b-4b7d-92a7-afe2eab67590'), 'Travesía'),
+(UUID_TO_BIN('a9f5c6b8-95c3-44e7-b62e-d1d5b0d71cb6'), 'Ronda');
 

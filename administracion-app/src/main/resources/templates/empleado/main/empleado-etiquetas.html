@@ -5,25 +5,36 @@
 
 <body>
 <div th:replace="/fragments/cabecera"></div>
-<div th:replace="/fragments/cuentaatras"></div>
-<div th:replace="/fragments/botonCss"></div>
-  <h2>Gestión de Etiquetas</h2>
+<main>
+    <div th:replace="/fragments/cuentaatras"></div>
+    <div th:replace="/fragments/botonCss"></div>
 
-  <form th:action="@{crearEtiquetas}" method="post" th:object="${nuevaEtiqueta}">
-    <label for="texto">Nombre de la Etiqueta:</label>
-    <input type="text" id="texto" th:field="*{texto}" required />
-    <button type="submit">Crear</button>
-  </form>
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Gestión de Etiquetas</h2>
 
-  <div th:if="${error}" style="color: red;" th:text="${error}"></div>
+        <!-- Formulario para crear una etiqueta -->
+        <form th:action="@{crearEtiquetas}" method="post" th:object="${nuevaEtiqueta}" class="mb-4">
+            <div class="mb-3">
+                <label for="texto" class="form-label fw-bold">Nombre de la Etiqueta:</label>
+                <input type="text" id="texto" th:field="*{texto}" class="form-control" required/>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Crear</button>
+        </form>
 
-  <h3>Etiquetas Definidas:</h3>
-  <ul>
-    <li th:each="etiqueta : ${etiquetas}">
-      <span th:text="${etiqueta.texto}"></span>
-    </li>
-  </ul>
+        <!-- Mensaje de error -->
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <!-- Lista de etiquetas existentes -->
+        <h3 class="mt-4 mb-3">Etiquetas Definidas:</h3>
+        <ul class="list-group mb-4">
+            <li class="list-group-item" th:each="etiqueta : ${etiquetas}">
+                <span th:text="${etiqueta.texto}"></span>
+            </li>
+        </ul>
+
+        <a href="/dashboard/submenu-etiquetado" class="btn btn-secondary w-100">Volver al menú de etiquetado</a>
+    </div>
+</main>
 <div th:replace="/fragments/pie"></div>
-<a href="/dashboard/submenu-etiquetado" class="btn btn-secondary w-100">Volver al menu de etiquetado</a>
 </body>
 </html>

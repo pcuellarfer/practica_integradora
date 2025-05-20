@@ -4,18 +4,31 @@
 <head th:replace="fragments/header :: head('Asignar subordinados')"></head>
 
 <body>
-<h2 th:text="'Asignar subordinados a: ' + ${jefe.nombre}"></h2>
+<div th:replace="/fragments/cabecera"></div>
+<main>
+    <div th:replace="/fragments/cuentaatras"></div>
+    <div th:replace="/fragments/botonCss"></div>
+    <div class="container mt-5">
+        <h2 class="text-center mb-4" th:text="'Asignar subordinados a: ' + ${jefe.nombre}"></h2>
 
-<form th:action="@{/asignar}" method="post">
-    <label for="empleados">Selecciona empleados:</label><br>
-    <select id="empleados" name="subordinadoIds" multiple size="4">
-        <th:block th:each="empleado : ${empleados}">
-            <option th:value="${empleado.id}" th:text="${empleado.apellido + ', ' + empleado.nombre}"></option>
-        </th:block>
-    </select>
-    <br><br>
-    <button type="submit">Asignar</button>
-    <a href="/dashboard/submenu-etiquetado" class="btn btn-secondary w-100">Volver al menu de etiquetado</a>
-</form>
+        <form th:action="@{/asignar}" method="post" class="mb-5">
+
+            <!-- Selector múltiple de empleados -->
+            <div class="mb-3">
+                <label for="empleados" class="form-label fw-bold">Selecciona empleados:</label>
+                <select id="empleados" name="subordinadoIds" multiple size="4" class="form-select">
+                    <th:block th:each="empleado : ${empleados}">
+                        <option th:value="${empleado.id}"
+                                th:text="${empleado.apellido + ', ' + empleado.nombre}"></option>
+                    </th:block>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 mb-3">Asignar</button>
+            <a href="/dashboard/submenu-etiquetado" class="btn btn-secondary w-100">Volver al menú de etiquetado</a>
+        </form>
+    </div>
+</main>
+<div th:replace="/fragments/pie"></div>
 </body>
 </html>
