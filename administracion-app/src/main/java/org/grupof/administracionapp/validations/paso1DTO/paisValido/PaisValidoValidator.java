@@ -3,7 +3,6 @@ package org.grupof.administracionapp.validations.paso1DTO.paisValido;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.grupof.administracionapp.repository.PaisRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -11,8 +10,11 @@ import java.util.UUID;
 @Component
 public class PaisValidoValidator implements ConstraintValidator<PaisValido, UUID> {
 
-    @Autowired
-    private PaisRepository paisRepository;
+    private final PaisRepository paisRepository;
+
+    public PaisValidoValidator(PaisRepository paisRepository) {
+        this.paisRepository = paisRepository;
+    }
 
     @Override
     public boolean isValid(UUID paisId, ConstraintValidatorContext context) {

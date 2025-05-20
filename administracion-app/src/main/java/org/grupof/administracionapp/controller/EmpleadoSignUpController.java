@@ -232,6 +232,7 @@ public class EmpleadoSignUpController {
         Paso2ContactoDTO paso2 = new Paso2ContactoDTO();
         paso2.setDireccion(new Direccion());
         modelo.addAttribute("paso2", paso2);
+        modelo.addAttribute("paises", paisService.getAllPaises());
         modelo.addAttribute("tiposVias", tipoViaService.getAllTipoVia());
         modelo.addAttribute("documentos", tipoDocumentoService.getAllTipoDocumento());
         return "empleado/auth/FormDatosContacto";
@@ -257,6 +258,7 @@ public class EmpleadoSignUpController {
             @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario) {
 
         if (errores.hasErrors()) {
+            modelo.addAttribute("paises", paisService.getAllPaises());
             modelo.addAttribute("tiposVias", tipoViaService.getAllTipoVia());
             modelo.addAttribute("documentos", tipoDocumentoService.getAllTipoDocumento());
             logger.warn("Errores en formulario de contacto para usuario ID: {}", usuario.getId());
