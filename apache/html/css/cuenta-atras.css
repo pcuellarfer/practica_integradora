@@ -1,0 +1,30 @@
+/* Contenedor principal de la cuenta atrás */
+#cuentatras {
+    background-color: #f1f3f5;
+    padding: 10px 15px;
+    border-left: 4px solid #dc3545;
+    margin: 20px 0;
+    text-align: left;
+}
+
+/* Título de la sección */
+#cuentatras h5 {
+    font-size: 1rem;
+    margin: 0 0 5px 0;
+    color: #343a40;
+}
+
+/* Texto y temporizador */
+#cuentatras p {
+    display: inline;
+    margin: 0;
+    font-size: 0.95rem;
+    color: #495057;
+}
+
+#countdown {
+    font-weight: bold;
+    color: #dc3545;
+    font-size: 1.1rem;
+    margin-left: 5px;
+}

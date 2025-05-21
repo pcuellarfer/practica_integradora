@@ -44,17 +44,17 @@ services:
     volumes:
       - ./tomcat/logs:/usr/local/tomcat/logs
 
-#  apache:
-#    build:
-#      context: ./apache
-#      dockerfile: Dockerfile
-#    image: davidsmh233/integradora-apache:latest
-#    container_name: apache_integradora
-#    ports:
-#      - "80:80"
-#    networks:
-#      - red_integradora
-#    restart: unless-stopped
+  apache:
+    build:
+      context: ./apache
+      dockerfile: Dockerfile
+    image: davidsmh233/integradora-apache:latest
+    container_name: apache_integradora
+    ports:
+      - "80:80"
+    networks:
+      - red_integradora
+    restart: unless-stopped
 
 volumes:
   mysql_data:
