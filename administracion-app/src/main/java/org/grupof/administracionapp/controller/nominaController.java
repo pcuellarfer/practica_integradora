@@ -2,18 +2,13 @@ package org.grupof.administracionapp.controller;
 
 import jakarta.servlet.http.HttpSession;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
-import org.grupof.administracionapp.dto.nominas.LineaNominaDTO;
-import org.grupof.administracionapp.dto.nominas.NominaDTO;
 import org.grupof.administracionapp.entity.Empleado;
 import org.grupof.administracionapp.services.Empleado.EmpleadoService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Controlador encargado de manejar las vistas y acciones relacionadas con las nóminas.
@@ -91,7 +86,13 @@ public class nominaController {
         return "empleado/main/empleado-detalle-nomina";
     }
 
-    //devuelve el formulario de alta o edicion de una nomina dependiendo si tienes usuario o NOOOOO
+    /**
+     * Muestra el formulario general de nómina para el empleado si el usuario está autenticado.
+     * Si no hay usuario en sesión o no está autenticado, redirige a la página de login.
+     *
+     * @param session sesión HTTP para verificar la autenticación del usuario.
+     * @return la vista del formulario o redirección al login.
+     */
     @GetMapping("/formulario")
     public String mostrarFormularioGeneral(HttpSession session) {
         UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
@@ -101,7 +102,7 @@ public class nominaController {
             logger.warn("Intento de acceso a /formulario sin usuario en sesión");
             return "redirect:/login/username";
         }
-        return "empleado/main/empleado-nomina-form"; // esta es tu nueva vista JS
+        return "empleado/main/empleado-nomina-form";
     }
 
 }

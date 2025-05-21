@@ -63,7 +63,7 @@ public class CatalogoController {
         } catch (Exception e) {
             logger.error("Error al procesar los catálogos: {}", e.getMessage(), e);
             HttpHeaders headers = new HttpHeaders();
-            headers.setLocation(URI.create("http://integradora-apache/dashboard/prueba.html?mensaje=Error+al+procesar+los+catálogos"));
+            headers.setLocation(URI.create("http://integradora-apache/dashboard/catalogo-apache.html?mensaje=Error+al+procesar+los+catálogos"));
             return new ResponseEntity<>(headers, HttpStatus.SEE_OTHER);
         }
     }
