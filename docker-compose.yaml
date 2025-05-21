@@ -1,8 +1,6 @@
-version: '3.8'
-
 services:
   mysql:
-    image: davidsmh233/integradora-mysql:1.0
+    image: davidsmh233/integradora-mysql:latest
     build:
       context: ./sql
       dockerfile: Dockerfile
@@ -24,7 +22,7 @@ services:
       retries: 5
 
   tomcat:
-    image: davidsmh233/integradora-tomcat:1.0
+    image: davidsmh233/integradora-tomcat:latest
     build:
       context: ./tomcat
       dockerfile: Dockerfile
@@ -45,6 +43,18 @@ services:
     restart: unless-stopped
     volumes:
       - ./tomcat/logs:/usr/local/tomcat/logs
+
+#  apache:
+#    build:
+#      context: ./apache
+#      dockerfile: Dockerfile
+#    image: davidsmh233/integradora-apache:latest
+#    container_name: apache_integradora
+#    ports:
+#      - "80:80"
+#    networks:
+#      - red_integradora
+#    restart: unless-stopped
 
 volumes:
   mysql_data:

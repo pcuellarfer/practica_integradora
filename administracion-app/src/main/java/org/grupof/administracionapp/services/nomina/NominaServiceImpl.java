@@ -1,9 +1,6 @@
 package org.grupof.administracionapp.services.nomina;
 
-import org.grupof.administracionapp.dto.nominas.BusquedaNominaDTO;
-import org.grupof.administracionapp.dto.nominas.DetalleNominaDTO;
-import org.grupof.administracionapp.dto.nominas.LineaNominaDTO;
-import org.grupof.administracionapp.dto.nominas.NominaDTO;
+import org.grupof.administracionapp.dto.nominas.*;
 import org.grupof.administracionapp.entity.Empleado;
 import org.grupof.administracionapp.entity.embeddable.Periodo;
 import org.grupof.administracionapp.entity.nomina.LineaNomina;
@@ -16,35 +13,52 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 
+/**
+ * Implementación del servicio para la gestión de nóminas.
+ * Proporciona operaciones para crear nóminas, buscar nóminas por empleado y fechas,
+ * obtener detalles de nóminas y obtener nóminas específicas.
+ */
 @Service
 public class NominaServiceImpl implements NominaService {
 
     private final EmpleadoRepository empleadoRepository;
     private final NominaRepository nominaRepository;
 
+    /**
+     * Constructor que inyecta los repositorios necesarios.
+     *
+     * @param empleadoRepository repositorio para acceso a empleados.
+     * @param nominaRepository   repositorio para acceso a nóminas.
+     */
     public NominaServiceImpl(EmpleadoRepository empleadoRepository,
                              NominaRepository nominaRepository) {
         this.empleadoRepository = empleadoRepository;
         this.nominaRepository = nominaRepository;
     }
 
+    /**
+     * Crea y guarda una nueva nómina a partir de un DTO.
+     * <p>
+     * Realiza validaciones sobre fechas y solapamiento con nóminas existentes.
+     * Calcula devengos, deducciones y salario neto.
+     * </p>
+     *
+     * @param nominaDTO DTO con los datos necesarios para crear la nómina.
+     * @throws IllegalArgumentException si el empleado no existe, las fechas son inválidas,
+     *                                  hay solapamientos o el salario neto es inválido.
+     */
     @Override
     public void crearNomina(NominaDTO nominaDTO) {
-
-        // 1. Validar y obtener el empleado
         Empleado empleado = empleadoRepository.findById(nominaDTO.getEmpleadoId())
                 .orElseThrow(() -> new IllegalArgumentException("Empleado no encontrado"));
 
-        // 2. Parsear fechas desde el DTO (String → LocalDate)
         LocalDate fechaInicio = nominaDTO.getFechaInicio();
         LocalDate fechaFin = nominaDTO.getFechaFin();
 
-        // 3. Validar fechas
         if (fechaFin.isBefore(fechaInicio)) {
             throw new IllegalArgumentException("La fecha de fin debe ser posterior a la de inicio.");
         }
 
-        // 4. Verificar solapamiento con otras nóminas
         for (Nomina existente : empleado.getNominas()) {
             LocalDate inicio = existente.getPeriodo().getFechaInicio();
             LocalDate fin = existente.getPeriodo().getFechaFin();
@@ -54,7 +68,6 @@ public class NominaServiceImpl implements NominaService {
             }
         }
 
-        // 5. Crear objeto Nomina
         Nomina nomina = new Nomina();
         nomina.setEmpleado(empleado);
         nomina.setPeriodo(new Periodo(fechaInicio, fechaFin));
@@ -65,10 +78,9 @@ public class NominaServiceImpl implements NominaService {
         nomina.setNombreEmp(empleado.getNombre() + " " + empleado.getApellido());
         nomina.setDocumentoEmpleado(empleado.getDocumento());
         nomina.setDireccionEmpleado(empleado.getDireccion());
-        nomina.setPerfilProfesional("Desconocido"); //falta en entidad empleado
+        nomina.setPerfilProfesional("Desconocido");
         nomina.setDepartamento(empleado.getDepartamento().getNombre());
 
-        // 6. Procesar líneas
         BigDecimal devengos = BigDecimal.ZERO;
         BigDecimal deducciones = BigDecimal.ZERO;
         List<LineaNomina> lineas = new ArrayList<>();
@@ -105,16 +117,21 @@ public class NominaServiceImpl implements NominaService {
         }
         nomina.setSalarioNeto(neto);
 
-        // 7. Guardar
         nominaRepository.save(nomina);
     }
 
+    /**
+     * Devuelve una nómina específica de un empleado.
+     *
+     * @param emp UUID del empleado.
+     * @param nom UUID de la nómina.
+     * @return un DTO con la nómina encontrada, o null si no coincide con el empleado.
+     */
     @Override
     public NominaDTO devuelveNominaPorEmpleadoId(UUID emp, UUID nom) {
-
+        // Implementación simplificada para ejemplo
         NominaDTO nominaDTO = new NominaDTO();
         nominaDTO.setEmpleadoId(UUID.fromString("f6e6c3d6-fb3d-45e6-b08b-208e2854cde0"));
-
         nominaDTO.setFechaInicio(LocalDate.of(2025, 5, 1));
         nominaDTO.setFechaFin(LocalDate.of(2025, 5, 31));
 
@@ -122,17 +139,24 @@ public class NominaServiceImpl implements NominaService {
         LineaNominaDTO linea = new LineaNominaDTO();
         linea.setConcepto("Sal inicial");
         linea.setCantidad(BigDecimal.valueOf(1500));
-
         lineas.add(linea);
-
         // nominaDTO.setLineasNomina(lineas);
-        if(emp.equals(nominaDTO.getEmpleadoId())){
-            return nominaDTO;}
-        else{
+
+        if (emp.equals(nominaDTO.getEmpleadoId())) {
+            return nominaDTO;
+        } else {
             return null;
         }
     }
 
+    /**
+     * Busca nóminas filtrando por empleado y rango de fechas.
+     *
+     * @param empleadoId UUID del empleado (puede ser null para no filtrar).
+     * @param fechaInicio fecha inicial del rango (puede ser null).
+     * @param fechaFin fecha final del rango (puede ser null).
+     * @return lista de DTOs con las nóminas que cumplen el filtro.
+     */
     @Override
     public List<BusquedaNominaDTO> buscarNominas(UUID empleadoId, LocalDate fechaInicio, LocalDate fechaFin) {
         return nominaRepository.findAll().stream()
@@ -148,6 +172,13 @@ public class NominaServiceImpl implements NominaService {
                 .toList();
     }
 
+    /**
+     * Obtiene el detalle completo de una nómina por su ID.
+     *
+     * @param id UUID de la nómina.
+     * @return DTO con los detalles de la nómina.
+     * @throws IllegalArgumentException si la nómina no existe.
+     */
     @Override
     public DetalleNominaDTO obtenerDetalleNomina(UUID id) {
         Nomina nomina = nominaRepository.findById(id)

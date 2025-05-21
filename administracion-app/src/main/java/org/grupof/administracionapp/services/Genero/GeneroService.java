@@ -1,9 +1,6 @@
 package org.grupof.administracionapp.services.Genero;
 
 import org.grupof.administracionapp.entity.registroEmpleado.Genero;
-import org.grupof.administracionapp.repository.GeneroRepository;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -11,7 +8,6 @@ import java.util.UUID;
  * Servicio para la gestión de entidades de tipo {@link Genero}.
  * Proporciona operaciones para consultar géneros por ID o recuperar todos los disponibles.
  */
-@Service
 public interface GeneroService {
 
     /**

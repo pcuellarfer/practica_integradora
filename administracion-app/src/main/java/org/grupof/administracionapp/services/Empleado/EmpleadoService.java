@@ -4,23 +4,19 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
-
 import org.grupof.administracionapp.dto.Empleado.EmpleadoDetalleDTO;
 import org.grupof.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
 import org.grupof.administracionapp.dto.nominas.NombreApellidoEmpleadoDTO;
 import org.grupof.administracionapp.entity.Empleado;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
 
 /**
- * Servicio encargado de gestionar operaciones relacionadas con empleados.
- * Define los métodos necesarios para registrar, editar, eliminar,
- * buscar y listar empleados dentro del sistema.
+ * Interfaz que define los métodos para la gestión de empleados en la aplicación.
+ * Proporciona operaciones para registrar, editar, buscar y eliminar empleados,
+ * así como para gestionar su estado (bloqueo/desbloqueo).
  */
-@Service
 public interface EmpleadoService {
 
     /**

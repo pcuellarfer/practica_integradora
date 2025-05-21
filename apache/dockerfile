@@ -1,0 +1,8 @@
+FROM httpd:2.4
+
+# Copiar vistas HTML al directorio raíz de Apache
+COPY ./html/ /usr/local/apache2/htdocs/
+
+# Sobrescribir configuración para habilitar mod_proxy
+COPY ./conf/httpd.conf /usr/local/apache2/conf/httpd.conf
+
