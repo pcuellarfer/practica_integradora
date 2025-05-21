@@ -152,6 +152,7 @@ public class EmpleadoSignUpController {
         logger.info("Procesando paso 1 del formulario para usuario ID: {}",
                 usuarioDTO != null ? usuarioDTO.getId() : "desconocido");
 
+        //esta validacion de foto solo sale si todas las demas validaciones del campo 1 estan correctas
         if (errores.hasErrors()) {
             logger.warn("Errores de validación en formulario de datos personales para usuario ID: {}",
                     usuarioDTO != null ? usuarioDTO.getId() : "desconocido");
@@ -231,6 +232,7 @@ public class EmpleadoSignUpController {
         Paso2ContactoDTO paso2 = new Paso2ContactoDTO();
         paso2.setDireccion(new Direccion());
         modelo.addAttribute("paso2", paso2);
+        modelo.addAttribute("paises", paisService.getAllPaises());
         modelo.addAttribute("tiposVias", tipoViaService.getAllTipoVia());
         modelo.addAttribute("documentos", tipoDocumentoService.getAllTipoDocumento());
         return "empleado/auth/FormDatosContacto";
@@ -256,6 +258,7 @@ public class EmpleadoSignUpController {
             @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario) {
 
         if (errores.hasErrors()) {
+            modelo.addAttribute("paises", paisService.getAllPaises());
             modelo.addAttribute("tiposVias", tipoViaService.getAllTipoVia());
             modelo.addAttribute("documentos", tipoDocumentoService.getAllTipoDocumento());
             logger.warn("Errores en formulario de contacto para usuario ID: {}", usuario.getId());

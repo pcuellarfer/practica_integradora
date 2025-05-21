@@ -16,6 +16,8 @@ public class DetalleNominaDTO {
 
     private UUID idNomina;
 
+    private UUID empleadoId;
+
     private String nombreEmpleado;
 
     private LocalDate fechaInicio;

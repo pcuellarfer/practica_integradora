@@ -46,6 +46,8 @@
                             </table>
                         </div>
                         <button id="descargar-pdf" class="btn btn-primary mt-3 w-100">Descargar PDF</button>
+                        <a id="editar-nomina" class="btn btn-warning mt-3 w-100">Editar Nómina</a>
+                        <a id="eliminar-nomina" class="btn btn-danger mt-3 w-100">Eliminar Nómina</a>
                         <a href="/nominas/buscarNominas" class="btn btn-secondary mt-3 w-100 mb-5">Volver</a>
                     </div>
                 </div>
@@ -61,10 +63,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
-    window.addEventListener('DOMContentLoaded', function () {
-        const urlParams = new URLSearchParams(window.location.search);
-        const id = urlParams.get('id');
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id');
 
+    window.addEventListener('DOMContentLoaded', function () {
         if (!id) {
             alert("ID de nómina no proporcionado.");
             return;
@@ -99,12 +101,16 @@
 
                     tbody.appendChild(row);
                 });
+                document.getElementById("editar-nomina").addEventListener("click", function () {
+                    window.location.href = `/nominas/formulario?id=${id}`;
+                });
             })
             .catch(error => {
                 console.error('Error al cargar detalle de nómina:', error);
                 alert("No se pudo cargar el detalle de la nómina.");
             });
     });
+
 
     document.getElementById('descargar-pdf').addEventListener('click', () => {
         const { jsPDF } = window.jspdf;
@@ -139,6 +145,27 @@
             btnDescargar.style.display = 'inline-block';
             btnVolver.style.display = 'inline-block';
         });
+    });
+
+    document.getElementById("eliminar-nomina").addEventListener("click", function () {
+        if (!confirm("¿Estás seguro de que quieres eliminar esta nómina?")) return;
+
+        fetch(`/api/nominas/${id}`, {
+            method: "DELETE"
+        })
+            .then(res => {
+                if (res.ok) {
+                    alert("Nómina eliminada correctamente");
+                    window.location.href = "/nominas/buscarNominas";
+                } else {
+                    return res.json().then(err => {
+                        throw new Error(err.error || "Error al eliminar la nómina.");
+                    });
+                }
+            })
+            .catch(err => {
+                alert(err.message);
+            });
     });
 </script>
 

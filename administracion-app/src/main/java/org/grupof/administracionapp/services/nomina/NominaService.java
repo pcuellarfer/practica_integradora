@@ -45,4 +45,8 @@ public interface NominaService {
      * @return un objeto {@link DetalleNominaDTO} con la información detallada de la nómina.
      */
     DetalleNominaDTO obtenerDetalleNomina(UUID id);
+
+    void editarNomina(UUID id, NominaDTO dto);
+
+    void eliminarNomina(UUID id);
 }
