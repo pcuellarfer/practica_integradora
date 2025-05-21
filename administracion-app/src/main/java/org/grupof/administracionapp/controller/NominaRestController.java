@@ -4,7 +4,6 @@ import org.grupof.administracionapp.dto.nominas.BusquedaNominaDTO;
 import org.grupof.administracionapp.dto.nominas.DetalleNominaDTO;
 import org.grupof.administracionapp.dto.nominas.NombreApellidoEmpleadoDTO;
 import org.grupof.administracionapp.dto.nominas.NominaDTO;
-import org.grupof.administracionapp.entity.Empleado;
 import org.grupof.administracionapp.services.Empleado.EmpleadoService;
 import org.grupof.administracionapp.services.nomina.NominaService;
 import org.slf4j.Logger;

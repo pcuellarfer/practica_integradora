@@ -57,11 +57,13 @@ public class CatalogoController {
                 logger.info("Procesando archivo: '{}'", file.getOriginalFilename());
                 catalogoService.procesarCatalogo(file);
             }
+            //si tod va bien crea una redireccion a la misma vista con un mensaje de exito
             HttpHeaders headers = new HttpHeaders();
             headers.setLocation(URI.create("/dashboard/subida-catalogo?mensaje=Catálogos+procesados+correctamente"));
             return new ResponseEntity<>(headers, HttpStatus.SEE_OTHER);
         } catch (Exception e) {
             logger.error("Error al procesar los catálogos: {}", e.getMessage(), e);
+            //si va mal crea una redireccion a la misma vista con un mensaje de exito
             HttpHeaders headers = new HttpHeaders();
             headers.setLocation(URI.create("/dashboard/subida-catalogo?error=Error+al+procesar+los+catálogos"));
             return new ResponseEntity<>(headers, HttpStatus.SEE_OTHER);

@@ -2,18 +2,15 @@ package org.grupof.administracionapp.controller;
 
 import jakarta.servlet.http.HttpSession;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
-import org.grupof.administracionapp.dto.nominas.LineaNominaDTO;
-import org.grupof.administracionapp.dto.nominas.NominaDTO;
 import org.grupof.administracionapp.entity.Empleado;
 import org.grupof.administracionapp.services.Empleado.EmpleadoService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
-import java.util.UUID;
+
 
 /**
  * Controlador encargado de manejar las vistas y acciones relacionadas con las nóminas.
