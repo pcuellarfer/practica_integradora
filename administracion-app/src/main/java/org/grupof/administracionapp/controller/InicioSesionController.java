@@ -92,10 +92,13 @@ public class InicioSesionController {
     @GetMapping("/username")
     public String mostrarFormularioNombre(@ModelAttribute("usuario") UsuarioDTO usuario,
                                           HttpSession session) {
-        if (session.getAttribute("usuario") != null) {
-            logger.info("Sesión activa detectada. Redirigiendo al dashboard.");
+        Boolean autenticado = (Boolean) session.getAttribute("autenticado");
+
+        if (autenticado != null && autenticado) {
+            logger.info("Sesión autenticada detectada. Redirigiendo al dashboard.");
             return "redirect:/dashboard";
         }
+
         logger.info("Mostrando formulario para ingresar email.");
         return "usuario/auth/login-nombre";
     }
@@ -171,7 +174,6 @@ public class InicioSesionController {
      */
     @GetMapping("/password")
     public String mostrarFormularioContrasena(@ModelAttribute("usuario") UsuarioDTO usuarioDTO) {
-        // Verificamos si usuarioDTO es null o si el campo email es null o está vacío
         if (usuarioDTO == null || usuarioDTO.getEmail() == null || usuarioDTO.getEmail().isBlank()) {
             return "redirect:/login/username";
         }
@@ -278,6 +280,7 @@ public class InicioSesionController {
         redirectAttributes.addFlashAttribute("contador", contador);
         redirectAttributes.addFlashAttribute("navegadorId", contadorCookie.getValue());
         session.removeAttribute("intentos");
+        session.setAttribute("autenticado", true);
         return "redirect:/dashboard";
     }
 

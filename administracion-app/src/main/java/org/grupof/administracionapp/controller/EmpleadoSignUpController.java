@@ -1,5 +1,6 @@
 package org.grupof.administracionapp.controller;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.grupof.administracionapp.dto.Empleado.*;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
@@ -107,17 +108,21 @@ public class EmpleadoSignUpController {
      * @param modelo             el modelo para la vista
      * @param usuario            el usuario en sesión
      * @param redirectAttributes atributos para redirección en caso de error
+     * @param session            la sesión HTTP actual
      * @return la vista correspondiente o redirección
      */
     @GetMapping("/empleado")
     public String mostrarPaso1(Model modelo,
                                @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario,
-                               RedirectAttributes redirectAttributes) {
+                               RedirectAttributes redirectAttributes,
+                               HttpSession session) {
 
-        if (usuario == null) {
+        Boolean autenticado = (Boolean) session.getAttribute("autenticado");
+        if (usuario == null || autenticado == null || !autenticado) {
             logger.warn("Intento de registro de empleado sin usuario en sesión.");
             //se usa redirectAttributes y addflashAttribute porque con model.addatribute no se guarda entre redirecciones
-            redirectAttributes.addFlashAttribute("error", "Estabas intentando registrar un empleado sin usuario. Te hemos redirigido para que registres un usuario.");
+            redirectAttributes.addFlashAttribute("error",
+                    "Estabas intentando registrar un empleado sin usuario. Te hemos redirigido para que registres un usuario.");
             return "redirect:/registro/usuario";
         }
 
@@ -221,8 +226,11 @@ public class EmpleadoSignUpController {
      */
     @GetMapping("/paso2")
     public String mostrarPaso2(Model modelo, @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario,
-                               RedirectAttributes redirectAttributes) {
-        if (usuario == null) {
+                               RedirectAttributes redirectAttributes, HttpSession session) {
+
+        Boolean autenticado = (Boolean) session.getAttribute("autenticado");
+
+        if (usuario == null || autenticado == null || !autenticado) {
             logger.warn("Intento de acceso a paso 2 sin usuario en sesión.");
             redirectAttributes.addFlashAttribute("error", "Estabas intentando registrar un empleado sin usuario.");
             return "redirect:/registro/usuario";
@@ -278,13 +286,16 @@ public class EmpleadoSignUpController {
      * @param modelo             el modelo de Spring utilizado para pasar atributos a la vista
      * @param usuario            el objeto {@link UsuarioDTO} obtenido de la sesión, puede ser null si no está presente
      * @param redirectAttributes objeto para añadir atributos flash en caso de redirección
+     * @param session            la sesión HTTP actual
      * @return la vista del formulario de datos profesionales o una redirección al registro de usuario
      */
     @GetMapping("/paso3")
     public String mostrarPaso3(Model modelo, @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario,
-                               RedirectAttributes redirectAttributes) {
-        if (usuario == null) {
-            logger.warn("Intento de acceso a paso 3 sin usuario en sesión.");
+                               RedirectAttributes redirectAttributes,  HttpSession session) {
+        Boolean autenticado = (Boolean) session.getAttribute("autenticado");
+
+        if (usuario == null || autenticado == null || !autenticado) {
+            logger.warn("Intento de acceso a paso 2 sin usuario en sesión. /paso3");
             redirectAttributes.addFlashAttribute("error", "Estabas intentando registrar un empleado sin usuario.");
             return "redirect:/registro/usuario";
         }
@@ -335,13 +346,16 @@ public class EmpleadoSignUpController {
      * @param modelo             el modelo de Spring utilizado para pasar atributos a la vista
      * @param usuario            el objeto {@link UsuarioDTO} obtenido de la sesión, puede ser null si no está presente
      * @param redirectAttributes objeto para añadir atributos flash en caso de redirección
+     * @param session            la sesión HTTP actual
      * @return la vista del formulario de datos económicos o una redirección al registro de usuario
      */
     @GetMapping("/paso4")
     public String mostrarPaso4(Model modelo, @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario,
-                               RedirectAttributes redirectAttributes) {
-        if (usuario == null) {
-            logger.warn("Intento de acceso a paso 4 sin usuario en sesión.");
+                               RedirectAttributes redirectAttributes, HttpSession session) {
+        Boolean autenticado = (Boolean) session.getAttribute("autenticado");
+
+        if (usuario == null || autenticado == null || !autenticado) {
+            logger.warn("Intento de acceso a paso 2 sin usuario en sesión. /paso4");
             redirectAttributes.addFlashAttribute("error", "Estabas intentando registrar un empleado sin usuario.");
             return "redirect:/registro/usuario";
         }
@@ -399,18 +413,20 @@ public class EmpleadoSignUpController {
      * @param modelo             el modelo de Spring utilizado para pasar atributos a la vista
      * @param usuario            el objeto {@link UsuarioDTO} obtenido de la sesión, puede ser null si no está presente
      * @param redirectAttributes objeto para añadir atributos flash en caso de redirección
+     * @param session            la sesión HTTP actual
      * @return la vista del resumen del registro del empleado o una redirección al registro de usuario si no hay sesión válida
      */
     @GetMapping("/paso5")
     public String mostrarPaso5(@ModelAttribute("registroEmpleado") RegistroEmpleadoDTO registroEmpleado,
                                Model modelo,
                                @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario,
-                               RedirectAttributes redirectAttributes) {
+                               RedirectAttributes redirectAttributes, HttpSession session) {
 
-        if (usuario == null) {
-            logger.warn("Intento de acceso a resumen sin usuario en sesión.");
-            //se usa redirectAttributes y addflashAttribute porque con model.addatribute no se guarda entre redirecciones
-            redirectAttributes.addFlashAttribute("error", "Estabas intentando registrar un empleado sin usuario. Te hemos redirigido para que registres un usuario.");
+        Boolean autenticado = (Boolean) session.getAttribute("autenticado");
+
+        if (usuario == null || autenticado == null || !autenticado) {
+            logger.warn("Intento de acceso a paso 2 sin usuario en sesión.");
+            redirectAttributes.addFlashAttribute("error", "Estabas intentando registrar un empleado sin usuario.");
             return "redirect:/registro/usuario";
         }
 

@@ -1,46 +1,52 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title th:text="${id} ? 'Editar Nómina' : 'Alta Nómina'">Formulario Nómina</title>
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
-</head>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="fragments/header :: head(${id} ? 'Editar Nómina' : 'Alta Nómina')"></head>
+
 <body>
-<div class="container mt-5">
-    <h1 id="titulo-formulario" class="text-center"></h1>
+<div th:replace="/fragments/cabecera"></div>
+<main>
+    <div th:replace="/fragments/cuentaatras"></div>
+    <div th:replace="/fragments/botonCss"></div>
+    <div class="absoluto mt-5 mb-5">
+        <div class="container">
+            <h1 id="titulo-formulario" class="text-center mb-4"></h1>
 
-    <input type="hidden" id="empleadoId-hidden" name="empleadoId" />
+            <input type="hidden" id="empleadoId-hidden" name="empleadoId"/>
 
-    <form id="form-nomina">
-        <div class="form-group">
-            <label for="select-empleado">Empleado:</label>
-            <select id="select-empleado" class="form-control" required></select>
+            <form id="form-nomina">
+                <div class="mb-3">
+                    <label for="select-empleado" class="form-label">Empleado:</label>
+                    <select id="select-empleado" class="form-control" required></select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="fecha-inicio" class="form-label">Fecha inicio:</label>
+                    <input type="text" id="fecha-inicio" class="form-control" placeholder="aaaa-mm-dd" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="fecha-fin" class="form-label">Fecha fin:</label>
+                    <input type="text" id="fecha-fin" class="form-control" placeholder="aaaa-mm-dd" required>
+                </div>
+
+                <h4 class="mt-4">Líneas de Nómina</h4>
+                <div id="lineasNominaContainer"></div>
+                <button type="button" class="btn btn-secondary mb-3" onclick="anadirLineaNomina()">+ Añadir Línea
+                </button>
+
+                <div class="mb-3">
+                    <p><strong>Total Devengos:</strong> <span id="totalDevengos">0.00</span> €</p>
+                    <p><strong>Total Deducciones:</strong> <span id="totalDeducciones">0.00</span> €</p>
+                    <p><strong>Salario Neto:</strong> <span id="salarioNeto">0.00</span> €</p>
+                </div>
+
+                <button id="btnGuardar" type="submit" class="btn btn-primary w-100">Guardar Nómina</button>
+                <a href="/nominas/buscarNominas" class="btn btn-secondary w-100 mt-2">Volver</a>
+            </form>
         </div>
-
-        <div class="form-group">
-            <label for="fecha-inicio">Fecha inicio:</label>
-            <input type="text" id="fecha-inicio" class="form-control" placeholder="aaaa-mm-dd" required>
-        </div>
-
-        <div class="form-group">
-            <label for="fecha-fin">Fecha fin:</label>
-            <input type="text" id="fecha-fin" class="form-control" placeholder="aaaa-mm-dd" required>
-        </div>
-
-        <h4 class="mt-4">Líneas de Nómina</h4>
-        <div id="lineasNominaContainer"></div>
-        <button type="button" class="btn btn-secondary mb-3" onclick="anadirLineaNomina()">+ Añadir Línea</button>
-
-        <div class="mb-3">
-            <p><strong>Total Devengos:</strong> <span id="totalDevengos">0.00</span> €</p>
-            <p><strong>Total Deducciones:</strong> <span id="totalDeducciones">0.00</span> €</p>
-            <p><strong>Salario Neto:</strong> <span id="salarioNeto">0.00</span> €</p>
-        </div>
-
-        <button id="btnGuardar" type="submit" class="btn btn-primary w-100">Guardar Nómina</button>
-        <a href="/nominas/buscarNominas" class="btn btn-secondary w-100 mt-2">Volver</a>
-    </form>
-</div>
+    </div>
+</main>
+<div th:replace="/fragments/pie"></div>
 
 <script>
     const urlParams = new URLSearchParams(window.location.search);
@@ -188,7 +194,7 @@
                 btnGuardar.disabled = false;
                 return;
             }
-            lineas.push({ concepto, porcentaje, cantidad });
+            lineas.push({concepto, porcentaje, cantidad});
         }
 
         if (lineas.length === 0) {
@@ -209,7 +215,7 @@
 
         fetch(url, {
             method: method,
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(datos)
         })
             .then(res => {

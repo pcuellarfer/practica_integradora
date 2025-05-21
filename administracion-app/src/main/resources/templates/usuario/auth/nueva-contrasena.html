@@ -1,12 +1,7 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <meta charset="UTF-8" />
-    <title>Nueva Contraseña</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
-    <script th:src="@{/js/script.js}"></script>
-</head>
+<head th:replace="fragments/header :: head('Recuperación contraseña')"></head>
 
 <body>
 <div th:replace="/fragments/cabecera"></div>

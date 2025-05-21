@@ -74,8 +74,9 @@ public class DashboardController {
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model modelo, HttpServletRequest request) {
         UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
+        Boolean autenticado = (Boolean) session.getAttribute("autenticado");
 
-        if (usuarioDTO == null) {
+        if (usuarioDTO == null || autenticado == null || !autenticado) {
             logger.warn("Intento de acceso al dashboard sin usuario en sesión");
             return "redirect:/login/username";
         }
@@ -116,7 +117,6 @@ public class DashboardController {
         return "empleado/main/empleado-dashboard";
     }
 
-
     /**
      * Muestra el submenú de etiquetado para empleados.
      * @param session sesión HTTP actual
@@ -125,8 +125,9 @@ public class DashboardController {
     @GetMapping("dashboard/submenu-etiquetado")
     public String mostrarSubmenuSubordinados(HttpSession session) {
         UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario"); //casting
+        Boolean autenticado = (Boolean) session.getAttribute("autenticado");
 
-        if (usuarioDTO == null) {
+        if (usuarioDTO == null || autenticado == null || !autenticado) {
             logger.warn("Intento de acceso al dashboard sin usuario en sesión /submenu-etiquetado");
             return "redirect:/login/username";
         }
@@ -141,8 +142,9 @@ public class DashboardController {
     @GetMapping("dashboard/submenu-productos")
     public String mostrarSubmenuProductos(HttpSession session) {
         UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario"); //casting
+        Boolean autenticado = (Boolean) session.getAttribute("autenticado");
 
-        if (usuarioDTO == null) {
+        if (usuarioDTO == null || autenticado == null || !autenticado) {
             logger.warn("Intento de acceso al dashboard sin usuario en sesión /submenu-productos");
             return "redirect:/login/username";
         }
@@ -160,8 +162,9 @@ public class DashboardController {
     @GetMapping("dashboard/submenu-nominas")
     public String mostrarSubmenuNominas(HttpSession session) {
         UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
+        Boolean autenticado = (Boolean) session.getAttribute("autenticado");
 
-        if (usuarioDTO == null) {
+        if (usuarioDTO == null || autenticado == null || !autenticado) {
             logger.warn("Acceso denegado: no hay usuario en sesión (/submenu-nominas)");
             return "redirect:/login/username";
         }
@@ -186,8 +189,9 @@ public class DashboardController {
                                         Model model,
                                         HttpSession session) {
         UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
+        Boolean autenticado = (Boolean) session.getAttribute("autenticado");
 
-        if (usuarioDTO == null) {
+        if (usuarioDTO == null || autenticado == null || !autenticado) {
             logger.warn("Intento de acceso al dashboard sin usuario en sesión (/subida-catalogo)");
             return "redirect:/login/username";
         }
@@ -218,8 +222,9 @@ public class DashboardController {
     @GetMapping("/dashboard/mostrarCatalogo")
     public String mostrarCatalogo(Model model, HttpSession session) {
         UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario"); //casting
+        Boolean autenticado = (Boolean) session.getAttribute("autenticado");
 
-        if (usuarioDTO == null) {
+        if (usuarioDTO == null || autenticado == null || !autenticado) {
             logger.warn("Intento de acceso al dashboard sin usuario en sesión /mostrarCatalogo");
             return "redirect:/login/username";
         }
@@ -251,8 +256,9 @@ public class DashboardController {
                                   Model model, HttpSession session) {
 
         UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario"); //casting
+        Boolean autenticado = (Boolean) session.getAttribute("autenticado");
 
-        if (usuarioDTO == null) {
+        if (usuarioDTO == null || autenticado == null || !autenticado) {
             logger.warn("Intento de acceso al dashboard sin usuario en sesión /mostrarCatalogo POST");
             return "redirect:/login/username";
         }
@@ -282,8 +288,9 @@ public class DashboardController {
     @GetMapping("/dashboard/mostrarCatalogo/{id}")
     public String mostrarDetalleProducto(@PathVariable UUID id, Model model, HttpSession session) {
         UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
+        Boolean autenticado = (Boolean) session.getAttribute("autenticado");
 
-        if (usuarioDTO == null) {
+        if (usuarioDTO == null || autenticado == null || !autenticado) {
             logger.warn("Intento de acceso al dashboard sin usuario en sesión /mostrarCatalogo/{}", id);
             return "redirect:/login/username";
         }

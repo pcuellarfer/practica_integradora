@@ -118,10 +118,14 @@
         const card = document.querySelector('.card'); // área que queremos capturar
         const btnDescargar = document.getElementById('descargar-pdf');
         const btnVolver = document.querySelector('a.btn-secondary'); // botón "Volver"
+        const btnEditar = document.querySelector('a.btn-warning ');
+        const btnEliminar = document.querySelector('a.btn-danger');
 
         // Ocultamos los botones antes de capturar
         btnDescargar.style.display = 'none';
         btnVolver.style.display = 'none';
+        btnEditar.style.display = 'none';
+        btnEliminar.style.display = 'none';
 
         html2canvas(card, { scale: 2 }).then(canvas => {
             const imgData = canvas.toDataURL('image/png');
@@ -144,6 +148,8 @@
             // Volvemos a mostrar los botones después de la captura
             btnDescargar.style.display = 'inline-block';
             btnVolver.style.display = 'inline-block';
+            btnEditar.style.display = 'inline-block';
+            btnEliminar.style.display = 'inline-block';
         });
     });
 

@@ -48,8 +48,9 @@ public class BusquedaEmpleadosController {
      */
     private Empleado obtenerEmpleadoDesdeSesion(HttpSession session) {
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
+        Boolean autenticado = (Boolean) session.getAttribute("autenticado");
 
-        if (usuario == null) {
+        if (usuario == null || autenticado == null || !autenticado) {
             BusquedaEmpleadosController.logger.warn("Sesión no activa.");
             return null;
         }
@@ -80,7 +81,9 @@ public class BusquedaEmpleadosController {
         logger.info("Accediendo al formulario de búsqueda de empleados");
 
         Empleado empleado = obtenerEmpleadoDesdeSesion(session);
-        if (empleado == null) {
+        Boolean autenticado = (Boolean) session.getAttribute("autenticado");
+
+        if (empleado == null || autenticado == null || !autenticado) {
             logger.warn("No se encontró un empleado en sesión. Redirigiendo al login.");
             return "redirect:/login/username";
         }
@@ -127,7 +130,8 @@ public class BusquedaEmpleadosController {
         logger.info("Procesando búsqueda de empleados. Nombre: '{}', Género ID: {}", nombre, genero);
 
         Empleado empleado = obtenerEmpleadoDesdeSesion(session);
-        if (empleado == null) {
+        Boolean autenticado = (Boolean) session.getAttribute("autenticado");
+        if (empleado == null || autenticado == null || !autenticado) {
             logger.warn("No se encontró un empleado en sesión. Redirigiendo al login. /buscar POST");
             return "redirect:/login/username";
         }
@@ -168,7 +172,6 @@ public class BusquedaEmpleadosController {
         return "empleado/main/empleado-buscar";
     }
 
-
     /**
      * Maneja la solicitud POST para bloquear a un empleado específico.
      * <p>
@@ -176,10 +179,10 @@ public class BusquedaEmpleadosController {
      * Si el empleado está autenticado, se llama al servicio para bloquear al empleado con el motivo proporcionado.
      * Después, redirige a la vista de búsqueda con un mensaje de éxito.
      *
-     * @param empleadoId          UUID del empleado que se desea bloquear.
-     * @param motivoBloqueo       Motivo proporcionado para el bloqueo del empleado.
-     * @param session             Sesión HTTP actual desde la cual se recupera el empleado autenticado.
-     * @param redirectAttributes  Atributos utilizados para enviar mensajes flash al redirigir.
+     * @param empleadoId         UUID del empleado que se desea bloquear.
+     * @param motivoBloqueo      Motivo proporcionado para el bloqueo del empleado.
+     * @param session            Sesión HTTP actual desde la cual se recupera el empleado autenticado.
+     * @param redirectAttributes Atributos utilizados para enviar mensajes flash al redirigir.
      * @return Redirección a la página de login si no hay sesión válida, o a la vista de búsqueda tras el bloqueo.
      */
     @PostMapping("/bloquear")
@@ -188,7 +191,9 @@ public class BusquedaEmpleadosController {
                                   HttpSession session,
                                   RedirectAttributes redirectAttributes) {
         Empleado empleado = obtenerEmpleadoDesdeSesion(session);
-        if (empleado == null) {
+        Boolean autenticado = (Boolean) session.getAttribute("autenticado");
+
+        if (empleado == null || autenticado == null || !autenticado) {
             return "redirect:/login/username";
         }
 
@@ -212,7 +217,9 @@ public class BusquedaEmpleadosController {
     public String desbloquearUsuario(@RequestParam("empleadoId") UUID empleadoId, HttpSession session, RedirectAttributes redirectAttributes) {
 
         Empleado empleado = obtenerEmpleadoDesdeSesion(session);
-        if (empleado == null) {
+        Boolean autenticado = (Boolean) session.getAttribute("autenticado");
+
+        if (empleado == null || autenticado == null || !autenticado) {
             return "redirect:/login/username";
         }
 

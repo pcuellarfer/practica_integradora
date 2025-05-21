@@ -40,8 +40,9 @@ public class nominaController {
     @GetMapping("/seleccionar-empleado")
     public String seleccionarEmpleado(Model model, HttpSession session) {
         UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
+        Boolean autenticado = (Boolean) session.getAttribute("autenticado");
 
-        if (usuarioDTO == null) {
+        if (usuarioDTO == null || autenticado == null || !autenticado) {
             logger.warn("Intento de acceso a /nominas/seleccionar-empleado sin usuario en sesión");
             return "redirect:/login/username";
         }
@@ -62,7 +63,9 @@ public class nominaController {
     @GetMapping("/buscarNominas")
     public String buscarNominas(HttpSession session) {
         UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
-        if (usuarioDTO == null) {
+        Boolean autenticado = (Boolean) session.getAttribute("autenticado");
+
+        if (usuarioDTO == null || autenticado == null || !autenticado) {
             logger.warn("Intento de acceso a /buscarNominas sin usuario en sesión");
             return "redirect:/login/username";
         }
@@ -79,7 +82,9 @@ public class nominaController {
     @GetMapping("/detalle")
     public String mostrarDetalleNomina(HttpSession session) {
         UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
-        if (usuarioDTO == null) {
+        Boolean autenticado = (Boolean) session.getAttribute("autenticado");
+
+        if (usuarioDTO == null || autenticado == null || !autenticado) {
             logger.warn("Intento de acceso a /detalle sin usuario en sesión");
             return "redirect:/login/username";
         }
@@ -90,7 +95,9 @@ public class nominaController {
     @GetMapping("/formulario")
     public String mostrarFormularioGeneral(HttpSession session) {
         UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
-        if (usuarioDTO == null) {
+        Boolean autenticado = (Boolean) session.getAttribute("autenticado");
+
+        if (usuarioDTO == null || autenticado == null || !autenticado) {
             logger.warn("Intento de acceso a /formulario sin usuario en sesión");
             return "redirect:/login/username";
         }

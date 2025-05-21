@@ -5,7 +5,6 @@ import jakarta.validation.Valid;
 import org.grupof.administracionapp.dto.Empleado.EmpleadoDetalleDTO;
 import org.grupof.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
-import org.grupof.administracionapp.entity.Empleado;
 import org.grupof.administracionapp.services.Departamento.DepartamentoService;
 import org.grupof.administracionapp.services.Empleado.EmpleadoService;
 import org.grupof.administracionapp.services.Genero.GeneroService;
@@ -22,14 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Optional;
-import java.util.UUID;
 
 @Controller
 public class DetalleController {
@@ -41,7 +33,10 @@ public class DetalleController {
     private final DepartamentoService departamentoService;
     private final PaisService paisService;
 
-    public DetalleController(GeneroService generoService, EmpleadoService empleadoService, DepartamentoService departamentoService, PaisService paisService) {
+    public DetalleController(GeneroService generoService,
+                             EmpleadoService empleadoService,
+                             DepartamentoService departamentoService,
+                             PaisService paisService) {
         this.generoService = generoService;
         this.empleadoService = empleadoService;
         this.departamentoService = departamentoService;
@@ -61,8 +56,9 @@ public class DetalleController {
     @GetMapping("/detalle")
     public String verDetalles(HttpSession session, Model modelo) {
         UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
+        Boolean autenticado = (Boolean) session.getAttribute("autenticado");
 
-        if (usuarioDTO == null) {
+        if (usuarioDTO == null || autenticado == null || !autenticado) {
             logger.warn("Intento de acceso al dashboard sin usuario en sesión");
             return "redirect:/login/username";
         }
@@ -99,8 +95,9 @@ public class DetalleController {
     @GetMapping("/editarDetalle")
     public String editarDetalle(HttpSession session, Model modelo){
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario"); //recuperar el usuario de la sesion
+        Boolean autenticado = (Boolean) session.getAttribute("autenticado");
 
-        if (usuario == null) {
+        if (usuario == null || autenticado == null || !autenticado) {
             logger.warn("Intento de acceso sin sesión activa en /editarDetalle. Redirigiendo a login.");
             return "redirect:/login/username"; //si no hay usuario, a iniciar sesion
         }
@@ -163,8 +160,9 @@ public class DetalleController {
                                 @RequestParam("foto") MultipartFile foto) {
 
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario"); //pillar el usuario de sesion
+        Boolean autenticado = (Boolean) session.getAttribute("autenticado");
 
-        if (usuario == null) {
+        if (usuario == null || autenticado == null || !autenticado) {
             return "redirect:/login/username"; //si no usuario, a iniciar sesion
         }
 
