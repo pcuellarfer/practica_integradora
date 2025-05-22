@@ -102,30 +102,21 @@ public class EmpleadoSignUpController {
         return usuario;
     }
 
-    @ModelAttribute("persona")
-    public UsuarioDTO getPersona(HttpSession sesion){
-        UsuarioDTO persona = (UsuarioDTO) sesion.getAttribute("persona");
-        if(persona == null){
-            persona = new UsuarioDTO();
-        }
-        return persona;
-    }
-
     /**
      * Muestra el formulario del Paso 1: Datos personales.
      *
-     * @param model             el modelo para la vista
+     * @param modelo             el modelo para la vista
      * @param usuario            el usuario en sesión
      * @param redirectAttributes atributos para redirección en caso de error
      * @param session            la sesión HTTP actual
      * @return la vista correspondiente o redirección
      */
     @GetMapping("/empleado")
-    public String mostrarPaso1(Model model,
+    public String mostrarPaso1(Model modelo,
                                @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario,
                                RedirectAttributes redirectAttributes,
-                               @ModelAttribute("persona") UsuarioDTO persona,
                                HttpSession session) {
+
         Boolean autenticado = (Boolean) session.getAttribute("autenticado");
         if (usuario == null || autenticado == null || !autenticado) {
             logger.warn("Intento de registro de empleado sin usuario en sesión.");
@@ -135,19 +126,11 @@ public class EmpleadoSignUpController {
             return "redirect:/registro/usuario";
         }
 
-        RegistroEmpleadoDTO registroEmpleado = (RegistroEmpleadoDTO) session.getAttribute("registroEmpleado");
-        if (registroEmpleado == null) {
-            registroEmpleado = new RegistroEmpleadoDTO(); // o construirlo vacío
-            registroEmpleado.setPaso1PersonalDTO(new Paso1PersonalDTO());
-        }
-
         logger.info("Mostrando formulario de datos personales para usuario ID: {}", usuario.getId());
+        modelo.addAttribute("paso1", new Paso1PersonalDTO());
+        modelo.addAttribute("paises", paisService.getAllPaises());
+        modelo.addAttribute("generos", generoService.getAllGeneros());
 
-        model.addAttribute("registroEmpleado", registroEmpleado);
-        model.addAttribute("paso1", registroEmpleado.getPaso1PersonalDTO());
-
-        model.addAttribute("generos", generoService.getAllGeneros());
-        model.addAttribute("paises", paisService.getAllPaises());
         return "empleado/auth/FormDatosPersonales";
     }
 
@@ -169,8 +152,7 @@ public class EmpleadoSignUpController {
             @ModelAttribute("registroEmpleado") RegistroEmpleadoDTO registroEmpleado,
             Model modelo,
             @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuarioDTO,
-            @RequestParam("foto") MultipartFile foto,
-            HttpSession session) {
+            @RequestParam("foto") MultipartFile foto) {
 
         logger.info("Procesando paso 1 del formulario para usuario ID: {}",
                 usuarioDTO != null ? usuarioDTO.getId() : "desconocido");
@@ -227,7 +209,6 @@ public class EmpleadoSignUpController {
         UUID empleadoId = UUID.randomUUID();
         registroEmpleado.setEmpleadoId(empleadoId);
         registroEmpleado.setPaso1PersonalDTO(paso1);
-        session.setAttribute("registroEmpleado", registroEmpleado);
         logger.info("Paso 1 completado exitosamente para nuevo empleado ID: {}", empleadoId);
 
         return "redirect:/registro/paso2";
@@ -245,13 +226,12 @@ public class EmpleadoSignUpController {
      */
     @GetMapping("/paso2")
     public String mostrarPaso2(Model modelo, @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario,
-                               RedirectAttributes redirectAttributes, HttpSession session,
-                               @ModelAttribute("persona") UsuarioDTO persona) {
+                               RedirectAttributes redirectAttributes, HttpSession session) {
 
         Boolean autenticado = (Boolean) session.getAttribute("autenticado");
 
         if (usuario == null || autenticado == null || !autenticado) {
-            logger.warn("Intento de acceso a paso 2 sin usuario en sesión. /paso2");
+            logger.warn("Intento de acceso a paso 2 sin usuario en sesión.");
             redirectAttributes.addFlashAttribute("error", "Estabas intentando registrar un empleado sin usuario.");
             return "redirect:/registro/usuario";
         }
@@ -311,12 +291,11 @@ public class EmpleadoSignUpController {
      */
     @GetMapping("/paso3")
     public String mostrarPaso3(Model modelo, @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario,
-                               RedirectAttributes redirectAttributes,  HttpSession session,
-                               @ModelAttribute("persona") UsuarioDTO persona) {
+                               RedirectAttributes redirectAttributes,  HttpSession session) {
         Boolean autenticado = (Boolean) session.getAttribute("autenticado");
 
         if (usuario == null || autenticado == null || !autenticado) {
-            logger.warn("Intento de acceso a paso 3 sin usuario en sesión. /paso3");
+            logger.warn("Intento de acceso a paso 2 sin usuario en sesión. /paso3");
             redirectAttributes.addFlashAttribute("error", "Estabas intentando registrar un empleado sin usuario.");
             return "redirect:/registro/usuario";
         }
@@ -372,12 +351,11 @@ public class EmpleadoSignUpController {
      */
     @GetMapping("/paso4")
     public String mostrarPaso4(Model modelo, @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario,
-                               RedirectAttributes redirectAttributes, HttpSession session,
-                               @ModelAttribute("persona") UsuarioDTO persona) {
+                               RedirectAttributes redirectAttributes, HttpSession session) {
         Boolean autenticado = (Boolean) session.getAttribute("autenticado");
 
         if (usuario == null || autenticado == null || !autenticado) {
-            logger.warn("Intento de acceso a paso 4 sin usuario en sesión. /paso4");
+            logger.warn("Intento de acceso a paso 2 sin usuario en sesión. /paso4");
             redirectAttributes.addFlashAttribute("error", "Estabas intentando registrar un empleado sin usuario.");
             return "redirect:/registro/usuario";
         }
@@ -442,13 +420,12 @@ public class EmpleadoSignUpController {
     public String mostrarPaso5(@ModelAttribute("registroEmpleado") RegistroEmpleadoDTO registroEmpleado,
                                Model modelo,
                                @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario,
-                               RedirectAttributes redirectAttributes, HttpSession session,
-                               @ModelAttribute("persona") UsuarioDTO persona) {
+                               RedirectAttributes redirectAttributes, HttpSession session) {
 
         Boolean autenticado = (Boolean) session.getAttribute("autenticado");
 
         if (usuario == null || autenticado == null || !autenticado) {
-            logger.warn("Intento de acceso a paso 5 sin usuario en sesión.");
+            logger.warn("Intento de acceso a paso 2 sin usuario en sesión.");
             redirectAttributes.addFlashAttribute("error", "Estabas intentando registrar un empleado sin usuario.");
             return "redirect:/registro/usuario";
         }
@@ -516,8 +493,7 @@ public class EmpleadoSignUpController {
      */
     @PostMapping("/paso5")
     public String procesarPaso5(@ModelAttribute("registroEmpleado") RegistroEmpleadoDTO registroEmpleadoDTO,
-                                @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuarioDTO,
-                                @ModelAttribute("persona") UsuarioDTO persona) {
+                                @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuarioDTO) {
 
         if (usuarioDTO == null) {
             logger.warn("Intento de envío final de registro sin usuario.");
