@@ -114,19 +114,18 @@ public class EmpleadoSignUpController {
     /**
      * Muestra el formulario del Paso 1: Datos personales.
      *
-     * @param modelo             el modelo para la vista
+     * @param model             el modelo para la vista
      * @param usuario            el usuario en sesión
      * @param redirectAttributes atributos para redirección en caso de error
      * @param session            la sesión HTTP actual
      * @return la vista correspondiente o redirección
      */
     @GetMapping("/empleado")
-    public String mostrarPaso1(Model modelo,
+    public String mostrarPaso1(Model model,
                                @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario,
                                RedirectAttributes redirectAttributes,
                                @ModelAttribute("persona") UsuarioDTO persona,
                                HttpSession session) {
-
         Boolean autenticado = (Boolean) session.getAttribute("autenticado");
         if (usuario == null || autenticado == null || !autenticado) {
             logger.warn("Intento de registro de empleado sin usuario en sesión.");
@@ -136,11 +135,19 @@ public class EmpleadoSignUpController {
             return "redirect:/registro/usuario";
         }
 
+        RegistroEmpleadoDTO registroEmpleado = (RegistroEmpleadoDTO) session.getAttribute("registroEmpleado");
+        if (registroEmpleado == null) {
+            registroEmpleado = new RegistroEmpleadoDTO(); // o construirlo vacío
+            registroEmpleado.setPaso1PersonalDTO(new Paso1PersonalDTO());
+        }
+
         logger.info("Mostrando formulario de datos personales para usuario ID: {}", usuario.getId());
-        modelo.addAttribute("paso1", new Paso1PersonalDTO());
-        modelo.addAttribute("paises", paisService.getAllPaises());
-        modelo.addAttribute("generos", generoService.getAllGeneros());
-        session.setAttribute("persona", persona);
+
+        model.addAttribute("registroEmpleado", registroEmpleado);
+        model.addAttribute("paso1", registroEmpleado.getPaso1PersonalDTO());
+
+        model.addAttribute("generos", generoService.getAllGeneros());
+        model.addAttribute("paises", paisService.getAllPaises());
         return "empleado/auth/FormDatosPersonales";
     }
 
@@ -162,7 +169,8 @@ public class EmpleadoSignUpController {
             @ModelAttribute("registroEmpleado") RegistroEmpleadoDTO registroEmpleado,
             Model modelo,
             @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuarioDTO,
-            @RequestParam("foto") MultipartFile foto) {
+            @RequestParam("foto") MultipartFile foto,
+            HttpSession session) {
 
         logger.info("Procesando paso 1 del formulario para usuario ID: {}",
                 usuarioDTO != null ? usuarioDTO.getId() : "desconocido");
@@ -219,6 +227,7 @@ public class EmpleadoSignUpController {
         UUID empleadoId = UUID.randomUUID();
         registroEmpleado.setEmpleadoId(empleadoId);
         registroEmpleado.setPaso1PersonalDTO(paso1);
+        session.setAttribute("registroEmpleado", registroEmpleado);
         logger.info("Paso 1 completado exitosamente para nuevo empleado ID: {}", empleadoId);
 
         return "redirect:/registro/paso2";
