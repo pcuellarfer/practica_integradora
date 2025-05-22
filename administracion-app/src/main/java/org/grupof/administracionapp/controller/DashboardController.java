@@ -157,7 +157,7 @@ public class DashboardController {
         Boolean autenticado = (Boolean) session.getAttribute("autenticado");
         Empleado empleado = obtenerEmpleadoDesdeSesion(session);
 
-        if (usuarioDTO == null || autenticado == null || !autenticado || empleado != null) {
+        if (usuarioDTO == null || autenticado == null || !autenticado || empleado == null) {
             logger.warn("No se encontró un empleado en sesión. Redirigiendo al login.");
             //mensaje de error redirigido a la vista
             redirectAttributes.addFlashAttribute("error", "has intentado acceder al submenu de etiquetado sin usuario/empleado autorizado, FUERA DE AQUI!");
