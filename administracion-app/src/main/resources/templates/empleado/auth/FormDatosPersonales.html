@@ -20,7 +20,7 @@
             <div class="col-2"></div>
         </div>
 
-        <form th:action="@{/registro/paso2}" th:object="${registroEmpleado.paso1PersonalDTO}" method="post" enctype="multipart/form-data">
+        <form th:action="@{/registro/paso1}" th:object="${registroEmpleado.paso1PersonalDTO}" method="post" enctype="multipart/form-data">
 
             <div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}">
                 <ul>
