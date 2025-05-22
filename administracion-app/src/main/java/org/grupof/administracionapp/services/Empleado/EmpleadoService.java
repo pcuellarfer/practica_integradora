@@ -1,44 +1,77 @@
 package org.grupof.administracionapp.services.Empleado;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
-
 import org.grupof.administracionapp.dto.Empleado.EmpleadoDetalleDTO;
 import org.grupof.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
+import org.grupof.administracionapp.dto.nominas.NombreApellidoEmpleadoDTO;
 import org.grupof.administracionapp.entity.Empleado;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
 
 /**
- * Servicio encargado de gestionar operaciones relacionadas con empleados.
- * Define los métodos necesarios para registrar, editar, eliminar,
- * buscar y listar empleados dentro del sistema.
+ * Interfaz que define los métodos para la gestión de empleados en la aplicación.
+ * Proporciona operaciones para registrar, editar, buscar y eliminar empleados,
+ * así como para gestionar su estado (bloqueo/desbloqueo).
  */
-@Service
 public interface EmpleadoService {
 
-    //usado en DetalleControler
+    /**
+     * Guarda un nuevo empleado en el sistema.
+     *
+     * @param empleado el objeto {@link Empleado} que se desea guardar.
+     */
     void guardarEmpleado(Empleado empleado);
 
-    //usado en DetalleControler
+    /**
+     * Actualiza los datos de un empleado existente, incluyendo la carga de una foto.
+     *
+     * @param usuarioId el UUID del usuario/empleado a actualizar.
+     * @param dto el objeto {@link RegistroEmpleadoDTO} con los nuevos datos a actualizar.
+     * @param foto el archivo {@link MultipartFile} con la foto que se quiere subir (puede ser null).
+     * @param uploadDir la ruta del directorio donde se almacenará la foto subida.
+     * @throws IOException si ocurre un error durante la subida o guardado de la foto.
+     */
     void actualizarDatosEmpleado(UUID usuarioId,
                                  RegistroEmpleadoDTO dto,
                                  MultipartFile foto,
-                                 String uploadDir)
-            throws IOException;
+                                 String uploadDir) throws IOException;
 
-    //usado en DetalleControler
+    /**
+     * Obtiene el detalle completo de un empleado a partir de su ID.
+     *
+     * @param usuarioId el UUID del empleado del que se desea obtener el detalle.
+     * @return un objeto {@link EmpleadoDetalleDTO} con la información detallada del empleado.
+     */
     EmpleadoDetalleDTO obtenerDetalleEmpleado(UUID usuarioId);
 
-    //usado en DetalleControler
+    /**
+     * Obtiene los datos de registro de un empleado para ser usados en edición.
+     *
+     * @param usuarioId el UUID del empleado que se va a editar.
+     * @return un objeto {@link RegistroEmpleadoDTO} con los datos para edición.
+     */
     RegistroEmpleadoDTO obtenerRegistroEmpleadoParaEdicion(UUID usuarioId);
 
-    //usado en BusqedaEmpleadosController para la busqueda parametrizada nombre+genero
-    List<Empleado> buscarEmpleados(String nombre, UUID generoId);
+    /**
+     * Busca empleados según múltiples parámetros opcionales: nombre, género, departamentos y rango de fechas.
+     *
+     * @param nombre el nombre o parte del nombre para filtrar empleados (puede ser null o vacío).
+     * @param generoId el UUID del género para filtrar (puede ser null para no filtrar por género).
+     * @param departamentoIds lista de UUIDs de departamentos para filtrar (puede ser vacía o null para no filtrar).
+     * @param fechaInicio la fecha mínima de inicio para filtrar empleados (puede ser null).
+     * @param fechaFin la fecha máxima de fin para filtrar empleados (puede ser null).
+     * @return una lista de {@link Empleado} que cumplen con los criterios de búsqueda especificados.
+     */
+    List<Empleado> buscarEmpleados(String nombre,
+                                   UUID generoId,
+                                   List<UUID> departamentoIds,
+                                   LocalDate fechaInicio,
+                                   LocalDate fechaFin);
+
 
 
     /**
@@ -82,6 +115,8 @@ public interface EmpleadoService {
      */
     List<RegistroEmpleadoDTO> listarEmpleados();
 
+    List<NombreApellidoEmpleadoDTO> obtenerNombreYApellidoEmpleados();
+
     /**
      * Busca un empleado por el identificador del usuario al que está asociado.
      *
@@ -105,10 +140,10 @@ public interface EmpleadoService {
      * Este método es útil para excluir al empleado que está realizando una acción,
      * como por ejemplo en la vista de asignación de subordinados.
      *
-     * @param id ID del empleado que se desea excluir.
+     * @param jefeId ID del empleado que se desea excluir.
      * @return Lista de empleados distintos al proporcionado.
      */
-    List<Empleado> buscarTodosMenos(UUID id);
+    List<Empleado>  buscarTodosMenosConJerarquia (UUID jefeId);
 
     /**
      * Busca una lista de empleados cuyos IDs se proporcionan.
@@ -176,4 +211,13 @@ public interface EmpleadoService {
      * @return una lista ordenada de empleados.
      */
     List<Empleado> getEmpleadosOrdenados();
+
+    /**
+     * Obtiene el estado de bloqueo del usuario asociado al empleado con el ID proporcionado.
+     *
+     * @param empleadoId el identificador único del empleado.
+     * @return {@code true} si el usuario está bloqueado; {@code false} si no lo está.
+     * @throws RuntimeException si el empleado no existe o no tiene un usuario asociado.
+     */
+    boolean obtenerEstadoEmpleado(UUID empleadoId);
 }

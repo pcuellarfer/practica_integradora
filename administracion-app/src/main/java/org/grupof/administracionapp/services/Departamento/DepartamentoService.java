@@ -1,16 +1,13 @@
 package org.grupof.administracionapp.services.Departamento;
 
 import org.grupof.administracionapp.entity.registroEmpleado.Departamento;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.UUID;
 
 /**
- * Servicio para la gestión de entidades {@link Departamento}.
- * Proporciona métodos para recuperar información de departamentos desde la base de datos.
+ * Interfaz que define los métodos para la gestión de departamentos en la aplicación.
+ * Proporciona operaciones para obtener información sobre departamentos registrados.
  */
-@Service
 public interface DepartamentoService {
 
     /**

@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="fragments/header :: head('Mostrar catálogo')">
-    <!-- Agrega DataTables CSS si no está en tu fragmento -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 </head>
 <body>
@@ -9,6 +8,7 @@
 
 <main>
     <div th:replace="/fragments/cuentaatras"></div>
+    <div th:replace="/fragments/botonCss"></div>
     <div class="absoluto mt-5">
         <div class="container-fluid px-5">
             <!-- Título -->
@@ -17,44 +17,91 @@
                     <h1 class="catalogo-titulo">Catálogo de Productos</h1>
                 </div>
             </div>
+            <form th:action="@{/dashboard/mostrarCatalogo}" method="post">
+                <!-- Filtro por Tipo de Producto -->
+                <div class="mb-3">
+                    <label for="tipoProducto" class="form-label">Tipo de producto:</label>
+                    <select id="tipoProducto" name="tipoProducto" class="form-control">
+                        <option value="">Mostrar todos los productos</option>
+                        <option th:each="tipo : ${tipoProducto}"
+                                th:value="${tipo.name()}"
+                                th:text="${tipo.name()}"
+                                th:selected="${tipo.name() == selectedTipoProducto}"></option>
+                    </select>
+                </div>
+
+                <!-- Filtro por Categoría -->
+                <div class="mb-3">
+                    <label for="categoria" class="form-label">Categoría:</label>
+                    <select id="categoria" name="categoria" class="form-control">
+                        <option value="">Mostrar todas las categorias</option>
+                        <option th:each="cat : ${categorias}"
+                                th:value="${cat.nombre}"
+                                th:text="${cat.nombre}"
+                                th:selected="${cat.nombre == selectedCategoria}"></option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-4">Buscar</button>
+            </form>
+
 
             <!-- Tabla de productos -->
             <div class="catalogo-tabla table-responsive mb-4">
-                <table id="catalogo" class="catalogo-table table table-bordered table-hover w-100">
-                    <thead class="catalogo-thead">
-                    <tr class="catalogo-header-row">
+                <table id="catalogo" class="catalogo table table-striped table-bordered table-hover">
+                    <thead>
+                    <tr>
                         <th>Descripción</th>
                         <th>Precio</th>
                         <th>Marca</th>
                         <th>Categorías</th>
-                        <th>Es Perecedero</th>
+                        <th>Perecedero</th>
                         <th>Unidades</th>
                         <th>Fecha Fabricación</th>
                         <th>Colores</th>
-                        <th>Título</th>
-                        <th>Autor</th>
-                        <th>Editorial</th>
-                        <th>Tapa</th>
-                        <th>Número de Páginas</th>
-                        <th>Segunda Mano</th>
+                        <th>Dimensiones</th>
+                        <th>Detalles</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="producto : ${productos}">
+                        <!-- Campos comunes -->
                         <td th:text="${producto.descripcion}"></td>
                         <td th:text="${producto.precio}"></td>
                         <td th:text="${producto.marca}"></td>
-                        <td th:text="${producto.categorias}"></td>
+                        <td>
+                            <ul>
+                                <li th:each="categoria : ${producto.categorias}" th:text="${categoria.nombre}"></li>
+                            </ul>
+                        </td>
                         <td th:text="${producto.esPerecedero ? 'Sí' : 'No'}"></td>
                         <td th:text="${producto.unidades}"></td>
                         <td th:text="${producto.fechaFabricacion}"></td>
-                        <td th:text="${producto.colores}"></td>
-                        <td th:text="${producto.titulo}"></td>
-                        <td th:text="${producto.autor}"></td>
-                        <td th:text="${producto.editorial}"></td>
-                        <td th:text="${producto.tapa}"></td>
-                        <td th:text="${producto.numeroPaginas}"></td>
-                        <td th:text="${producto.segundaMano ? 'Sí' : 'No'}"></td>
+                        <td>
+                            <ul>
+                                <li th:each="color : ${producto.colores}" th:text="${color}"></li>
+                            </ul>
+                        </td>
+                        <td th:if="${producto instanceof T(org.grupof.administracionapp.entity.producto.Libro)}"
+                            th:with="libro=${producto}">
+                            <span th:text="${libro.dimensiones.ancho}">-</span> x
+                            <span th:text="${libro.dimensiones.profundidad}">-</span> x
+                            <span th:text="${libro.dimensiones.alto}">-</span>
+                        </td>
+                        <td th:if="${producto instanceof T(org.grupof.administracionapp.entity.producto.Mueble)}"
+                            th:with="mueble=${producto}">
+                            <span th:text="${mueble.dimensiones.ancho}">-</span> x
+                            <span th:text="${mueble.dimensiones.profundidad}">-</span> x
+                            <span th:text="${mueble.dimensiones.alto}">-</span>
+                        </td>
+                        <td th:if="${producto instanceof T(org.grupof.administracionapp.entity.producto.Mueble)}"
+                            th:with="mueble=${producto}">
+                            <a th:href="@{/dashboard/mostrarCatalogo/{id}(id=${mueble.id})}" class="btn btn-info">Detalles</a>
+                        </td>
+                        <td th:if="${producto instanceof T(org.grupof.administracionapp.entity.producto.Libro)}"
+                            th:with="libro=${producto}">
+                            <a th:href="@{/dashboard/mostrarCatalogo/{id}(id=${libro.id})}" class="btn btn-info">Detalles</a>
+                        </td>
                     </tr>
                     </tbody>
                 </table>

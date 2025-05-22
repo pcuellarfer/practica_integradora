@@ -1,0 +1,64 @@
+services:
+  mysql:
+    image: davidsmh233/integradora-mysql:latest
+    build:
+      context: ./sql
+      dockerfile: Dockerfile
+    container_name: mysql_integradora
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: integradora_compose
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - red_integradora
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-padmin" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  tomcat:
+    image: davidsmh233/integradora-tomcat:latest
+    build:
+      context: ./tomcat
+      dockerfile: Dockerfile
+    container_name: tomcat_integradora
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=integradora_compose
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=admin
+    networks:
+      - red_integradora
+    restart: unless-stopped
+    volumes:
+      - ./tomcat/logs:/usr/local/tomcat/logs
+
+  apache:
+    build:
+      context: ./apache
+      dockerfile: Dockerfile
+    image: davidsmh233/integradora-apache:latest
+    container_name: apache_integradora
+    ports:
+      - "80:80"
+    networks:
+      - red_integradora
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+
+networks:
+  red_integradora:
+    driver: bridge

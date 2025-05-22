@@ -1,0 +1,8 @@
+FROM mysql:8.0
+
+ENV MYSQL_ROOT_PASSWORD=admin
+ENV MYSQL_DATABASE=integradora_compose
+
+# Copiar los archivos SQL al punto de inicialización de MySQL
+COPY init.sql /docker-entrypoint-initdb.d/
+

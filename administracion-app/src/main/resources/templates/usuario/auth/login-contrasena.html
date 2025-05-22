@@ -4,6 +4,7 @@
 <head th:replace="fragments/header :: head('Login - Contraseña')"></head>
 <body>
 <div th:replace="/fragments/cabecera"></div>
+<div th:replace="/fragments/botonCss"></div>
 <main>
 <div class="absoluto mt-5">
     <div class="container">
@@ -23,7 +24,7 @@
                 <label for="contrasena" class="form-label">Contraseña</label>
                 <input type="password" id="contrasena" name="contrasena" class="form-control">
             </div>
-            <input type="checkbox" id="mostrarcontrasena" onclick="script()"> Mostrar contraseña
+            <input type="checkbox" id="mostrarcontrasena" onclick="script()"><label for="mostrarcontrasena">&nbsp;Mostrar contraseña</label>
             <button type="submit" class="btn btn-primary w-100 mt-3">Iniciar sesión</button>
         </form>
 

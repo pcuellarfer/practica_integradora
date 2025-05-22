@@ -1,0 +1,18 @@
+<div th:fragment="toggleCss">
+    <div class="mt-4 text-start ps-3">
+        <button id="toggleCssBtn" class="btn btn-warning">Desactivar CSS</button>
+    </div>
+    <script>
+        const btn = document.getElementById('toggleCssBtn');
+        let estiloActivo = true;
+
+        btn.addEventListener('click', () => {
+            const estilos = document.querySelectorAll('link[rel="stylesheet"]');
+            estilos.forEach(link => {
+                link.disabled = estiloActivo;
+            });
+            estiloActivo = !estiloActivo;
+            btn.textContent = estiloActivo ? 'Desactivar CSS' : 'Activar CSS';
+        });
+    </script>
+</div>

@@ -1,23 +1,22 @@
-//package org.grupof.administracionapp.entity.producto;
-//
-//import jakarta.persistence.*;
-//import org.grupof.administracionapp.entity.producto.enums.Tapa;
-//
-//import java.util.UUID;
-//
-//@Entity
-//public class Libro extends Producto{
-//
-//    private String titulo;
-//
-//    private String autor;
-//
-//    private String editorial;
-//
-//    @Enumerated(EnumType.STRING)
-//    private Tapa tapa;
-//
-//    private int numPaginas;
-//
-//    private Boolean segundaMano;
-//}
+package org.grupof.administracionapp.entity.producto;
+
+import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
+@EqualsAndHashCode(callSuper = true)
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Libro extends Producto {
+    private String titulo;
+    private String autor;
+    private String editorial;
+    private String tapa;
+    private Integer numeroPaginas;
+    private Boolean segundaMano;
+    private Dimensiones dimensiones;
+}

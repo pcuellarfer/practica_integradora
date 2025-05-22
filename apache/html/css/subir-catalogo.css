@@ -1,0 +1,33 @@
+.subir-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.subir-card {
+    border-radius: 12px;
+    background-color: #ffffff;
+}
+
+.subir-titulo {
+    font-size: 1.8rem;
+    color: #333;
+    font-weight: 600;
+}
+
+.subir-label {
+    font-weight: 500;
+    color: #555;
+}
+
+.subir-input {
+    border-radius: 6px;
+}
+
+.subir-boton {
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.subir-alerta {
+    font-size: 0.95rem;
+}

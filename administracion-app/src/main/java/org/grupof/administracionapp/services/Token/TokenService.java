@@ -1,15 +1,12 @@
 package org.grupof.administracionapp.services.Token;
 
 import org.grupof.administracionapp.dto.TokenRecuperacionDTO;
-import org.springframework.stereotype.Service;
-
 import java.util.Optional;
 
 /**
  * Servicio para la gestión de tokens de recuperación de contraseña.
  * Permite guardar, validar, obtener y eliminar tokens asociados a un correo electrónico.
  */
-@Service
 public interface TokenService {
 
     /**

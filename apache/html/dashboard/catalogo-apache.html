@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Subir catálogo</title>
+    <link rel="stylesheet" href="../css/cabecera.css"/>
+    <link rel="stylesheet" href="../css/pie.css"/>
+    <link rel="stylesheet" href="../css/cuenta-atras.css"/>
+    <link rel="stylesheet" href="../css/num-sesion.css"/>
+    <link rel="stylesheet" href="../css/mostrar-catalogo.css" />
+    <link rel="stylesheet" href="../css/subir-catalogo.css" />
+    <link rel="icon" type="image/png" href="../favicon/fire-department.png"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="../js/script.js"></script>
+</head>
+<body>
+
+<!-- Aquí va el contenido del fragmento "cabecera" -->
+<header>
+    <div>
+        <header class="cabecera">
+            <div class="header-content">
+                <h3 class="titulo">Práctica Integradora</h3>
+                <p class="grupo">– Grupo F</p>
+            </div>
+        </header>
+    </div>
+</header>
+
+<main>
+    <!-- Fragmento cuentaatras -->
+    <section>
+        <div id="cuentatras">
+            <h5>Cuenta Atrás para Cierre de Sesión</h5>
+            <p>La sesión se cerrará en:<strong id="countdown">5:00</strong></p>
+        </div>
+    </section>
+
+    <!-- Fragmento botonCss -->
+    <div>
+        <div>
+            <div class="mt-4 text-start ps-3">
+                <button id="toggleCssBtn" class="btn btn-warning">Desactivar CSS</button>
+            </div>
+            <script>
+                const btn = document.getElementById('toggleCssBtn');
+                let estiloActivo = true;
+
+                btn.addEventListener('click', () => {
+                    const estilos = document.querySelectorAll('link[rel="stylesheet"]');
+                    estilos.forEach(link => {
+                        link.disabled = estiloActivo;
+                    });
+                    estiloActivo = !estiloActivo;
+                    btn.textContent = estiloActivo ? 'Desactivar CSS' : 'Activar CSS';
+                });
+            </script>
+        </div>
+    </div>
+
+    <div class="absoluto mt-5">
+        <div class="container">
+            <div class="row align-items-center mb-4">
+                <div class="col-2"></div>
+                <div class="col text-center">
+                    <h1 class="subir-titulo">Subir catálogo</h1>
+                </div>
+                <div class="col-2"></div>
+            </div>
+
+            <!-- Formulario -->
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="subir-card card shadow-lg p-4">
+                        <form action="http://tomcat:8080/catalogo/subir" method="post" enctype="multipart/form-data" class="subir-formulario">
+                            <div class="mb-3">
+                                <label for="file" class="form-label subir-label">Seleccionar archivo JSON:</label>
+                                <input type="file" id="file" name="files" class="form-control subir-input" accept=".json" required multiple>
+                            </div>
+                            <div id="mensaje"></div>
+                            <button type="submit" class="btn btn-primary w-100 subir-boton mb-4 mt-3">Subir catálogo</button>
+                            <a href="http://tomcat:8080/dashboard" class="btn btn-secondary w-100 mb-4">Volver al dashboard</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Fragmento pie -->
+<footer class="mt-5">
+    <div>
+        <footer class="pie">
+            <div class="footer-content">
+                <p class="copyright">&copy; 2025 Práctica Integradora - Grupo F. Todos los derechos reservados.</p>
+
+                <nav class="footer-nav">
+                    <ul>
+                        <li><a href="#">Política de Privacidad</a></li>
+                        <li><a href="#">Términos y Condiciones</a></li>
+                        <li><a href="#">Contacto</a></li>
+                    </ul>
+                </nav>
+
+                <div class="social-media">
+                    <a href="#"><i class="fab fa-facebook-f"></i> Facebook</a>
+                    <a href="#"><i class="fab fa-twitter"></i> Twitter</a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i> LinkedIn</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+</footer>
+
+<!-- Script para mostrar mensajes desde query params -->
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const mensaje = urlParams.get('mensaje');
+    if (mensaje) {
+        document.getElementById('mensaje').innerHTML = `<div class="alert alert-success">${mensaje}</div>`;
+    }
+</script>
+
+</body>
+</html>

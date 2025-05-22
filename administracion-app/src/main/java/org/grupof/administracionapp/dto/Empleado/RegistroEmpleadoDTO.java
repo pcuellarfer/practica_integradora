@@ -2,7 +2,6 @@ package org.grupof.administracionapp.dto.Empleado;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
