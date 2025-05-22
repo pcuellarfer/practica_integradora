@@ -41,6 +41,7 @@ public class NominaRestController {
      * @param idNomina UUID de la nómina.
      * @return ResponseEntity con la nómina correspondiente en formato JSON si se encuentra.
      */
+    //ignorar, lo hice con Jose Ramon como prueba
     @GetMapping("{idEmple}/{idNomina}")
     public ResponseEntity<?> devuelveNomina(@PathVariable UUID idEmple, @PathVariable UUID idNomina) {
         logger.info("Solicitando nómina con ID {} para el empleado con ID {}", idNomina, idEmple);

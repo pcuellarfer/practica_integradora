@@ -91,7 +91,7 @@ public class nominaController {
             logger.warn("Intento de acceso a /formulario sin usuario en sesión");
             return "redirect:/login/username";
         }
-        return "empleado/main/empleado-nomina-form"; // esta es tu nueva vista JS
+        return "empleado/main/empleado-nomina-form";
     }
 
 }
