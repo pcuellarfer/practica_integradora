@@ -1,0 +1,13 @@
+FROM tomcat:10-jdk17-temurin
+
+# Eliminar las aplicaciones de ejemplo de Tomcat
+#RUN rm -rf /usr/local/tomcat/webapps/*
+RUN apt-get update && apt-get install -y default-mysql-client iputils-ping net-tools curl tree
+
+# Puerto por defecto de Tomcat
+EXPOSE 8080
+
+COPY mi-app.war webapps/ROOT.war
+
+# Punto de entrada
+CMD ["catalina.sh", "run"]

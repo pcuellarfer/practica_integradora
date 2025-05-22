@@ -7,6 +7,7 @@
 <div th:replace="/fragments/cabecera"></div>
 <main>
     <div th:replace="/fragments/cuentaatras"></div>
+    <div th:replace="/fragments/botonCss"></div>
 
     <div class="container mt-5 mb-5">
         <div class="row justify-content-center">
@@ -18,10 +19,10 @@
                     <div class="card-header bg-primary text-white">Usuario</div>
                     <div class="card-body">
                         <p><strong>Email:</strong> <span th:text="${usuario.email}"></span></p>
-                        <p><strong>Contraseña:</strong> <span th:text="${usuario.contrasena}"></span></p>
                         <p><strong>Foto Usuario:</strong></p>
                         <img th:src="@{'/imagenes/' + ${detalle.nombreFoto}}" alt="Foto del usuario"
                              class="img-thumbnail d-block mx-auto" style="max-width: 200px;" />
+
                     </div>
                 </div>
 
@@ -40,6 +41,7 @@
 
                         <hr>
                         <h5 class="card-title">Empresarial</h5>
+                        <p><strong>Jefe:</strong> <span th:text="${detalle.nombreJefe}"></span></p>
                         <p><strong>Departamento:</strong> <span th:text="${detalle.nombreDepartamento}"></span></p>
                     </div>
                 </div>

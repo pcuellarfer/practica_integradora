@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.grupof.administracionapp.validations.paso2DTO.tipoViaValido.TipoViaValido;
 
 import java.util.UUID;
 
@@ -16,18 +17,15 @@ import java.util.UUID;
 public class Direccion {
 
     @NotNull(message = "Este campo es obligatorio y no puede estar vacío")
-//    Si se recibe un tipo de vía que no se
-//    encuentra entre los que aparecen en la tabla
-//    de tipos de vía, se producirá un Error de la
-//    aplicación.
+    @TipoViaValido
     private UUID tipoVia;
 
     @NotBlank(message = "Este campo es obligatorio y no puede estar vacío")
     private String nombreDireccion;
 
     @NotNull(message = "Este campo es obligatorio y no puede estar vacío")
-//    Debe sen un número entero.
-    private Integer numeroDireccion;
+    @Pattern(regexp = "\\d+", message = "Solo se permiten números enteros positivos")
+    private String numeroDireccion;
 
     @NotNull(message = "Este campo es obligatorio y no puede estar vacío")
     private String portal;

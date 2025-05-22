@@ -5,42 +5,51 @@
 
 <body>
 <div th:replace="/fragments/cabecera"></div>
-<div th:replace="/fragments/cuentaatras"></div>
-<h1>Eliminar etiquetas a un subordinado</h1>
 
-<!--Formulario 1: Seleccionar empleado (GET) -->
-<form th:action="@{/etiquetado/eliminar}" method="get">
-    <label for="empleado">Empleado:</label>
-    <select id="empleado" name="empleadoId" onchange="this.form.submit()">
-        <option disabled selected value="">Selecciona un empleado</option>
-        <th:block th:each="empleado : ${empleados}">
-            <option th:value="${empleado.id}"
-                    th:text="${empleado.apellido + ', ' + empleado.nombre}"
-                    th:selected="${empleado.id == empleadoSeleccionado?.id}">
-            </option>
-        </th:block>
-    </select>
-</form>
+<main>
+    <div th:replace="/fragments/cuentaatras"></div>
+    <div th:replace="/fragments/botonCss"></div>
 
-<br><br>
+    <div class="container mt-5">
+        <h1 class="mb-4 text-center">Eliminar etiquetas a un subordinado</h1>
 
-<!--Formulario 2: Eliminar etiquetas (POST) -->
-<form th:action="@{/etiquetado/eliminar}" method="post" th:if="${empleadoSeleccionado != null}">
-    <!-- Campo oculto para saber a qué empleado quitarle las etiquetas -->
-    <input type="hidden" name="empleadoId" th:value="${empleadoSeleccionado.id}"/>
+        <!-- Formulario 1: Seleccionar empleado -->
+        <form th:action="@{/etiquetado/eliminar}" method="get" class="mb-5">
+            <div class="mb-3">
+                <label for="empleado" class="form-label fw-bold">Empleado:</label>
+                <select id="empleado" name="empleadoId" class="form-select"
+                        onchange="this.form.submit()">
+                    <option disabled selected value="">Selecciona un empleado</option>
+                    <th:block th:each="empleado : ${empleados}">
+                        <option th:value="${empleado.id}"
+                                th:text="${empleado.apellido + ', ' + empleado.nombre}"
+                                th:selected="${empleado.id == empleadoSeleccionado?.id}">
+                        </option>
+                    </th:block>
+                </select>
+            </div>
+        </form>
 
-    <label for="etiquetas">Etiquetas asignadas al empleado:</label><br>
-    <select id="etiquetas" name="etiquetasIds" multiple size="5">
-        <th:block th:each="etiqueta : ${etiquetasAsignadas}">
-            <option th:value="${etiqueta.id}" th:text="${etiqueta.texto}"></option>
-        </th:block>
-    </select>
+        <!-- Formulario 2: Eliminar etiquetas -->
+        <form th:action="@{/etiquetado/eliminar}" method="post"
+              th:if="${empleadoSeleccionado != null}" class="mb-5">
+            <input type="hidden" name="empleadoId" th:value="${empleadoSeleccionado.id}"/>
 
-    <br><br>
-    <button type="submit">Eliminar etiquetas seleccionadas</button>
-</form>
-<a href="/dashboard/submenu-etiquetado" class="btn btn-secondary w-100">Volver al menu de etiquetado</a>
+            <div class="mb-3">
+                <label for="etiquetas" class="form-label fw-bold">Etiquetas asignadas al empleado:</label>
+                <select id="etiquetas" name="etiquetasIds" class="form-select" multiple size="5">
+                    <th:block th:each="etiqueta : ${etiquetasAsignadas}">
+                        <option th:value="${etiqueta.id}" th:text="${etiqueta.texto}"></option>
+                    </th:block>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-danger w-100">Eliminar etiquetas seleccionadas</button>
+        </form>
+
+        <a href="/dashboard/submenu-etiquetado" class="btn btn-secondary w-100">Volver al menú de etiquetado</a>
+    </div>
+</main>
 <div th:replace="/fragments/pie"></div>
 </body>
 </html>
-

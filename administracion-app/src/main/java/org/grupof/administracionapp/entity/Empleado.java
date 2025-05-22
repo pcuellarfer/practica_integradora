@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.grupof.administracionapp.entity.embeddable.CuentaCorriente;
 import org.grupof.administracionapp.entity.embeddable.Direccion;
 import org.grupof.administracionapp.entity.embeddable.TarjetaCredito;
+import org.grupof.administracionapp.entity.nomina.Nomina;
 import org.grupof.administracionapp.entity.registroEmpleado.*;
 
 import java.math.BigDecimal;
@@ -32,6 +33,10 @@ public class Empleado {
     //@GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "PK_empleado")
     private UUID id;
+
+    @OneToOne
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
 
     //paso1 datos personales
     private String nombre;
@@ -109,19 +114,13 @@ public class Empleado {
     @OneToMany(mappedBy = "jefe")
     private List<Etiqueta> etiquetasDefinidas;
 
-    /////////////
+    //nomina
+    @OneToMany(mappedBy = "empleado", cascade = CascadeType.ALL)
+    private List<Nomina> nominas;
 
     @Column(name = "fecha_contratacion")
-    private LocalDateTime fechaContratacion;
+    private LocalDate fechaContratacion;
 
     @Column(name = "fecha_cese")
     private LocalDateTime fechaCese;
-
-    // Relación 1:1 con Nomina
-    @OneToOne(mappedBy = "empleado", cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
-    private Nomina nomina;
-
-    @OneToOne
-    @JoinColumn(name = "usuario_id")
-    private Usuario usuario;
 }

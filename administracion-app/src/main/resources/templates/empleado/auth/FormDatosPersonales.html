@@ -7,6 +7,8 @@
 <div th:replace="/fragments/cabecera"></div>
 <main>
     <div th:replace="/fragments/cuentaatras"></div>
+    <div th:replace="/fragments/botonCss"></div>
+    <div th:replace="/fragments/cabeceraRegistro"></div>
 <div class="absoluto mt-5">
     <div class="container">
         <!-- Título -->
@@ -19,6 +21,12 @@
         </div>
 
         <form th:action="@{/registro/paso1}" th:object="${paso1}" method="post" enctype="multipart/form-data">
+
+            <div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}">
+                <ul>
+                    <li th:each="err : ${#fields.globalErrors()}" th:text="${err}"></li>
+                </ul>
+            </div>
 
             <div class="mb-3">
                 <label for="nombre" class="form-label">Nombre:</label>
@@ -49,18 +57,16 @@
                     <label class="form-check-label" th:for="${genero.identidad}" th:text="${genero.identidad}"></label>
                 </div>
 
-                <!--Boton de deseleccionar radios-->
-                <!--Boton de seleccionar el primer radio-->
-                <button type="button" class="btn btn-secondary w-100 mt-2" onclick="deseleccionarGenero()">Deseleccionar género</button>
-
                 <span class="error-message" th:if="${#fields.hasErrors('genero')}" th:errors="*{genero}"></span>
+
+                <button type="button" class="btn btn-secondary w-100 mt-2" onclick="deseleccionarGenero()">Deseleccionar género</button>
 
             </div>
 
             <div class="mb-3">
                 <label for="fechaNacimiento" class="form-label">Fecha de nacimiento:</label>
                 <input type="text" id="fechaNacimiento" name="fechaNacimiento" class="form-control"
-                       th:field="*{fechaNacimiento}">
+                       th:field="*{fechaNacimiento}" placeholder="dd/mm/aaaa">
                 <span class="error-message" th:if="${#fields.hasErrors('fechaNacimiento')}"
                       th:errors="*{fechaNacimiento}"></span>
             </div>
@@ -77,6 +83,9 @@
                 <option value="">Seleccione un país</option>
                 <option th:each="pais : ${paises}" th:value="${pais.id}" th:text="${pais.nombre}"></option>
             </select>
+
+            <span class="error-message" th:if="${#fields.hasErrors('pais')}" th:errors="*{pais}"></span>
+
             <button type="button" class="btn btn-secondary w-100 mt-2" onclick="deseleccionarPais()">Deseleccionar país</button>
 
             <div class="mb-3">

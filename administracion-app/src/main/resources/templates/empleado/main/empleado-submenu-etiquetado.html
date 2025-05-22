@@ -1,17 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Gestión de Subordinados</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
-    <script th:src="@{/js/script.js}"></script>
-</head>
+<head th:replace="fragments/header :: head('Gestión de Subordinados')"></head>
+
 <body>
 <div th:replace="/fragments/cabecera"></div>
 
 <main>
     <div th:replace="/fragments/cuentaatras"></div>
+    <div th:replace="/fragments/botonCss"></div>
     <div class="absoluto mt-5">
         <div class="container">
             <!-- Título -->

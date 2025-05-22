@@ -7,6 +7,7 @@
 
 <main>
     <div th:replace="/fragments/cuentaatras"></div>
+    <div th:replace="/fragments/botonCss"></div>
     <div class="absoluto mt-5">
         <div class="container">
             <!-- Título -->
@@ -25,13 +26,13 @@
                         <form th:action="@{/catalogo/subir}" method="post" enctype="multipart/form-data" class="subir-formulario">
                             <div class="mb-3">
                                 <label for="file" class="form-label subir-label">Seleccionar archivo JSON:</label>
-                                <input type="file" id="file" name="file" class="form-control subir-input" accept=".json" required multiple>
+                                <input type="file" id="file" name="files" class="form-control subir-input" accept=".json" required multiple>
                             </div>
+                            <div th:if="${mensaje}" class="alert alert-success" role="alert" th:text="${mensaje}"></div>
+                            <div th:if="${error}" class="alert alert-danger mt-3 subir-alerta" th:text="${error}"></div>
                             <button type="submit" class="btn btn-primary w-100 subir-boton mb-4 mt-3">Subir catálogo</button>
                                 <a href="/dashboard" class="btn btn-secondary w-100 mb-4">Volver al dashboard</a>
                         </form>
-                        <div th:if="${error}" class="alert alert-danger mt-3 subir-alerta" th:text="${error}"></div>
-                        <div th:if="${mensaje}" class="alert alert-success mt-3 subir-alerta" th:text="${mensaje}"></div>
                     </div>
                 </div>
             </div>

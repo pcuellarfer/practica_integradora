@@ -3,9 +3,12 @@ package org.grupof.administracionapp.entity.embeddable;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.grupof.administracionapp.validations.paso4DTO.anioTarjetaValido.AnioCaducidadValido;
+import org.grupof.administracionapp.validations.paso4DTO.tipoTarjetaValido.TipoTarjetaValido;
 
 import java.util.UUID;
 
@@ -17,34 +20,21 @@ import java.util.UUID;
 public class TarjetaCredito {
 
     @NotNull(message = "Este campo es obligatorio y no puede estar vacío")
-//    Si se recibe un código de tipo de tarjeta que
-//    no se encuentra entre los que aparecen en la
-//    tabla de tipos de tarjeta, se producirá un Error
-//    de la aplicación
+    @TipoTarjetaValido
     private UUID tipoTarjeta;
 
     @NotBlank(message = "Este campo es obligatorio y no puede estar vacío")
-//    Debe tener una longitud de 16 caracteres,
-//    siendo todos dígitos.
-//- Debe cumplir el algoritmo de verificación de
-//    tarjetas bancarias.
+    @Pattern(regexp = "^\\d{16}$", message = "Debe tener exactamente 16 dígitos")
     private String numTarjeta;
 
     @NotBlank(message = "Este campo es obligatorio y no puede estar vacío")
-//   Debe tener una longitud de 2 caracteres,
-//siendo todos dígitos, y representando un mes
-//válido, es decir, del 01 al 12
+    @Pattern(regexp = "^(0[1-9]|1[0-2])$", message = "Debe ser un mes válido entre 01 y 12")
     private String mesCaducidad;
 
     @NotBlank
-//    Debe tener una longitud de 4 caracteres,
-//    siendo todos dígitos, y representando un año
-//    válido a partir del año actual y hasta 20 años en
-//    el futuro.
+    @AnioCaducidadValido
     private String anoCaducidad;
 
     @NotBlank(message = "Este campo es obligatorio y no puede estar vacío")
-//    - Debe seguir el algoritmo para estos códigos
-//            (ver online).
     private String cvc;
 }

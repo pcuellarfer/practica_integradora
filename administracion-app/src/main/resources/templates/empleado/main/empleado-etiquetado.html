@@ -4,48 +4,60 @@
 <head th:replace="fragments/header :: head('Etiquetado')"></head>
 
 <body>
-    <div th:replace="/fragments/cabecera"></div>
+<div th:replace="/fragments/cabecera"></div>
+<main>
     <div th:replace="/fragments/cuentaatras"></div>
-    <h1>etiquetado empleado</h1>
-    <!--select de empleados-->
-    <form th:action="@{/etiquetado}" method="post">
-          <label for="empleados">Selecciona empleados:</label><br>
-          <select id="empleados" name="empleados" multiple size="4">
-            <th:block th:each="empleado : ${empleados}">
-              <option th:value="${empleado.id}" th:text="${empleado.apellido + ', ' + empleado.nombre}"></option>
-            </th:block>
-          </select>
+    <div th:replace="/fragments/botonCss"></div>
 
-        <br><br>
+    <div class="container mt-5">
+        <h1 class="mb-4 text-center">Etiquetado de empleado</h1>
 
-        <!--barra para buscar la etiqueta-->
-        <label for="etiquetas">Selecciona etiquetas:</label><br>
-        <input type="text" id="buscador" placeholder="Buscar etiqueta..." onkeyup="filtrarEtiquetas()"><br>
+        <!-- Formulario de asignación de etiquetas -->
+        <form th:action="@{/etiquetado}" method="post" class="mb-5">
 
-        <select id="etiquetas" name="etiquetas" multiple size="4">
-            <th:block th:each="etiqueta : ${etiquetas}">
-                <option th:value="${etiqueta.id}" th:text="${etiqueta.texto}"></option>
-            </th:block>
-        </select>
+            <!-- Select de empleados -->
+            <div class="mb-3">
+                <label for="empleados" class="form-label fw-bold">Selecciona empleados:</label>
+                <select id="empleados" name="empleados" multiple size="4" class="form-select">
+                    <th:block th:each="empleado : ${empleados}">
+                        <option th:value="${empleado.id}"
+                                th:text="${empleado.apellido + ', ' + empleado.nombre}"></option>
+                    </th:block>
+                </select>
+            </div>
 
-        <br><br>
-        <button type="submit">Asignar etiquetas</button>
-        <a href="/dashboard/submenu-etiquetado" class="btn btn-secondary w-100">Volver al menu de etiquetado</a>
-    </form>
+            <!-- Buscador de etiquetas -->
+            <div class="mb-3">
+                <label for="etiquetas" class="form-label fw-bold">Selecciona etiquetas:</label>
+                <input type="text" id="buscador" placeholder="Buscar etiqueta..." class="form-control mb-2"
+                       onkeyup="filtrarEtiquetas()">
+                <select id="etiquetas" name="etiquetas" multiple size="4" class="form-select">
+                    <th:block th:each="etiqueta : ${etiquetas}">
+                        <option th:value="${etiqueta.id}" th:text="${etiqueta.texto}"></option>
+                    </th:block>
+                </select>
+            </div>
 
-<!-- JS para filtrar etiquetas por texto -->
-<script>
-    function filtrarEtiquetas() {
-        let input = document.getElementById("buscador");
-        let filtro = input.value.toLowerCase();
-        let opciones = document.getElementById("etiquetas").options;
+            <!-- Botones -->
+            <button type="submit" class="btn btn-primary w-100 mb-3">Asignar etiquetas</button>
+            <a href="/dashboard/submenu-etiquetado" class="btn btn-secondary w-100">Volver al menú de etiquetado</a>
+        </form>
+    </div>
 
-        for (let i = 0; i < opciones.length; i++) {
-            let texto = opciones[i].text.toLowerCase();
-            opciones[i].style.display = texto.includes(filtro) ? "" : "none";
+    <!-- JS para filtrar etiquetas por texto -->
+    <script>
+        function filtrarEtiquetas() {
+            let input = document.getElementById("buscador");
+            let filtro = input.value.toLowerCase();
+            let opciones = document.getElementById("etiquetas").options;
+
+            for (let i = 0; i < opciones.length; i++) {
+                let texto = opciones[i].text.toLowerCase();
+                opciones[i].style.display = texto.includes(filtro) ? "" : "none";
+            }
         }
-    }
-</script>
+    </script>
+</main>
 <div th:replace="/fragments/pie"></div>
 </body>
 </html>

@@ -3,6 +3,7 @@ package org.grupof.administracionapp;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -36,10 +37,12 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login/**", "/dashboard/**", "/empleado/**", "/usuario/**")
+                        .requestMatchers("/login/**", "/dashboard/**", "/empleado/**", "/usuario/**", "/nominas/**", "/api/nominas/**")
                         .permitAll()
                         .anyRequest().permitAll()
-                );
+                )
+                .csrf(AbstractHttpConfigurer::disable); //desactiva un sistema de protección que impide que formularios o scripts maliciosos hagan POST
+
         return http.build();
     }
 }

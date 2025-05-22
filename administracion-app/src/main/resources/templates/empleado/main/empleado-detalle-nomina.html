@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="fragments/header :: head('Detalle de Nómina')"></head>
+<body>
+
+<div th:replace="/fragments/cabecera"></div>
+
+<main>
+    <div th:replace="/fragments/cuentaatras"></div>
+    <div th:replace="/fragments/botonCss"></div>
+
+    <div class="absoluto mt-5">
+        <div class="container">
+
+            <!-- Título -->
+            <div class="row align-items-center mb-4">
+                <div class="col-2"></div>
+                <div class="col text-center">
+                    <h1>Detalle de la Nómina</h1>
+                </div>
+                <div class="col-2"></div>
+            </div>
+
+            <!-- Detalle de Nómina -->
+            <div class="row justify-content-center mb-5">
+                <div class="col-md-8">
+                    <div class="card p-4 shadow">
+                        <p><strong>Empleado:</strong> <span id="nombre-empleado"></span></p>
+                        <p><strong>Fecha inicio:</strong> <span id="fecha-inicio"></span></p>
+                        <p><strong>Fecha fin:</strong> <span id="fecha-fin"></span></p>
+                        <p><strong>Salario neto:</strong> <span id="salario-neto"></span></p>
+
+                        <h4 class="mt-4">Líneas de Nómina</h4>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped mt-2 mb-5">
+                                <thead class="thead-dark">
+                                <tr>
+                                    <th>Concepto</th>
+                                    <th>Porcentaje</th>
+                                    <th>Cantidad</th>
+                                </tr>
+                                </thead>
+                                <tbody id="lineas-nomina">
+                                <!-- Contenido dinámico -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <button id="descargar-pdf" class="btn btn-primary mt-3 w-100">Descargar PDF</button>
+                        <a id="editar-nomina" class="btn btn-warning mt-3 w-100">Editar Nómina</a>
+                        <a id="eliminar-nomina" class="btn btn-danger mt-3 w-100">Eliminar Nómina</a>
+                        <a href="/nominas/buscarNominas" class="btn btn-secondary mt-3 w-100 mb-5">Volver</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<div th:replace="/fragments/pie"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id');
+
+    window.addEventListener('DOMContentLoaded', function () {
+        if (!id) {
+            alert("ID de nómina no proporcionado.");
+            return;
+        }
+
+        fetch('/api/nominas/' + id)
+            .then(response => response.json())
+            .then(nomina => {
+                document.getElementById('nombre-empleado').textContent = nomina.nombreEmpleado;
+                document.getElementById('fecha-inicio').textContent = nomina.fechaInicio;
+                document.getElementById('fecha-fin').textContent = nomina.fechaFin;
+                document.getElementById('salario-neto').textContent = nomina.salarioNeto + " €";
+
+                const tbody = document.getElementById('lineas-nomina');
+                tbody.innerHTML = '';
+
+                nomina.lineasNomina.forEach(linea => {
+                    const row = document.createElement('tr');
+
+                    const tdConcepto = document.createElement('td');
+                    tdConcepto.textContent = linea.concepto;
+
+                    const tdPorcentaje = document.createElement('td');
+                    tdPorcentaje.textContent = linea.porcentaje + " %";
+
+                    const tdCantidad = document.createElement('td');
+                    tdCantidad.textContent = linea.cantidad + " €";
+
+                    row.appendChild(tdConcepto);
+                    row.appendChild(tdPorcentaje);
+                    row.appendChild(tdCantidad);
+
+                    tbody.appendChild(row);
+                });
+                document.getElementById("editar-nomina").addEventListener("click", function () {
+                    window.location.href = `/nominas/formulario?id=${id}`;
+                });
+            })
+            .catch(error => {
+                console.error('Error al cargar detalle de nómina:', error);
+                alert("No se pudo cargar el detalle de la nómina.");
+            });
+    });
+
+
+    document.getElementById('descargar-pdf').addEventListener('click', () => {
+        const { jsPDF } = window.jspdf;
+
+        const card = document.querySelector('.card'); // área que queremos capturar
+        const btnDescargar = document.getElementById('descargar-pdf');
+        const btnVolver = document.querySelector('a.btn-secondary'); // botón "Volver"
+        const btnEditar = document.querySelector('a.btn-warning ');
+        const btnEliminar = document.querySelector('a.btn-danger');
+
+        // Ocultamos los botones antes de capturar
+        btnDescargar.style.display = 'none';
+        btnVolver.style.display = 'none';
+        btnEditar.style.display = 'none';
+        btnEliminar.style.display = 'none';
+
+        html2canvas(card, { scale: 2 }).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'pt',
+                format: 'a4'
+            });
+
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save('detalle-nomina.pdf');
+        }).catch(err => {
+            console.error("Error generando PDF:", err);
+            alert("No se pudo generar el PDF.");
+        }).finally(() => {
+            // Volvemos a mostrar los botones después de la captura
+            btnDescargar.style.display = 'inline-block';
+            btnVolver.style.display = 'inline-block';
+            btnEditar.style.display = 'inline-block';
+            btnEliminar.style.display = 'inline-block';
+        });
+    });
+
+    document.getElementById("eliminar-nomina").addEventListener("click", function () {
+        if (!confirm("¿Estás seguro de que quieres eliminar esta nómina?")) return;
+
+        fetch(`/api/nominas/${id}`, {
+            method: "DELETE"
+        })
+            .then(res => {
+                if (res.ok) {
+                    alert("Nómina eliminada correctamente");
+                    window.location.href = "/nominas/buscarNominas";
+                } else {
+                    return res.json().then(err => {
+                        throw new Error(err.error || "Error al eliminar la nómina.");
+                    });
+                }
+            })
+            .catch(err => {
+                alert(err.message);
+            });
+    });
+</script>
+
+</body>
+</html>

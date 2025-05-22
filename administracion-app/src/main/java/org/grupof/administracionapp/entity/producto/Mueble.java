@@ -1,21 +1,18 @@
 package org.grupof.administracionapp.entity.producto;
 
-import jakarta.persistence.*;
-import org.grupof.administracionapp.entity.producto.enums.Color;
+import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
-
+@EqualsAndHashCode(callSuper = true)
 @Entity
-public class Mueble extends Producto{
-
-    private LocalDate fechaFabricacion;
-
-    @Embedded
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Mueble extends Producto {
+    private String tipoMadera;
+    private String estilo;
     private Dimensiones dimensiones;
-
-    @ElementCollection //necesario para poder meter listas, crea una tabla donde guarda por cada fila guarda mueble-color
-    @Enumerated(EnumType.STRING)
-    private List<Color> colores;
 }

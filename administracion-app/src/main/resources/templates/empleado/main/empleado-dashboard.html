@@ -8,6 +8,7 @@
 
 <main>
     <div th:replace="/fragments/cuentaatras"></div>
+    <div th:replace="/fragments/botonCss"></div>
 
     <div class="absoluto mt-5">
         <div class="container d-flex justify-content-center">
@@ -26,7 +27,8 @@
                 </div>
 
                 <!-- Número de inicio de sesión -->
-                <div th:replace="/fragments/numinisesion" class="mb-4"></div>
+                <p class="num-item">Número de inicios de sesión (global): <span class="num-valor" th:text="${contadorSesiones}"></span></p>
+                <p class="num-item">Número de inicios de sesión (este navegador): <span class="num-valor" th:text="${navegadorId}"></span></p>
 
                 <!-- Botones de navegación -->
                 <form th:action="@{/login/logout}" method="get">
@@ -35,6 +37,7 @@
                         <a href="/buscar" class="btn btn-primary">Buscar</a>
                         <a href="/dashboard/submenu-etiquetado" class="btn btn-primary">Etiquetados / Subordinados</a>
                         <a href="/dashboard/submenu-productos" class="btn btn-primary">Productos</a>
+                        <a href="/dashboard/submenu-nominas" class="btn btn-primary">Gestionar Nóminas</a>
                         <button type="submit" class="btn btn-danger mt-2">Cerrar sesión</button>
                     </div>
                 </form>
