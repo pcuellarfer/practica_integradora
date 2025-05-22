@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
  */
 @Controller
 @RequestMapping("/registro")
-@SessionAttributes({"registroEmpleado", "usuario"})
+@SessionAttributes({"registroEmpleado", "usuario"}) //hay que meter el registro de empleado a la sesion para poder ir rellenandolo poco a poco
 public class EmpleadoSignUpController {
 
     private static final Logger logger = LoggerFactory.getLogger(EmpleadoSignUpController.class);
@@ -111,7 +111,7 @@ public class EmpleadoSignUpController {
      */
     @GetMapping("/empleado")
     public String mostrarPaso1(Model modelo,
-                               @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario,
+                               @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario, //recupera el usuario de sesion como "usuario"
                                RedirectAttributes redirectAttributes) {
 
         if (usuario == null) {
@@ -160,6 +160,7 @@ public class EmpleadoSignUpController {
             return "empleado/auth/FormDatosPersonales";
         }
 
+        //esta validacion de foto solo sale si todas las demas validaciones del campo 1 estan correctas
         if (foto == null || foto.isEmpty()) {
             logger.warn("No se subió una imagen para usuario ID: {}",
                     usuarioDTO != null ? usuarioDTO.getId() : "desconocido");
@@ -200,7 +201,7 @@ public class EmpleadoSignUpController {
             return "empleado/auth/FormDatosPersonales";
         }
 
-        UUID empleadoId = UUID.randomUUID();
+        UUID empleadoId = UUID.randomUUID(); //id random generado ahgora para poder ponersela a la fotito
         registroEmpleado.setEmpleadoId(empleadoId);
         registroEmpleado.setPaso1PersonalDTO(paso1);
         logger.info("Paso 1 completado exitosamente para nuevo empleado ID: {}", empleadoId);
@@ -231,6 +232,7 @@ public class EmpleadoSignUpController {
         Paso2ContactoDTO paso2 = new Paso2ContactoDTO();
         paso2.setDireccion(new Direccion());
         modelo.addAttribute("paso2", paso2);
+        modelo.addAttribute("paises", paisService.getAllPaises());
         modelo.addAttribute("tiposVias", tipoViaService.getAllTipoVia());
         modelo.addAttribute("documentos", tipoDocumentoService.getAllTipoDocumento());
         return "empleado/auth/FormDatosContacto";
@@ -256,6 +258,7 @@ public class EmpleadoSignUpController {
             @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuario) {
 
         if (errores.hasErrors()) {
+            modelo.addAttribute("paises", paisService.getAllPaises());
             modelo.addAttribute("tiposVias", tipoViaService.getAllTipoVia());
             modelo.addAttribute("documentos", tipoDocumentoService.getAllTipoDocumento());
             logger.warn("Errores en formulario de contacto para usuario ID: {}", usuario.getId());

@@ -100,38 +100,40 @@ public class EmpleadoServiceImpl implements EmpleadoService {
                                         String uploadDir) throws IOException {
         logger.info("Actualizando datos del empleado con usuarioId: {}", usuarioId);
 
+        //pilla un empleado con el id usuario
         Empleado empleado = empleadoRepository.findByUsuarioId(usuarioId)
                 .orElseThrow(() -> new IllegalArgumentException("Empleado no encontrado"));
 
-        if (!foto.isEmpty()) {
+        //realiza toda la paranoia de validar la foto y meterla a el servidor
+        if (!foto.isEmpty()) {//si la foto no esta vacia
             logger.info("Se detectó subida de nueva foto para empleado: {}", empleado.getId());
 
-            String tipo = foto.getContentType();
-            if (!"image/png".equals(tipo) && !"image/gif".equals(tipo)) {
+            String tipo = foto.getContentType(); //pilla el tipo de foto (image/png) (image/gif)
+            if (!"image/png".equals(tipo) && !"image/gif".equals(tipo)) { //si no es png o gif no le vale
                 logger.warn("Tipo de imagen no permitido: {}", tipo);
                 throw new IllegalArgumentException("Solo se permiten imágenes PNG o GIF.");
             }
 
-            if (foto.getSize() > 10 * 1024 * 1024) {
+            if (foto.getSize() > 10 * 1024 * 1024) { //si pesa mas de 10 mb no le vale
                 logger.warn("Imagen demasiado grande ({} bytes) para empleado: {}", foto.getSize(), empleado.getId());
                 throw new IllegalArgumentException("La imagen debe pesar menos de 10 MB.");
             }
 
-            dto.setFotoBytes(foto.getBytes());
-            dto.setFotoTipo(foto.getContentType());
+            dto.setFotoBytes(foto.getBytes()); //le setea los bytes de la foto al dto
+            dto.setFotoTipo(foto.getContentType()); //y tambien el mime de extension (image/png) (image/gif)
 
-            String extension = tipo.equals("image/png") ? ".png" : ".gif";
-            String nombreArchivo = empleado.getId() + extension;
+            String extension = tipo.equals("image/png") ? ".png" : ".gif"; //mete en variable SOLO la extension, sin el image
+            String nombreArchivo = empleado.getId() + extension; //y genera un nuevo nombre de archivo con el id del empleado y la extension de la foto
 
-            File directorioBase = new File(uploadDir);
-            String rutaAbsoluta = directorioBase.getAbsolutePath();
-            Path ruta = Paths.get(rutaAbsoluta, nombreArchivo);
+            File directorioBase = new File(uploadDir); //crea un file que apunta a esa ruta, no un file de verdad
+            String rutaAbsoluta = directorioBase.getAbsolutePath(); //obtiene la ruta absoluta del objeto archivo creado, la ruta absoluta es desde la raiz
+            Path ruta = Paths.get(rutaAbsoluta, nombreArchivo); //convierte el tipo string a path
 
-            Files.createDirectories(ruta.getParent());
-            Files.write(ruta, dto.getFotoBytes());
+            Files.createDirectories(ruta.getParent()); //crea la carpeta si no existe
+            Files.write(ruta, dto.getFotoBytes()); //guarda la foto en la carpeta
 
-            String urlFoto = "/uploads/empleados/" + nombreArchivo;
-            empleado.setFotoUrl(urlFoto);
+            String urlFoto = "/uploads/empleados/" + nombreArchivo; //crea un string con la ruta orientativa
+            empleado.setFotoUrl(urlFoto); //le seetea al empleado esa nueva ruta como campo fotoUrl
             logger.info("Foto actualizada y guardada en: {}", urlFoto);
         }
 
@@ -158,12 +160,19 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     public EmpleadoDetalleDTO obtenerDetalleEmpleado(UUID usuarioId) {
         logger.info("Obteniendo detalles del empleado con usuarioId: {}", usuarioId);
 
+        //revice un empleado entero
         Empleado empleadoEntidad = empleadoRepository.findByUsuarioId(usuarioId)
                 .orElseThrow(() -> new IllegalArgumentException("Empleado no encontrado"));
 
+        //llama al metodo que devuelve un RegistroEmpleadoDTO a partir de la id del empleado
         RegistroEmpleadoDTO dto = this.buscarEmpleadoPorUsuarioId(usuarioId);
 
+        //crea un dTO vacio para el detalle LEER:
+        //se tiene que crear un detalle nuevo y no usar el registroEmpleadoDTO porque
+        //se quieren guardar nuevos campos que no estan, como los nombres de los ID o los jefes
         EmpleadoDetalleDTO detalle = new EmpleadoDetalleDTO();
+
+        //setea los campos del RegistroEmpleadoDTO al detalleDTO
         detalle.setEmpleado(dto);
 
         UUID idGenero = dto.getPaso1PersonalDTO().getGenero();
@@ -219,20 +228,26 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         logger.info("Buscando empleados con filtros - nombre: {}, generoId: {}, departamentos: {}, fechaInicio: {}, fechaFin: {}",
                 nombre, generoId, departamentoIds, fechaInicio, fechaFin);
 
+        //pilla todos los empleados de la bbdd
         List<Empleado> empleados = empleadoRepository.findAll();
 
+        //crea un stream sobre la lista de empleados completa
         List<Empleado> filtrados = empleados.stream()
-                .filter(e -> nombre == null || nombre.isBlank() ||
-                        e.getNombre().toLowerCase().contains(nombre.toLowerCase()))
-                .filter(e -> generoId == null ||
-                        (e.getGenero() != null && e.getGenero().getId().equals(generoId)))
-                .filter(e -> departamentoIds == null || departamentoIds.isEmpty() ||
+
+                //los filter funcionan como: deja pasar al empleado e si no se ha especificado un nombre (es decir, nombre == null o está vacío),
+                // o si su nombre contiene el texto que se busca, asi con todos los campos
+
+                .filter(e -> nombre == null || nombre.isBlank() || //si es null o vacio no filta por nombre
+                        e.getNombre().toLowerCase().contains(nombre.toLowerCase())) //si tiene algo, busca empeados con esa cadena en su nombre
+                .filter(e -> generoId == null || //si es null no filtra por genero
+                        (e.getGenero() != null && e.getGenero().getId().equals(generoId))) //si llega genero, busca con ese genero
+                .filter(e -> departamentoIds == null || departamentoIds.isEmpty() || //asi va con todos
                         (e.getDepartamento() != null && departamentoIds.contains(e.getDepartamento().getId())))
                 .filter(e -> fechaInicio == null ||
                         (e.getFechaContratacion() != null && !e.getFechaContratacion().isBefore(fechaInicio)))
                 .filter(e -> fechaFin == null ||
                         (e.getFechaContratacion() != null && !e.getFechaContratacion().isAfter(fechaFin)))
-                .toList();
+                .toList(); //los empleados que han pasado los filtros los mete en la lista filtrados
 
         logger.info("Se encontraron {} empleados que cumplen los criterios.", filtrados.size());
         return filtrados;
@@ -577,8 +592,8 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 
         // función recursiva integrada directamente
         for (Empleado subordinado : jefe.getSubordinados()) { //recorre cada subordinado del jefe
-            if (ids.add(subordinado.getId())) { //si el ID no estaba, lo añade
-                ids.addAll(obtenerIdsSubordinadosRecursivos(subordinado)); //añade también los subordinados de ese subordinado
+            if (ids.add(subordinado.getId())) { //intenta a;adir el id al set, si ya estaba devuelve false y termina con ese subordinado, si no estaba entonces:
+                ids.addAll(obtenerIdsSubordinadosRecursivos(subordinado)); //llama al metodo para buscar sus subordinados (del subordinado 1)
             }
         }
 
@@ -590,7 +605,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         Empleado actual = empleado.getJefe(); //mete al jefe del empleado en una variable
         while (actual != null) { //mientras siga habiendo jefe,es decir, no hemos llegado al jefe jefazo
             ids.add(actual.getId()); //mete al set el id del jefe 1
-            actual = actual.getJefe();//mete a actual su jefe, es decir, el jefe del jefe
+            actual = actual.getJefe();//actualiza a actual su jefe, es decir, el jefe del jefe
         }
         return ids;
     }
@@ -606,7 +621,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         idsProhibidos.addAll(obtenerIdsJefesRecursivos(jefe)); // los de arriba
 
         List<Empleado> todos = empleadoRepository.findAll(); //mete en una lista todos los empleados
-        todos.removeIf(emp -> idsProhibidos.contains(emp.getId())); //elimina los prohibidos
+        todos.removeIf(emp -> idsProhibidos.contains(emp.getId())); //elimina los prohibidos, recorriendo cada empleado y viendo si esta en la tabla de prohibidos, como un for con if
 
         return todos; //alfinal devuelve una lista de empleados sin: el mismo, sus subordinados y sus jefes
     }

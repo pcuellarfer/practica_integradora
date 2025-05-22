@@ -76,6 +76,7 @@ public class EtiquetadoController {
             return "redirect:/login/username";
         }
 
+        //lista de posibles subordinados, sin el empleado mismo, sus subordinados y los subordinados de este y sin sus jefes y los jefes de este
         List<Empleado> posiblesSubordinados = empleadoService.buscarTodosMenosConJerarquia(jefe.getId());
 
         //meter al modelo el jefe y sus posibles subordinados
@@ -170,7 +171,7 @@ public class EtiquetadoController {
 
         etiqueta.setJefe(jefe);
         try {
-            etiquetaService.guardarEtiqueta(etiqueta);
+            etiquetaService.guardarEtiqueta(etiqueta); //intenta guardar la etiqueta, si ya existe la combinacion jefe-etiqueta, salta la exciepcion
         } catch (IllegalArgumentException e) {
             logger.warn("Etiqueta duplicada: {}", e.getMessage());
             redirectAttributes.addFlashAttribute("error", "Ya has has puesto esta etiqueta crack");
@@ -235,6 +236,7 @@ public class EtiquetadoController {
             return "redirect:/etiquetado";
         }
 
+        //pasar de ids a objetos
         List<Empleado> empleados = empleadoService.buscarPorIds(empleadosIds);
         List<Etiqueta> etiquetas = etiquetaService.buscarPorIds(etiquetasIds);
 
@@ -244,7 +246,7 @@ public class EtiquetadoController {
                 etiquetaService.guardarEtiqueta(etiqueta);
             }
             logger.info("Etiquetas {} asignadas a empleados {}", etiquetasIds, empleadosIds);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) { //si ya existe esa combinacion etiqueta-empleado lo tira para atras
             logger.warn("Error al etiquetar: {}", e.getMessage());
             redirectAttributes.addFlashAttribute("error", "Alguna de las etiquetas ya está definida para ese jefe.");
             return "redirect:/etiquetado";
@@ -275,17 +277,21 @@ public class EtiquetadoController {
             return "redirect:/login/username";
         }
 
+        //mete en lista los subordinados del jefe
         List<Empleado> subordinados = empleadoService.buscarPorJefe(jefe);
         logger.info("Se encontraron {} subordinados del jefe con ID: {}", subordinados.size(), jefe.getId());
         modelo.addAttribute("empleados", subordinados);
 
+        //esto es para la segunda vez que se hace la solicitud get, no se hara la primera vez porque empleado id llega null
         if (empleadoId != null) {
             logger.info("Se recibió el ID del empleado a consultar: {}", empleadoId);
+            //pasa de id a objeto
             Empleado empleadoSeleccionado = empleadoService.buscarPorId(empleadoId).orElse(null);
             if (empleadoSeleccionado != null) {
                 logger.info("Empleado seleccionado encontrado: {}", empleadoSeleccionado.getId());
                 modelo.addAttribute("empleadoSeleccionado", empleadoSeleccionado);
 
+                //estas etiquetas serviran para rellenar el select de etiquetas
                 List<Etiqueta> etiquetasAsignadas = etiquetaService.buscarPorEmpleadoId(empleadoId);
                 logger.info("Etiquetas asignadas encontradas: {}", etiquetasAsignadas.size());
                 modelo.addAttribute("etiquetasAsignadas", etiquetasAsignadas);
@@ -312,7 +318,7 @@ public class EtiquetadoController {
      */
     @PostMapping("/etiquetado/eliminar")
     public String eliminarEtiquetas(@RequestParam UUID empleadoId,
-                                    @RequestParam List<UUID> etiquetasIds,
+                                    @RequestParam(required = false) List<UUID> etiquetasIds,
                                     HttpSession session) {
         logger.info("Inicio de eliminación de etiquetas para empleado ID: {}", empleadoId);
 
@@ -327,19 +333,20 @@ public class EtiquetadoController {
             return "redirect:/etiquetado/eliminar";
         }
 
-        logger.info("Empleado encontrado: {}. Etiquetas a eliminar: {}", empleado.getId(), etiquetasIds.size());
-
-        if (etiquetasIds.isEmpty()) {
+        if (etiquetasIds == null || etiquetasIds.isEmpty()) {
             logger.warn("No se proporcionaron etiquetas para eliminar.");
             return "redirect:/etiquetado/eliminar?empleadoId=" + empleadoId;
         }
 
+        logger.info("Empleado encontrado: {}. Etiquetas a eliminar: {}", empleado.getId(), etiquetasIds.size());
+        //si tanto etiqueta id como empleado tienen contenido
         for (UUID etiquetaId : etiquetasIds) {
+            //por cada etiqueta pasa de id a objeto
             Etiqueta etiqueta = etiquetaService.buscarPorId(etiquetaId).orElse(null);
             if (etiqueta != null) {
-                if (etiqueta.getJefe().equals(jefe)) {
-                    etiqueta.getEmpleadosEtiquetados().remove(empleado);
-                    etiquetaService.guardarEtiqueta(etiqueta);
+                if (etiqueta.getJefe().equals(jefe)) { //comprueba qu la etiqueta pertenece al jefe que la borra, el equals devuelve si o no
+                    etiqueta.getEmpleadosEtiquetados().remove(empleado);//en la etiqueta, en su lista de empleados etiquetados, borra el empleado seleccionado
+                    etiquetaService.guardarEtiqueta(etiqueta); //guarda la nueva etiqueta sin el empleado
                     logger.info("Etiqueta eliminada: {} para empleado: {}", etiquetaId, empleadoId);
                 } else {
                     logger.warn("Etiqueta {} no pertenece al jefe actual. No se elimina.", etiquetaId);

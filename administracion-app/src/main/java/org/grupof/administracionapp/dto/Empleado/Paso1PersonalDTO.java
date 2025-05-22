@@ -4,49 +4,43 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import org.grupof.administracionapp.validations.paso1DTO.fechaNaz.MayorDeEdad;
+import org.grupof.administracionapp.validations.paso1DTO.generoValido.GeneroValido;
+import org.grupof.administracionapp.validations.paso1DTO.paisValido.PaisValido;
 import org.springframework.format.annotation.DateTimeFormat;
-
+import org.grupof.administracionapp.validations.paso1DTO.edadIgualAFecha.EdadConsistente;
 import java.time.LocalDate;
 import java.util.UUID;
 
 @Getter
 @Setter
+
+@EdadConsistente //validacion para comparar la fecha de nacimiento con la edad
 public class Paso1PersonalDTO {
 
-    @NotBlank(message = "Este campo es obligatorio y no puede estar vacío")
+    @NotBlank(message = "el campo nombre es obligatorio y no puede estar vacío")
     private String nombre;
 
-    @NotBlank(message = "Este campo es obligatorio y no puede estar vacío")
+    @NotBlank(message = "el campo apellido es obligatorio y no puede estar vacío")
     private String apellido;
 
-//    @NotNull(message = "Este campo es obligatorio y no puede estar vacío")
-//    @FotoTipoTamano(message = "La extension del archivo tiene que ser png o gif y debe pesar menos de 200kb")
-//    private String fotoUrl;
-
-    @NotNull(message = "Este campo es obligatorio y no puede estar vacío")
-//    Si se recibe unas siglas de género que no se
-//    encuentren entre las que aparecen en el
-//    dominio de géneros se
-//    producirá un Error de la aplicación.
+    @NotNull(message = "se tiene que seleccionar un genero si o si")
+    @GeneroValido
     private UUID genero;
 
-    @NotNull(message = "Este campo es obligatorio y no puede estar vacío")
+    @NotNull(message = "el campo fecha de nacimiento es obligatorio y no puede estar vacío")
     @DateTimeFormat(pattern = "dd/MM/yyyy")
-    //@MayorDeEdad(message = "Debe ser mayor de 18 años y tener un formato dd/mm/aaaa")
+    @MayorDeEdad
     private LocalDate fechaNacimiento;
 
-    @NotNull(message = "Este campo es obligatorio y no puede estar vacío")
-//    Debe coincidir con el número de años
-//    trascurridos desde la fecha de nacimiento.
+    @NotNull(message = "tienes que meter una fecha si o si")
+    //validado a nivel de clase que coincidan con la fecha nacimiento
     private Integer edad;
 
-    @NotNull(message = "Este campo es obligatorio y no puede estar vacío")
-//    Si se recibe un código de país que no se
-//    encuentra entre los que aparecen en la tabla
-//    de países, se producirá un Error de la aplicación
+    @NotNull(message = "selecciona el un pais, por favor te lo pido")
+    @PaisValido
     private UUID pais;
 
     @NotBlank(message = "Este campo es obligatorio")
-    //puede estar vacio? notNull?
     private String comentarios;
 }

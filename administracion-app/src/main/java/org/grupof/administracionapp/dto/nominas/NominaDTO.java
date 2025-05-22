@@ -3,12 +3,9 @@ package org.grupof.administracionapp.dto.nominas;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.grupof.administracionapp.entity.nomina.LineaNomina;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @AllArgsConstructor

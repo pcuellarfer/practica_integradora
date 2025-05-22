@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 
 <head th:replace="fragments/header :: head('Buscar Empleado')"></head>
 
@@ -11,13 +11,15 @@
     <div class="container mt-5">
         <h2>Buscar Empleado por Nombre</h2>
 
-
+        <!--formulario de busqueda parametrizada de empleados-->
         <form th:action="@{/buscar}" method="post">
+
             <!--nombre-->
             <div class="mb-3">
                 <label for="nombre" class="form-label">Nombre:</label>
                 <input type="text" id="nombre" name="nombre" th:value="${nombre}" class="form-control"/>
             </div>
+
             <!--genero-->
             <div class="mb-3">
                 <label for="genero" class="form-label">Género:</label>
@@ -33,9 +35,10 @@
             <div class="mb-3">
                 <label for="departamentos" class="form-label">Departamentos:</label>
                 <select id="departamentos" name="departamentos" class="form-control" multiple>
-                    <option th:each="dep : ${departamentos}" th:value="${dep.id}"
-                            th:text="${dep.nombre}"
-                            th:selected="${selectedDepartamentoIds != null and selectedDepartamentoIds.contains(dep.id)}">
+                    <option th:each="departamento : ${departamentos}" th:value="${departamento.id}"
+                            th:text="${departamento.nombre}">
+                            <!-- != null para evitar null pointer exception al hacer .contains-->
+                            th:selected="${selectedDepartamentoIds != null and selectedDepartamentoIds.contains(departamento.id)}">
                     </option>
                 </select>
             </div>
@@ -43,14 +46,12 @@
             <!-- Fecha de contratación -->
             <div class="mb-3">
                 <label for="fechaInicio" class="form-label">Fecha de contratación desde:</label>
-                <input type="text" id="fechaInicio" name="fechaInicio" placeholder="aaaa-mm-dd"
-                       th:value="${fechaInicio}" class="form-control"/>
+                <input type="text" id="fechaInicio" name="fechaInicio" placeholder="aaaa-mm-dd" th:value="${fechaInicio}" class="form-control"/>
             </div>
 
             <div class="mb-3">
                 <label for="fechaFin" class="form-label">Fecha de contratación hasta:</label>
-                <input type="text" id="fechaFin" name="fechaFin" placeholder="aaaa-mm-dd" th:value="${fechaFin}"
-                       class="form-control"/>
+                <input type="text" id="fechaFin" name="fechaFin" placeholder="aaaa-mm-dd" th:value="${fechaFin}" class="form-control"/>
             </div>
 
             <button type="submit" class="btn btn-primary mt-4">Buscar</button>
@@ -70,7 +71,7 @@
                     <th>Género</th>
                     <th>Departamento</th>
                     <th>Fecha de contratación</th>
-                    <th>Acciones</th>
+                    <th>Estado bloqueo</th>
                 </tr>
                 </thead>
                 <tbody>

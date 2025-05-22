@@ -3,9 +3,9 @@ package org.grupof.administracionapp.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import lombok.RequiredArgsConstructor;
 import org.grupof.administracionapp.dto.Empleado.RegistroEmpleadoDTO;
 import org.grupof.administracionapp.dto.Usuario.UsuarioDTO;
+import org.grupof.administracionapp.entity.Empleado;
 import org.grupof.administracionapp.entity.producto.Producto;
 import org.grupof.administracionapp.services.CatalogoService;
 import org.grupof.administracionapp.services.Categoria.CategoriaService;
@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -57,6 +59,28 @@ public class DashboardController {
         this.categoriaService = categoriaService;
     }
 
+    private Empleado obtenerEmpleadoDesdeSesion(HttpSession session) {
+        //recupera el usuario de sesion
+        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
+
+        //si no se encuentra se manda un null y avisa al logger
+        if (usuario == null) {
+            logger.warn("Sesión no activa.");
+            return null;
+        }
+
+        //intenta recuperar el empleado con el id del usuario
+        Empleado empleado = empleadoService.obtenerEmpleadoPorUsuarioId(usuario.getId()).orElse(null);
+
+        //si no se encuentra se manda un null y avisa al logger
+        if (empleado == null) {
+            logger.error("No se encontró el empleado para usuario ID: {}", usuario.getId());
+            //no hay un return null porque si el empleado esta vacio la variable empleado se envia vacio ya
+        }
+
+        return empleado;
+    }
+
     /**
      * Muestra el dashboard correspondiente según si el usuario es solo usuario o también empleado.
      *
@@ -73,6 +97,8 @@ public class DashboardController {
      */
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model modelo, HttpServletRequest request) {
+
+        //no se puede usar el metodo obtenerEmpleadoDesdeSesion porque necesito el usuarioDTO
         UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
 
         if (usuarioDTO == null) {
@@ -92,9 +118,12 @@ public class DashboardController {
 
         logger.info("Usuario ID {} es también empleado. Mostrando dashboard de empleado.", usuarioDTO.getId());
 
+        //por que no usar uduarioDTO directamente?
         UsuarioDTO usuarioBBDD = usuarioService.buscarPorEmail(usuarioDTO.getEmail());
+        //contador de inicio global
         int contadorSesiones = usuarioService.getContadorInicios(usuarioBBDD.getEmail());
 
+        //contador de inicio por navegador
         String contadorSesion = "0";
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
@@ -123,13 +152,17 @@ public class DashboardController {
      * @return vista del submenú de etiquetado
      */
     @GetMapping("dashboard/submenu-etiquetado")
-    public String mostrarSubmenuSubordinados(HttpSession session) {
-        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario"); //casting
+    public String mostrarSubmenuSubordinados(HttpSession session, RedirectAttributes redirectAttributes) {
 
-        if (usuarioDTO == null) {
-            logger.warn("Intento de acceso al dashboard sin usuario en sesión /submenu-etiquetado");
+        Empleado empleado = obtenerEmpleadoDesdeSesion(session);
+        //comprobar si hay empleado en sesion
+        if (empleado == null) {
+            logger.warn("No se encontró un empleado en sesión. Redirigiendo al login.");
+            //mensaje de error redirigido a la vista
+            redirectAttributes.addFlashAttribute("error", "has intentado acceder al submenu de etiquetado sin usuario/empleado autorizado, FUERA DE AQUI!");
             return "redirect:/login/username";
         }
+
         return "empleado/main/empleado-submenu-etiquetado";
     }
 
@@ -139,13 +172,17 @@ public class DashboardController {
      * @return vista del submenú de productos
      */
     @GetMapping("dashboard/submenu-productos")
-    public String mostrarSubmenuProductos(HttpSession session) {
-        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario"); //casting
+    public String mostrarSubmenuProductos(HttpSession session, RedirectAttributes redirectAttributes) {
 
-        if (usuarioDTO == null) {
-            logger.warn("Intento de acceso al dashboard sin usuario en sesión /submenu-productos");
+        Empleado empleado = obtenerEmpleadoDesdeSesion(session);
+        //comprobar si hay empleado en sesion
+        if (empleado == null) {
+            logger.warn("No se encontró un empleado en sesión. Redirigiendo al login.");
+            //mensaje de error redirigido a la vista
+            redirectAttributes.addFlashAttribute("error", "has intentado acceder al submenu de productos sin usuario/empleado autorizado, FUERA DE AQUI!");
             return "redirect:/login/username";
         }
+
         return "empleado/main/empleado-submenu-productos";
     }
 
@@ -158,15 +195,18 @@ public class DashboardController {
      * @return vista del submenú de nóminas o redirección al login
      */
     @GetMapping("dashboard/submenu-nominas")
-    public String mostrarSubmenuNominas(HttpSession session) {
-        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
+    public String mostrarSubmenuNominas(HttpSession session, RedirectAttributes redirectAttributes) {
 
-        if (usuarioDTO == null) {
-            logger.warn("Acceso denegado: no hay usuario en sesión (/submenu-nominas)");
+        Empleado empleado = obtenerEmpleadoDesdeSesion(session);
+        //comprobar si hay empleado en sesion
+        if (empleado == null) {
+            logger.warn("No se encontró un empleado en sesión. Redirigiendo al login.");
+            //mensaje de error redirigido a la vista
+            redirectAttributes.addFlashAttribute("error", "has intentado acceder al submenu de nominas sin usuario/empleado autorizado, FUERA DE AQUI!");
             return "redirect:/login/username";
         }
 
-        logger.info("Usuario {} accede al submenú de nóminas", usuarioDTO.getEmail());
+        logger.info("Usuario {} accede al submenú de nóminas", empleado.getNombre());
         return "empleado/main/empleado-submenu-nominas";
     }
 
@@ -184,11 +224,15 @@ public class DashboardController {
     public String mostrarSubidaCatalogo(@RequestParam(value = "mensaje", required = false) String mensaje,
                                         @RequestParam(value = "error", required = false) String error,
                                         Model model,
-                                        HttpSession session) {
-        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
+                                        HttpSession session,
+                                        RedirectAttributes redirectAttributes) {
 
-        if (usuarioDTO == null) {
-            logger.warn("Intento de acceso al dashboard sin usuario en sesión (/subida-catalogo)");
+        Empleado empleado = obtenerEmpleadoDesdeSesion(session);
+        //comprobar si hay empleado en sesion
+        if (empleado == null) {
+            logger.warn("No se encontró un empleado en sesión. Redirigiendo al login.");
+            //mensaje de error redirigido a la vista
+            redirectAttributes.addFlashAttribute("error", "has intentado acceder a la subida de catalogo sin usuario/empleado autorizado, FUERA DE AQUI!");
             return "redirect:/login/username";
         }
 
@@ -202,7 +246,7 @@ public class DashboardController {
             model.addAttribute("error", error);
         }
 
-        logger.info("Usuario {} accede al submenú de subida de catálogo", usuarioDTO.getEmail());
+        logger.info("Usuario {} accede al submenú de subida de catálogo", empleado.getNombre());
         return "empleado/main/catalogo";
     }
 
@@ -216,13 +260,17 @@ public class DashboardController {
      * @return la ruta de la plantilla Thymeleaf que representa el catálogo
      */
     @GetMapping("/dashboard/mostrarCatalogo")
-    public String mostrarCatalogo(Model model, HttpSession session) {
-        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario"); //casting
+    public String mostrarCatalogo(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
 
-        if (usuarioDTO == null) {
-            logger.warn("Intento de acceso al dashboard sin usuario en sesión /mostrarCatalogo");
+        Empleado empleado = obtenerEmpleadoDesdeSesion(session);
+        //comprobar si hay empleado en sesion
+        if (empleado == null) {
+            logger.warn("No se encontró un empleado en sesión. Redirigiendo al login.");
+            //mensaje de error redirigido a la vista
+            redirectAttributes.addFlashAttribute("error", "has intentado acceder a mostrar el catalogo sin usuario/empleado autorizado, FUERA DE AQUI!");
             return "redirect:/login/username";
         }
+
         logger.info("Accediendo a /dashboard/mostrarCatalogo");
 
         List<Producto> productos = catalogoService.obtenerTodosLosProductos();
@@ -248,14 +296,18 @@ public class DashboardController {
     @PostMapping("/dashboard/mostrarCatalogo")
     public String filtrarCatalogo(@RequestParam String tipoProducto,
                                   @RequestParam String categoria,
-                                  Model model, HttpSession session) {
+                                  Model model, HttpSession session,
+                                  RedirectAttributes redirectAttributes) {
 
-        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario"); //casting
-
-        if (usuarioDTO == null) {
-            logger.warn("Intento de acceso al dashboard sin usuario en sesión /mostrarCatalogo POST");
+        Empleado empleado = obtenerEmpleadoDesdeSesion(session);
+        //comprobar si hay empleado en sesion
+        if (empleado == null) {
+            logger.warn("No se encontró un empleado en sesión. Redirigiendo al login.");
+            //mensaje de error redirigido a la vista
+            redirectAttributes.addFlashAttribute("error", "has intentado acceder a mostrar el catalogo sin usuario/empleado autorizado, FUERA DE AQUI!");
             return "redirect:/login/username";
         }
+
         logger.info("Filtrando catálogo con tipoProducto='{}' y categoria='{}'", tipoProducto, categoria);
 
         List<Producto> productos = productoService.filtrarCatalogo(tipoProducto, categoria);
@@ -280,11 +332,14 @@ public class DashboardController {
      * @return vista con los detalles del producto o redirección al login si no hay sesión activa
      */
     @GetMapping("/dashboard/mostrarCatalogo/{id}")
-    public String mostrarDetalleProducto(@PathVariable UUID id, Model model, HttpSession session) {
-        UsuarioDTO usuarioDTO = (UsuarioDTO) session.getAttribute("usuario");
+    public String mostrarDetalleProducto(@PathVariable UUID id, Model model, HttpSession session, RedirectAttributes redirectAttributes) {
 
-        if (usuarioDTO == null) {
-            logger.warn("Intento de acceso al dashboard sin usuario en sesión /mostrarCatalogo/{}", id);
+        Empleado empleado = obtenerEmpleadoDesdeSesion(session);
+        //comprobar si hay empleado en sesion
+        if (empleado == null) {
+            logger.warn("No se encontró un empleado en sesión. Redirigiendo al login.");
+            //mensaje de error redirigido a la vista
+            redirectAttributes.addFlashAttribute("error", "has intentado acceder a mostrar el catalogo de un producto especifico sin usuario/empleado autorizado, FUERA DE AQUI!");
             return "redirect:/login/username";
         }
 
@@ -298,7 +353,7 @@ public class DashboardController {
         // Añadir el producto al modelo
         model.addAttribute("producto", producto);
         model.addAttribute("productoId", id);
-        logger.info("Usuario {} accede a los detalles del producto con ID {}", usuarioDTO.getEmail(), id);
+        logger.info("Usuario {} accede a los detalles del producto con ID {}", empleado.getNombre(), id);
         return "empleado/main/empleado-detalleProducto";
     }
 }
