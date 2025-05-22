@@ -73,14 +73,14 @@
             <div class="row justify-content-center">
                 <div class="col-md-8">
                     <div class="subir-card card shadow-lg p-4">
-                        <form action="http://tomcat-integradora:8080/catalogo/subir" method="post" enctype="multipart/form-data" class="subir-formulario">
+                        <form action="http://10.0.0.1:8080/catalogo/subir" method="post" enctype="multipart/form-data" class="subir-formulario">
                             <div class="mb-3">
                                 <label for="file" class="form-label subir-label">Seleccionar archivo JSON:</label>
                                 <input type="file" id="file" name="files" class="form-control subir-input" accept=".json" required multiple>
                             </div>
                             <div id="mensaje"></div>
                             <button type="submit" class="btn btn-primary w-100 subir-boton mb-4 mt-3">Subir catálogo</button>
-                            <a href="http://tomcat-integradora:8080/dashboard" class="btn btn-secondary w-100 mb-4">Volver al dashboard</a>
+                            <a href="http://10.0.0.1:8080/dashboard" class="btn btn-secondary w-100 mb-4">Volver al dashboard</a>
                         </form>
                     </div>
                 </div>
