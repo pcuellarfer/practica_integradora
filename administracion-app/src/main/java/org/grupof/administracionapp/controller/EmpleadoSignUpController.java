@@ -133,7 +133,7 @@ public class EmpleadoSignUpController {
             session.setAttribute("registroEmpleado", registroEmpleado); // opcional si quieres garantizar que ya esté en sesión
         }
 
-        modelo.addAttribute("paso1", registroEmpleado.getPaso1PersonalDTO());
+        modelo.addAttribute("registroEmpleado", registroEmpleado.getPaso1PersonalDTO());
 
         logger.info("Mostrando formulario de datos personales para usuario ID: {}", usuario.getId());
         modelo.addAttribute("paso1", new Paso1PersonalDTO());
