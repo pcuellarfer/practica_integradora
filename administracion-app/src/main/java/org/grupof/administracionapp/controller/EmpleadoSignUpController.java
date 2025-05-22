@@ -152,7 +152,7 @@ public class EmpleadoSignUpController {
             @ModelAttribute("registroEmpleado") RegistroEmpleadoDTO registroEmpleado,
             Model modelo,
             @SessionAttribute(value = "usuario", required = false) UsuarioDTO usuarioDTO,
-            @RequestParam("foto") MultipartFile foto) {
+            @RequestParam(value = "foto", required = false) MultipartFile foto) {
 
         logger.info("Procesando paso 1 del formulario para usuario ID: {}",
                 usuarioDTO != null ? usuarioDTO.getId() : "desconocido");
