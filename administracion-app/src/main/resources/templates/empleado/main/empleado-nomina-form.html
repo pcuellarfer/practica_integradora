@@ -11,29 +11,33 @@
         <div class="container">
             <h1 id="titulo-formulario" class="text-center mb-4"></h1>
 
-            <input type="hidden" id="empleadoId-hidden" name="empleadoId"/>
+    <!--para guardar el id del usuario, se usa porque el select del empleado esta desactivado en la edicion-->
+    <input type="hidden" id="empleadoId-hidden" name="empleadoId"/>
 
             <form id="form-nomina">
-                <div class="mb-3">
+                <div class="mb-3"><!--select de los empleados-->
                     <label for="select-empleado" class="form-label">Empleado:</label>
                     <select id="select-empleado" class="form-control" required></select>
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-3"><!--fecha iinicio-->
                     <label for="fecha-inicio" class="form-label">Fecha inicio:</label>
                     <input type="text" id="fecha-inicio" class="form-control" placeholder="aaaa-mm-dd" required>
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-3"><!--fecha fin-->
                     <label for="fecha-fin" class="form-label">Fecha fin:</label>
                     <input type="text" id="fecha-fin" class="form-control" placeholder="aaaa-mm-dd" required>
                 </div>
 
                 <h4 class="mt-4">Líneas de Nómina</h4>
+                <!--div con las lineas de nomina, se rellena en JS-->
                 <div id="lineasNominaContainer"></div>
+                <!--boton que llama a la funcion para añadir lineas de nomina-->
                 <button type="button" class="btn btn-secondary mb-3" onclick="anadirLineaNomina()">+ Añadir Línea
                 </button>
 
+                <!--resumen para calculos con los datos de linea nomina, JS-->
                 <div class="mb-3">
                     <p><strong>Total Devengos:</strong> <span id="totalDevengos">0.00</span> €</p>
                     <p><strong>Total Deducciones:</strong> <span id="totalDeducciones">0.00</span> €</p>
@@ -49,41 +53,89 @@
 <div th:replace="/fragments/pie"></div>
 
 <script>
+    // recupera el id de la nomina de la URL
+    // si no llega id es que es una creacion
+    // si hay id entonces es una modificacion de esa id
     const urlParams = new URLSearchParams(window.location.search);
     const idNomina = urlParams.get('id');
 
+    //funcion async para poder usar wait
     async function cargarEmpleados() {
+
+        //mete el select entero en una variable
         const select = document.getElementById("select-empleado");
+
+        //mete en variable la respuesta(status, headers, body) de la solicitud al get devuelve empleados
         const res = await fetch("/api/nominas/devuelveEmpleados");
+
+        //intenta convertir el body de la respuesta HTTP a json (de empleados)
         const empleados = await res.json();
+
+        //recorre todos los empleados
         empleados.forEach(emp => {
+            //crea un elemento option
             const opt = document.createElement("option");
+            //a ese option le mete el value del id del empleado
             opt.value = emp.id;
+            //mete en el texto visible del option el nombre+apellido
             opt.textContent = `${emp.nombre} ${emp.apellido}`;
+            //mete el select nuevo al select de empleados
             select.appendChild(opt);
         });
     }
 
+
     async function cargarNomina() {
+
+        //mete en const la respuesta HTTP de el metodo
         const res = await fetch(`/api/nominas/${idNomina}`);
+
+        //extrae el json de la respuesta
         const data = await res.json();
+
+        //rellena el los campos de fecha inicio-fecha fin
         document.getElementById("fecha-inicio").value = data.fechaInicio;
         document.getElementById("fecha-fin").value = data.fechaFin;
+
+        //coge el select de empleado
         const select = document.getElementById("select-empleado");
+
+        //mete en el select de empleado, el empleado(id-nombre), borrando el resto
         select.innerHTML = `<option value="${data.empleadoId}" selected>${data.nombreEmpleado}</option>`;
+
+        //guarda el id de empleado en un hidden para pasarlo al backend al guardar
         document.getElementById("empleadoId-hidden").value = data.empleadoId;
+        //desactiva el select de empleado, impidiendo que el empleado cambie el empleado seleccionado
         select.disabled = true;
-        data.lineasNomina.forEach((linea, index) => anadirLineaNomina(linea, index === 0));
+
+        //recorre el array lineas nominas que se recibe del servidor (mirar mas adelante)
+        data.lineasNomina.forEach((linea, index) =>
+            //para cada linea de nomina llama a la funcion de añadir linea nomina
+            //le pasa a la funcion la linea y un boolean que solo sera true para la primera linea (sueldo base)
+            anadirLineaNomina(linea, index === 0)
+        );
     }
 
+    //recibe una linea y un booleano que por defecto pone en false
     function anadirLineaNomina(linea = {}, esPrimera = false) {
+        //pilla tod el contenedor para rellenarlo
         const container = document.getElementById("lineasNominaContainer");
+        //cuenta el numero de lineas, para manejar inputs luego
         const numLineas = container.querySelectorAll('.linea-nomina').length;
+        //crea un nuevo div para la linea
         const nueva = document.createElement("div");
+        //le añade las clases de bootstrap a el nuevo div
         nueva.className = "linea-nomina d-flex align-items-center gap-3 mb-3 border p-3 rounded";
+        //prepara el concepto, si al metodo le ha llegado un true (es la primera linea)
+        //fuerza su concepto a sueldo base, sino lo pone o el valor que ya traiga (edicion) o vacio(alta)
         const concepto = esPrimera ? "Sueldo base" : (linea.concepto || '');
+        //prepara el porcentaje, si al metodo le ha llegado un true (es la primera linea)
+        //deja el porcentaje vacio sino, le mete el porcentaje que traiga o vacio
         const porcentaje = esPrimera ? "" : (linea.porcentaje ?? '');
+        //prepara la cantidad, deja su cantidad o lo pone vacio
         const cantidad = linea.cantidad ?? '';
+
+        //construye el html con las constantes creadas antes, si es primera linea(sueldo base) hace el concepto y porcentaje readonly
         nueva.innerHTML = `
             <div class="flex-fill">
                 <label class="form-label mb-1">Concepto:</label>
@@ -97,21 +149,32 @@
                 <label class="form-label mb-1">Cantidad:</label>
                 <input type="text" class="form-control form-control-sm" name="lineasNomina[${numLineas}].cantidad" value="${cantidad}" />
             </div>
+            <!--si no es la primera linea añade un boton para borrar la linea-->
             ${esPrimera ? '' : '<button type="button" class="btn btn-danger btn-sm mt-4" onclick="eliminarLinea(this)">–</button>'}
         `;
+        //añade el div al dom
         container.appendChild(nueva);
     }
 
     function eliminarLinea(boton) {
+        //boton.closest(...) busca el elemento más cercano hacia arriba en el DOM
+        // que tenga la clase linea-nomina(la linea de nomina entera)
         const fila = boton.closest(".linea-nomina");
+        //borra esa linea de nomina
         fila.remove();
+        //actualiza los indices de las demas nominas
         actualizarIndices();
+        //actualiza el resumen de datos de devengos y esas cosas
         actualizarResumen();
     }
 
     function actualizarIndices() {
+        //mete todas las filas
         const filas = document.querySelectorAll(".linea-nomina");
+
+        //recorre cada linea
         filas.forEach((fila, i) => {
+            //encuentra los campos con name terminados en .<campo> y los actualiza con el nuevo indice
             fila.querySelector('input[name$=".concepto"]').name = `lineasNomina[${i}].concepto`;
             fila.querySelector('input[name$=".porcentaje"]').name = `lineasNomina[${i}].porcentaje`;
             fila.querySelector('input[name$=".cantidad"]').name = `lineasNomina[${i}].cantidad`;
@@ -119,128 +182,201 @@
     }
 
     function actualizarCantidadesDesdePorcentajes() {
+        //mete en constantes todas las cantidades y porcentajes
         const cantidades = document.querySelectorAll('input[name^="lineasNomina"][name$=".cantidad"]');
         const porcentajes = document.querySelectorAll('input[name^="lineasNomina"][name$=".porcentaje"]');
+
+        //se pone como sueldo base el input con indice 0 (sueldo base)
         const sueldoBaseInput = cantidades[0];
+
+        //pasa el valor de ese objeto[0] a numero
         const sueldoBase = parseFloat(sueldoBaseInput.value);
+        //si el valor de ese numero NO es un numero para de ejecutar la funcion
         if (isNaN(sueldoBase)) return;
+
+        //recorre todas las lineas de nomina exceptuando la primera
         for (let i = 1; i < porcentajes.length; i++) {
+            //convierte el porcentaje del input[i] a numero
             const porcentajeVal = parseFloat(porcentajes[i].value);
+            //si el numero es valido
             if (!isNaN(porcentajeVal)) {
+                //si el porcentaje es mayor que 100
                 if (porcentajeVal > 100) {
+                    //avisa de error en linea
                     alert(`El porcentaje en la línea ${i + 1} no puede superar el 100%.`);
+                    //borra el porcentaje y la cantidad
                     porcentajes[i].value = "";
                     cantidades[i].value = "";
+                    //sale del bucle y pasa a la siguiente linea
                     continue;
                 }
+                //calcula la cantidad con dos decimales
                 const nuevaCantidad = (sueldoBase * porcentajeVal / 100).toFixed(2);
+                //la mete a la cantidad de la fila [i]
                 cantidades[i].value = nuevaCantidad;
             }
         }
     }
 
     function actualizarResumen() {
+        //inicializa los + y -
         let devengos = 0;
         let deducciones = 0;
+
+        //recorre todos los inputs con name acabado en cantidad
         document.querySelectorAll('input[name^="lineasNomina"][name$=".cantidad"]').forEach(input => {
+            //convierte el valor a numero
             const val = parseFloat(input.value);
+            //si es un numero valido
             if (!isNaN(val)) {
+                //mayor o igual a 0 se suma a devengos
                 if (val >= 0) devengos += val;
+                //se convierte a valor absoluto a deducciones (aunque sea resta)
                 else deducciones += Math.abs(val);
             }
         });
+        //calcula el neto
         const neto = devengos - deducciones;
+        //actualiza los valores con 2 decimales
         document.getElementById("totalDevengos").innerText = devengos.toFixed(2);
         document.getElementById("totalDeducciones").innerText = deducciones.toFixed(2);
         document.getElementById("salarioNeto").innerText = neto.toFixed(2);
     }
 
+    //escucha cada cambio que haya en un input
     document.addEventListener("input", () => {
+        //actualiza las cantidades y los resumenes
         actualizarCantidadesDesdePorcentajes();
         actualizarResumen();
     });
 
+    //escucha cambios en el select de empleado
     document.getElementById("select-empleado").addEventListener("change", function () {
+        //coge el campo id del empleado y lo mete ene l campo hidden
         document.getElementById("empleadoId-hidden").value = this.value;
     });
 
+    //escucha cuando se clica en el boton submit de el formulario
     document.getElementById("form-nomina").addEventListener("submit", async function (e) {
+        //bloquea el envio del formulario, que refrescaria la pagina, asi lo controlo yo
         e.preventDefault();
+        //desactiva el boton para evitar clics multiples
         const btnGuardar = document.getElementById("btnGuardar");
         btnGuardar.disabled = true;
 
+        //recupera los datos del formulario
         const empleadoId = document.getElementById("empleadoId-hidden").value;
         const fechaInicio = document.getElementById("fecha-inicio").value;
         const fechaFin = document.getElementById("fecha-fin").value;
 
+        //y las lineas
         const lineas = [];
         const conceptos = document.querySelectorAll('input[name^="lineasNomina"][name$=".concepto"]');
         const porcentajes = document.querySelectorAll('input[name^="lineasNomina"][name$=".porcentaje"]');
         const cantidades = document.querySelectorAll('input[name^="lineasNomina"][name$=".cantidad"]');
 
+        //crea un formato para la fecha
         const formatoFechaRegex = /^\d{4}-\d{2}-\d{2}$/;
+        //comprueba que las fechas son validas para el formato
         if (!formatoFechaRegex.test(fechaInicio) || !formatoFechaRegex.test(fechaFin)) {
+            //si esta mal manda un alert y reactiva el boton
             alert("Las fechas deben tener formato AAAA-MM-DD");
             btnGuardar.disabled = false;
             return;
         }
 
+        //Este bucle valida y transforma todos los inputs de línea en objetos JS reales
+        //que luego se envian al backend
+        //Si alguna línea tiene un fallo, se detiene tod y muestra un aviso
         for (let i = 0; i < conceptos.length; i++) {
+            //recive el concepto
             const concepto = conceptos[i].value;
+            //convierte el porcentaje a numero, si tiene porcentaje lo pasa a numero, sino null
             const porcentaje = porcentajes[i].value ? Number(porcentajes[i].value) : null;
+            //lo mismo que porcentaje
             const cantidad = cantidades[i].value ? Number(cantidades[i].value) : null;
+
+            //verifica que concepto existe y no es un vacio y que cantidad es un numero valido y no es null
             if (!concepto || concepto.trim() === "" || cantidad === null || isNaN(cantidad)) {
+                //avisa al usuario
                 alert(`Revisa los datos en la línea ${i + 1}`);
                 btnGuardar.disabled = false;
                 return;
             }
+            //crea los objetos de concepto porcentaje y cantidad y los mete al array de lineas
             lineas.push({concepto, porcentaje, cantidad});
         }
 
+        //si no hay lineas
         if (lineas.length === 0) {
             alert("Debes añadir al menos una línea.");
             btnGuardar.disabled = false;
             return;
         }
 
+        //crea un objeto datos con
         const datos = {
+            //el empleado id, creado o editado
             empleadoId,
+            //fechas correctas por la validacion
             fechaInicio,
             fechaFin,
+            //el array de lineas de nomina
             lineasNomina: lineas
         };
 
+        //si hay id nomina hace solicitud put si no post
+        //esto porque el mismo boton de guardar se usa para guardar la primera nomina, o editar nomina
         const method = idNomina ? "PUT" : "POST";
+
+        //crea el url al que se van a realizar las solicitudes
         const url = idNomina ? `/api/nominas/${idNomina}` : "/api/nominas";
 
+        //hace el fetch a el url generado
         fetch(url, {
+            //con el metodo generado
             method: method,
+            //pasa los datos creados antes a json
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(datos)
         })
+            //cuando se recive la respuesta
             .then(res => {
+                //vuelve a activar el boton
                 btnGuardar.disabled = false;
+                //si la respuesta le gusta
                 if (res.ok) {
                     alert("Nómina guardada correctamente");
+                    //redirige a la busqueda parametrizada de nominas, por si las quieres ver
                     window.location.href = "/nominas/buscarNominas";
                 } else {
+                    //intenta leer el cuerpo del json y muestra el alert
                     res.json().then(err => alert("Error: " + err.error));
                 }
             })
+            //este catch es por si el propio fetch() falla por falta de conexion o cosa mala
             .catch(error => {
                 btnGuardar.disabled = false;
                 alert("Error de conexión: " + error);
             });
     });
 
+    //se ejecuta cuando la pagina termina de cargar y prepara el formulario de nomina segun
+    //si es una edicion o un alta nueva.
     window.addEventListener("DOMContentLoaded", async () => {
         document.getElementById("titulo-formulario").textContent = idNomina ? "Editar Nómina" : "Alta de Nómina";
+        //carga los empleados para el select
         await cargarEmpleados();
+        //si llega un idnomina desde URL(edicion)
         if (idNomina) {
+            //carga la nomina para edicion
             await cargarNomina();
-        } else {
+        } else { //si no(alta)
+            //crea una linea nomina (la primera, sueldo base)
             anadirLineaNomina({}, true);
+            //pillar el empledo seleccionado en el select
             const primerEmpleadoId = document.getElementById("select-empleado").value;
+            //lo mete al hidden value
             document.getElementById("empleadoId-hidden").value = primerEmpleadoId;
         }
     });

@@ -8,7 +8,6 @@ import org.grupof.administracionapp.services.Empleado.EmpleadoService;
 import org.grupof.administracionapp.services.Genero.GeneroService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,17 +46,23 @@ public class BusquedaEmpleadosController {
      * @return el empleado correspondiente o null si no se encuentra
      */
     private Empleado obtenerEmpleadoDesdeSesion(HttpSession session) {
+        //recupera el usuario de sesion
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
         Boolean autenticado = (Boolean) session.getAttribute("autenticado");
 
+        //si no se encuentra se manda un null y avisa al logger
         if (usuario == null || autenticado == null || !autenticado) {
             BusquedaEmpleadosController.logger.warn("Sesión no activa.");
             return null;
         }
 
+        //intenta recuperar el empleado con el id del usuario
         Empleado empleado = empleadoService.obtenerEmpleadoPorUsuarioId(usuario.getId()).orElse(null);
+
+        //si no se encuentra se manda un null y avisa al logger
         if (empleado == null) {
             BusquedaEmpleadosController.logger.error("No se encontró el empleado para usuario ID: {}", usuario.getId());
+            //no hay un return null porque si el empleado esta vacio la variable empleado se envia vacio ya
         }
 
         return empleado;
@@ -77,14 +82,16 @@ public class BusquedaEmpleadosController {
      * @return la vista "empleado/main/empleado-buscar" o redirección al login si no hay sesión válida
      */
     @GetMapping("/buscar")
-    public String mostrarFormularioBusqueda(Model modelo, HttpSession session) {
+    public String mostrarFormularioBusqueda(Model modelo, HttpSession session, RedirectAttributes redirectAttributes) {
         logger.info("Accediendo al formulario de búsqueda de empleados");
 
         Empleado empleado = obtenerEmpleadoDesdeSesion(session);
         Boolean autenticado = (Boolean) session.getAttribute("autenticado");
-
+        //comprobar si hay empleado en sesion
         if (empleado == null || autenticado == null || !autenticado) {
             logger.warn("No se encontró un empleado en sesión. Redirigiendo al login.");
+            //mensaje de error redirigido a la vista
+            redirectAttributes.addFlashAttribute("error", "has intentado acceder a la busqueda de empleados sin un usuario/empleado autorizado, FUERA DE AQUI!");
             return "redirect:/login/username";
         }
 
@@ -126,12 +133,15 @@ public class BusquedaEmpleadosController {
                                    @RequestParam(required = false) String fechaInicio,
                                    @RequestParam(required = false) String fechaFin,
                                    Model modelo,
-                                   HttpSession session) {
+                                   HttpSession session,
+                                   RedirectAttributes redirectAttributes) {
         logger.info("Procesando búsqueda de empleados. Nombre: '{}', Género ID: {}", nombre, genero);
 
         Empleado empleado = obtenerEmpleadoDesdeSesion(session);
         Boolean autenticado = (Boolean) session.getAttribute("autenticado");
         if (empleado == null || autenticado == null || !autenticado) {
+            //mensaje de error redirigido a la vista
+            redirectAttributes.addFlashAttribute("error", "has intentado acceder a la busqueda de empleados sin un usuario/empleado autorizado, FUERA DE AQUI!");
             logger.warn("No se encontró un empleado en sesión. Redirigiendo al login. /buscar POST");
             return "redirect:/login/username";
         }
@@ -139,7 +149,8 @@ public class BusquedaEmpleadosController {
         //variables vacias para meter las fechas
         LocalDate fechaInicioBuena = null;
         LocalDate fechaFinBuena = null;
-        //intentar convertir las fechas de string a LocalDate
+
+        //intentar convertir las fechas de string a LocalDate, si las fechas vienen vacias devuelve una excepcion, por eso el required false en fechas
         try {
             if (fechaInicio != null && !fechaInicio.isBlank()) {
                 fechaInicioBuena = LocalDate.parse(fechaInicio);
@@ -150,17 +161,21 @@ public class BusquedaEmpleadosController {
         } catch (DateTimeParseException e) {
             modelo.addAttribute("mensaje", "Formato de fecha inválido. Usa aaaa-mm-dd");
         }
+
+        //una lista de empleados filtrados por los parametros recibidos del formulario
         List<Empleado> resultados = empleadoService.buscarEmpleados(nombre, genero, departamentos, fechaInicioBuena, fechaFinBuena);
         logger.info("Se encontraron {} empleados que coinciden con los criterios de búsqueda", resultados.size());
 
         boolean estadoBloqueado = empleadoService.obtenerEstadoEmpleado(empleado.getId());
         logger.info("Estado de bloqueo del empleado actual /buscar POST: {}", estadoBloqueado ? "Bloqueado" : "Desbloqueado");
 
-        List<UUID> depIds; //si llega null pasa una lista vacia, que no es lo mismo que un nulo, evitando nullpointerexception
+        List<UUID> depIds; //estas dos lineas de codigo son por si la lista de departamentos llega nula, convertirla a una lista VACIA, evitando NullPointer
         depIds = Objects.requireNonNullElse(departamentos, Collections.emptyList());
 
         modelo.addAttribute("estadoBloqueado", estadoBloqueado);
+        //aqui van los empleados filtrados
         modelo.addAttribute("resultados", resultados);
+        //estos para rellenar el formulario con lo que haya puesto el usuario antes
         modelo.addAttribute("nombre", nombre);
         modelo.addAttribute("selectedGeneroId", genero);
         modelo.addAttribute("generos", generoService.getAllGeneros());
@@ -175,7 +190,7 @@ public class BusquedaEmpleadosController {
     /**
      * Maneja la solicitud POST para bloquear a un empleado específico.
      * <p>
-     * Este método verifica si hay un empleado autenticado en sesión. Si no lo hay, redirige al formulario de login.
+     * Este métdo verifica si hay un empleado autenticado en sesión. Si no lo hay, redirige al formulario de login.
      * Si el empleado está autenticado, se llama al servicio para bloquear al empleado con el motivo proporcionado.
      * Después, redirige a la vista de búsqueda con un mensaje de éxito.
      *
@@ -190,10 +205,12 @@ public class BusquedaEmpleadosController {
                                   @RequestParam("motivoBloqueo") String motivoBloqueo,
                                   HttpSession session,
                                   RedirectAttributes redirectAttributes) {
+
         Empleado empleado = obtenerEmpleadoDesdeSesion(session);
         Boolean autenticado = (Boolean) session.getAttribute("autenticado");
 
         if (empleado == null || autenticado == null || !autenticado) {
+            redirectAttributes.addFlashAttribute("error", "has intentado bloquear un empleado sin un usuario/empleado autorizado, FUERA DE AQUI!");
             return "redirect:/login/username";
         }
 
@@ -220,6 +237,7 @@ public class BusquedaEmpleadosController {
         Boolean autenticado = (Boolean) session.getAttribute("autenticado");
 
         if (empleado == null || autenticado == null || !autenticado) {
+            redirectAttributes.addFlashAttribute("error", "has intentado desbloquear un empleado sin un usuario/empleado autorizado, FUERA DE AQUI!");
             return "redirect:/login/username";
         }
 

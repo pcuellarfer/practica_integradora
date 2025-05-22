@@ -4,7 +4,6 @@ import org.grupof.administracionapp.dto.nominas.BusquedaNominaDTO;
 import org.grupof.administracionapp.dto.nominas.DetalleNominaDTO;
 import org.grupof.administracionapp.dto.nominas.NombreApellidoEmpleadoDTO;
 import org.grupof.administracionapp.dto.nominas.NominaDTO;
-import org.grupof.administracionapp.entity.Empleado;
 import org.grupof.administracionapp.services.Empleado.EmpleadoService;
 import org.grupof.administracionapp.services.nomina.NominaService;
 import org.slf4j.Logger;
@@ -42,6 +41,7 @@ public class NominaRestController {
      * @param idNomina UUID de la nómina.
      * @return ResponseEntity con la nómina correspondiente en formato JSON si se encuentra.
      */
+    //ignorar, lo hice con Jose Ramon como prueba
     @GetMapping("{idEmple}/{idNomina}")
     public ResponseEntity<?> devuelveNomina(@PathVariable UUID idEmple, @PathVariable UUID idNomina) {
         logger.info("Solicitando nómina con ID {} para el empleado con ID {}", idNomina, idEmple);

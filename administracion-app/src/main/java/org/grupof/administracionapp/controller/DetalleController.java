@@ -45,7 +45,6 @@ public class DetalleController {
 
     /**
      * Muestra los detalles del empleado autenticado.
-     *
      * Si no hay usuario en sesión o ocurre un error al obtener los datos, redirige al login.
      * Carga en el modelo el usuario y sus detalles para mostrarlos en la vista.
      *
@@ -84,7 +83,6 @@ public class DetalleController {
 
     /**
      * Muestra el formulario para editar los datos del empleado.
-     *
      * Si no hay usuario en sesión o ocurre un error al obtener los datos, redirige al login.
      * Carga en el modelo el DTO del empleado y las listas necesarias para los selectores del formulario.
      *
@@ -121,7 +119,6 @@ public class DetalleController {
 
     /**
      * Añade al modelo los datos necesarios para cargar el formulario de empleado.
-     *
      * Incluye un DTO vacío y las listas de países, géneros y departamentos.
      *
      * @param modelo modelo donde se añaden los atributos para la vista
@@ -138,10 +135,9 @@ public class DetalleController {
 
     /**
      * Procesa el formulario de edición de los datos del empleado.
-     *
      * Si no hay usuario en sesión, redirige al login.
      * Si hay errores de validación o al guardar la imagen, vuelve a la vista con mensajes de error.
-     * Si todo va bien, actualiza los datos del empleado y redirige a la vista de detalles.
+     * Si tod va bien, actualiza los datos del empleado y redirige a la vista de detalles.
      *
      * @param session sesión HTTP actual
      * @param redirectAttributes atributos para mensajes flash tras redirección
