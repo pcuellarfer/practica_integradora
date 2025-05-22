@@ -1,9 +1,6 @@
 services:
   mysql:
     image: davidsmh233/integradora-mysql:latest
-    build:
-      context: ./sql
-      dockerfile: Dockerfile
     container_name: mysql_integradora
     environment:
       MYSQL_ROOT_PASSWORD: admin
@@ -23,9 +20,6 @@ services:
 
   tomcat:
     image: davidsmh233/integradora-tomcat:latest
-    build:
-      context: ./tomcat
-      dockerfile: Dockerfile
     container_name: tomcat_integradora
     ports:
       - "8080:8080"
@@ -45,9 +39,6 @@ services:
       - ./tomcat/logs:/usr/local/tomcat/logs
 
   apache:
-    build:
-      context: ./apache
-      dockerfile: Dockerfile
     image: davidsmh233/integradora-apache:latest
     container_name: apache_integradora
     ports:
