@@ -8,6 +8,7 @@
 <main>
     <div th:replace="/fragments/cuentaatras"></div>
     <div th:replace="/fragments/botonCss"></div>
+    <div th:replace="/fragments/cabeceraRegistro"></div>
 <div class="absoluto mt-5">
     <div class="container">
         <h1 class="mb-4">Resumen de tu registro</h1>
@@ -92,7 +93,6 @@
 
         <form th:action="@{/registro/paso5}" method="post" class="mt-4">
             <button type="submit" class="btn btn-primary">Confirmar Registro</button>
-            <a href="/registro/paso4" class="btn btn-secondary w-100 mb-4">Volver al paso 4</a>
         </form>
     </div>
 </div>

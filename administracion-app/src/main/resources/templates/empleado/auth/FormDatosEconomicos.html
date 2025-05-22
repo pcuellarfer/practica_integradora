@@ -8,6 +8,7 @@
 <main>
     <div th:replace="/fragments/cuentaatras"></div>
     <div th:replace="/fragments/botonCss"></div>
+    <div th:replace="/fragments/cabeceraRegistro"></div>
 <div class="absoluto mt-5">
     <div class="container">
         <!-- Título -->
@@ -84,7 +85,6 @@
             </div>
 
             <button type="submit" class="btn btn-primary w-100">Pasar al resumen</button>
-            <a href="/registro/paso3" class="btn btn-secondary w-100 mb-4">Volver al paso 3</a>
         </form>
         <!-- Mensaje de error (si existe) -->
         <p th:if="${error}" th:text="${error}" style="color: red;"></p>
