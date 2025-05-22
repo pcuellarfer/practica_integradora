@@ -50,7 +50,7 @@ public class CatalogoController {
      *         incluyendo un mensaje de éxito o error como parámetro en la URL.
      */
     @PostMapping("/subir")
-    public ResponseEntity<Object> subirCatalogo(@RequestParam("files") List<MultipartFile> files, HttpSession session) {
+    public ResponseEntity<Object> subirCatalogo(@RequestParam("files") List<MultipartFile> files) {
         logger.info("Petición recibida para subir catálogos");
 
         try {
@@ -58,14 +58,13 @@ public class CatalogoController {
                 logger.info("Procesando archivo: '{}'", file.getOriginalFilename());
                 catalogoService.procesarCatalogo(file);
             }
-            String idSesion = (String) session.getAttribute("idSession");
             HttpHeaders headers = new HttpHeaders();
-            headers.setLocation(URI.create("http://apache/dashboard/catalogo-apache.html?mensaje=Catálogos+procesados+correctamente"));
+            headers.setLocation(URI.create("http://apache:80/dashboard/catalogo-apache.html?mensaje=Catálogos+procesados+correctamente"));
             return new ResponseEntity<>(headers, HttpStatus.SEE_OTHER);
         } catch (Exception e) {
             logger.error("Error al procesar los catálogos: {}", e.getMessage(), e);
             HttpHeaders headers = new HttpHeaders();
-            headers.setLocation(URI.create("http://apache/dashboard/catalogo-apache.html?mensaje=Error+al+procesar+los+catálogos"));
+            headers.setLocation(URI.create("http://apache:80/dashboard/catalogo-apache.html?mensaje=Error+al+procesar+los+catálogos"));
             return new ResponseEntity<>(headers, HttpStatus.SEE_OTHER);
         }
     }
