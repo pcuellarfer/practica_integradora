@@ -1,0 +1,205 @@
+{
+  "proveedor": "Editorial Futura",
+  "fechaEnvioCatalogo": "2025-05-13",
+  "productos": [
+    {
+      "tipo": "MUEBLE",
+      "tipoProducto": "MUEBLE",
+      "descripcion": "Manual de Java Avanzado",
+      "precio": 49.99,
+      "marca": "FuturaPress",
+      "categorias": [
+        { "nombre": "Mueble de madera" },
+        { "nombre": "Ayuda por favor" }
+      ],
+      "esPerecedero": false,
+      "unidades": 50,
+      "fechaFabricacion": "2025-03-01",
+      "colores": ["AZUL", "BLANCO"],
+      "tipoMadera": "Java Avanzado",
+      "estilo": "Carlos Ortega",
+      "dimensiones": {
+        "ancho": 15.5,
+        "profundidad": 3.0,
+        "alto": 23.0
+      }
+    },
+    {
+      "tipo": "MUEBLE",
+      "tipoProducto": "MUEBLE",
+      "descripcion": "Silla de Oficina Ergonómica",
+      "precio": 129.99,
+      "marca": "ErgoStyle",
+      "categorias": [
+        { "nombre": "Mueble de oficina" },
+        { "nombre": "Silla ergonómica" }
+      ],
+      "esPerecedero": false,
+      "unidades": 30,
+      "fechaFabricacion": "2025-04-10",
+      "colores": ["NEGRO", "GRIS"],
+      "tipoMadera": "Roble",
+      "estilo": "Minimalista",
+      "dimensiones": {
+        "ancho": 50.0,
+        "profundidad": 50.0,
+        "alto": 120.0
+      }
+    },
+    {
+      "tipo": "MUEBLE",
+      "tipoProducto": "MUEBLE",
+      "descripcion": "Mesa de Comedor Rectangular",
+      "precio": 299.99,
+      "marca": "Muebles Clásicos",
+      "categorias": [
+        { "nombre": "Mueble de comedor" },
+        { "nombre": "Mesa de comedor" }
+      ],
+      "esPerecedero": false,
+      "unidades": 20,
+      "fechaFabricacion": "2025-02-15",
+      "colores": ["MADERA_NATURAL"],
+      "tipoMadera": "Caoba",
+      "estilo": "Clásico",
+      "dimensiones": {
+        "ancho": 180.0,
+        "profundidad": 90.0,
+        "alto": 75.0
+      }
+    },
+    {
+      "tipo": "MUEBLE",
+      "tipoProducto": "MUEBLE",
+      "descripcion": "Librero Moderno",
+      "precio": 159.99,
+      "marca": "Innovative Design",
+      "categorias": [
+        { "nombre": "Mueble de sala" },
+        { "nombre": "Librero moderno" }
+      ],
+      "esPerecedero": false,
+      "unidades": 40,
+      "fechaFabricacion": "2025-01-10",
+      "colores": ["BLANCO", "NEGRO"],
+      "tipoMadera": "Pino",
+      "estilo": "Modernista",
+      "dimensiones": {
+        "ancho": 80.0,
+        "profundidad": 30.0,
+        "alto": 180.0
+      }
+    },
+    {
+      "tipo": "MUEBLE",
+      "tipoProducto": "MUEBLE",
+      "descripcion": "Sofá de Tres Plazas",
+      "precio": 499.99,
+      "marca": "Comfort Living",
+      "categorias": [
+        { "nombre": "Mueble de sala" },
+        { "nombre": "Sofá" }
+      ],
+      "esPerecedero": false,
+      "unidades": 15,
+      "fechaFabricacion": "2025-03-05",
+      "colores": ["AZUL", "GRIS"],
+      "tipoMadera": "Madera de pino",
+      "estilo": "Contemporáneo",
+      "dimensiones": {
+        "ancho": 200.0,
+        "profundidad": 90.0,
+        "alto": 85.0
+      }
+    },
+    {
+      "tipo": "MUEBLE",
+      "tipoProducto": "MUEBLE",
+      "descripcion": "Armario Modular",
+      "precio": 259.99,
+      "marca": "SpaceSaver",
+      "categorias": [
+        { "nombre": "Mueble de almacenamiento" },
+        { "nombre": "Armario modular" }
+      ],
+      "esPerecedero": false,
+      "unidades": 25,
+      "fechaFabricacion": "2025-03-20",
+      "colores": ["MADERA_CLARA"],
+      "tipoMadera": "Aliso",
+      "estilo": "Moderno",
+      "dimensiones": {
+        "ancho": 100.0,
+        "profundidad": 50.0,
+        "alto": 200.0
+      }
+    },
+    {
+      "tipo": "MUEBLE",
+      "tipoProducto": "MUEBLE",
+      "descripcion": "Banco de Jardín",
+      "precio": 89.99,
+      "marca": "Outdoor Living",
+      "categorias": [
+        { "nombre": "Mueble de jardín" },
+        { "nombre": "Banco exterior" }
+      ],
+      "esPerecedero": false,
+      "unidades": 60,
+      "fechaFabricacion": "2025-04-01",
+      "colores": ["MADERA_OSCURA"],
+      "tipoMadera": "Teak",
+      "estilo": "Rústico",
+      "dimensiones": {
+        "ancho": 120.0,
+        "profundidad": 40.0,
+        "alto": 85.0
+      }
+    },
+    {
+      "tipo": "MUEBLE",
+      "tipoProducto": "MUEBLE",
+      "descripcion": "Mesita de Noche",
+      "precio": 69.99,
+      "marca": "Simple Living",
+      "categorias": [
+        { "nombre": "Mueble de dormitorio" },
+        { "nombre": "Mesita de noche" }
+      ],
+      "esPerecedero": false,
+      "unidades": 75,
+      "fechaFabricacion": "2025-03-25",
+      "colores": ["BLANCO", "GRIS"],
+      "tipoMadera": "Abeto",
+      "estilo": "Nórdico",
+      "dimensiones": {
+        "ancho": 45.0,
+        "profundidad": 35.0,
+        "alto": 60.0
+      }
+    },
+    {
+      "tipo": "MUEBLE",
+      "tipoProducto": "MUEBLE",
+      "descripcion": "Escritorio de Oficina",
+      "precio": 199.99,
+      "marca": "OfficePro",
+      "categorias": [
+        { "nombre": "Mueble de oficina" },
+        { "nombre": "Escritorio" }
+      ],
+      "esPerecedero": false,
+      "unidades": 20,
+      "fechaFabricacion": "2025-04-15",
+      "colores": ["MADERA_OSCURA"],
+      "tipoMadera": "Nogal",
+      "estilo": "Industrial",
+      "dimensiones": {
+        "ancho": 140.0,
+        "profundidad": 70.0,
+        "alto": 75.0
+      }
+    }
+  ]
+}
+

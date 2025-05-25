@@ -1,0 +1,243 @@
+{
+  "proveedor": "Editorial Futura",
+  "fechaEnvioCatalogo": "2025-05-13",
+  "productos": [
+    {
+      "tipo": "LIBRO",
+      "tipoProducto": "LIBRO",
+      "descripcion": "Manual de Java Avanzado",
+      "precio": 39.99,
+      "marca": "FuturaPress",
+      "categorias": [
+        { "nombre": "Programación" },
+        { "nombre": "Tecnología" }
+      ],
+      "esPerecedero": false,
+      "unidades": 50,
+      "fechaFabricacion": "2025-03-01",
+      "colores": ["AZUL", "BLANCO"],
+      "titulo": "Java Avanzado",
+      "autor": "Carlos Ortega",
+      "editorial": "FuturaPress",
+      "tapa": "Dura",
+      "numeroPaginas": 520,
+      "segundaMano": false,
+      "dimensiones": {
+        "ancho": 15.5,
+        "profundidad": 3.0,
+        "alto": 23.0
+      }
+    },
+    {
+      "tipo": "LIBRO",
+      "tipoProducto": "LIBRO",
+      "descripcion": "Fundamentos de Python",
+      "precio": 29.99,
+      "marca": "TechBooks",
+      "categorias": [
+        { "nombre": "Programación" },
+        { "nombre": "Python" }
+      ],
+      "esPerecedero": false,
+      "unidades": 100,
+      "fechaFabricacion": "2024-11-15",
+      "colores": ["ROJO", "NEGRO"],
+      "titulo": "Fundamentos de Python",
+      "autor": "Ana Martínez",
+      "editorial": "TechBooks",
+      "tapa": "Blanda",
+      "numeroPaginas": 350,
+      "segundaMano": false,
+      "dimensiones": {
+        "ancho": 14.0,
+        "profundidad": 2.0,
+        "alto": 20.0
+      }
+    },
+    {
+      "tipo": "LIBRO",
+      "tipoProducto": "LIBRO",
+      "descripcion": "Java para Principiantes",
+      "precio": 24.99,
+      "marca": "LearningBooks",
+      "categorias": [
+        { "nombre": "Programación" },
+        { "nombre": "Java" }
+      ],
+      "esPerecedero": false,
+      "unidades": 75,
+      "fechaFabricacion": "2023-06-01",
+      "colores": ["VERDE", "BLANCO"],
+      "titulo": "Java para Principiantes",
+      "autor": "Juan Pérez",
+      "editorial": "LearningBooks",
+      "tapa": "Blanda",
+      "numeroPaginas": 280,
+      "segundaMano": true,
+      "dimensiones": {
+        "ancho": 13.5,
+        "profundidad": 2.5,
+        "alto": 21.5
+      }
+    },
+    {
+      "tipo": "LIBRO",
+      "tipoProducto": "LIBRO",
+      "descripcion": "Desarrollo Web con HTML y CSS",
+      "precio": 19.99,
+      "marca": "TechBooks",
+      "categorias": [
+        { "nombre": "Desarrollo Web" },
+        { "nombre": "HTML" },
+        { "nombre": "CSS" }
+      ],
+      "esPerecedero": false,
+      "unidades": 150,
+      "fechaFabricacion": "2024-08-10",
+      "colores": ["AZUL", "NARANJA"],
+      "titulo": "Desarrollo Web con HTML y CSS",
+      "autor": "Sofia García",
+      "editorial": "TechBooks",
+      "tapa": "Dura",
+      "numeroPaginas": 430,
+      "segundaMano": false,
+      "dimensiones": {
+        "ancho": 16.0,
+        "profundidad": 3.0,
+        "alto": 24.0
+      }
+    },
+    {
+      "tipo": "LIBRO",
+      "tipoProducto": "LIBRO",
+      "descripcion": "Introducción a Python para Ciencia de Datos",
+      "precio": 34.99,
+      "marca": "DataScienceBooks",
+      "categorias": [
+        { "nombre": "Python" },
+        { "nombre": "Ciencia de Datos" }
+      ],
+      "esPerecedero": false,
+      "unidades": 60,
+      "fechaFabricacion": "2024-01-15",
+      "colores": ["AMARILLO", "NEGRO"],
+      "titulo": "Introducción a Python para Ciencia de Datos",
+      "autor": "Laura Fernández",
+      "editorial": "DataScienceBooks",
+      "tapa": "Blanda",
+      "numeroPaginas": 500,
+      "segundaMano": false,
+      "dimensiones": {
+        "ancho": 14.5,
+        "profundidad": 3.5,
+        "alto": 22.0
+      }
+    },
+    {
+      "tipo": "LIBRO",
+      "tipoProducto": "LIBRO",
+      "descripcion": "Algoritmos y Estructuras de Datos",
+      "precio": 45.99,
+      "marca": "CodeBooks",
+      "categorias": [
+        { "nombre": "Programación" },
+        { "nombre": "Algoritmos" },
+        { "nombre": "Estructuras de Datos" }
+      ],
+      "esPerecedero": false,
+      "unidades": 80,
+      "fechaFabricacion": "2023-12-10",
+      "colores": ["ROJO", "BLANCO"],
+      "titulo": "Algoritmos y Estructuras de Datos",
+      "autor": "David Gómez",
+      "editorial": "CodeBooks",
+      "tapa": "Dura",
+      "numeroPaginas": 600,
+      "segundaMano": false,
+      "dimensiones": {
+        "ancho": 17.0,
+        "profundidad": 4.0,
+        "alto": 25.0
+      }
+    },
+    {
+      "tipo": "LIBRO",
+      "tipoProducto": "LIBRO",
+      "descripcion": "Bases de Datos con MySQL",
+      "precio": 39.99,
+      "marca": "DBBooks",
+      "categorias": [
+        { "nombre": "Bases de Datos" },
+        { "nombre": "MySQL" }
+      ],
+      "esPerecedero": false,
+      "unidades": 120,
+      "fechaFabricacion": "2024-02-20",
+      "colores": ["VERDE", "NEGRO"],
+      "titulo": "Bases de Datos con MySQL",
+      "autor": "Roberto López",
+      "editorial": "DBBooks",
+      "tapa": "Blanda",
+      "numeroPaginas": 420,
+      "segundaMano": true,
+      "dimensiones": {
+        "ancho": 15.0,
+        "profundidad": 3.0,
+        "alto": 22.5
+      }
+    },
+    {
+      "tipo": "LIBRO",
+      "tipoProducto": "LIBRO",
+      "descripcion": "C++ Avanzado",
+      "precio": 59.99,
+      "marca": "ProgBooks",
+      "categorias": [
+        { "nombre": "Programación" },
+        { "nombre": "C++" }
+      ],
+      "esPerecedero": false,
+      "unidades": 40,
+      "fechaFabricacion": "2025-04-12",
+      "colores": ["AZUL", "BLANCO"],
+      "titulo": "C++ Avanzado",
+      "autor": "Fernando Ruiz",
+      "editorial": "ProgBooks",
+      "tapa": "Dura",
+      "numeroPaginas": 580,
+      "segundaMano": false,
+      "dimensiones": {
+        "ancho": 16.5,
+        "profundidad": 3.5,
+        "alto": 23.5
+      }
+    },
+    {
+      "tipo": "LIBRO",
+      "tipoProducto": "LIBRO",
+      "descripcion": "Deep Learning con Python",
+      "precio": 49.99,
+      "marca": "AIBooks",
+      "categorias": [
+        { "nombre": "Inteligencia Artificial" },
+        { "nombre": "Deep Learning" }
+      ],
+      "esPerecedero": false,
+      "unidades": 60,
+      "fechaFabricacion": "2024-09-05",
+      "colores": ["NEGRO", "AZUL"],
+      "titulo": "Deep Learning con Python",
+      "autor": "Miguel Sánchez",
+      "editorial": "AIBooks",
+      "tapa": "Dura",
+      "numeroPaginas": 550,
+      "segundaMano": false,
+      "dimensiones": {
+        "ancho": 17.0,
+        "profundidad": 4.0,
+        "alto": 25.0
+      }
+    }
+  ]
+}
+

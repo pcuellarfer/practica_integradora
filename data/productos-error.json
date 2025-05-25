@@ -1,0 +1,45 @@
+{
+  "proveedor": "Productalia",
+  "fechaEnvioCatalogo": "2020-01-01",
+  "productos": [
+    {
+      "descripcion": "Mesa de comedor",
+      "precio": 76.43,
+      "marca": "Acme",
+      "categorias": ["Muebles", "Comedor"],
+      "ecedero": true,
+     nidades": 8,
+      "fechaFabricacion": "2018-12-13",
+      "dimensiones": {
+     ancho": 100,
+        "profundidad": 60,
+        "alto": 60
+      },
+      "colores": ["Blanco", "Nogal", "Negro"],
+      "titulo": null,
+      "autor": null,
+      "editorial": null,
+      "tapa": null,
+      "numeroPaginas": null,
+      "segundaMano": null
+    },
+    {
+      "descripcion": "Novela",
+      "precio": 12.91,
+      "marca": "Papelería",
+      "categorias": ["Libro", "Existencialista"],
+      "esPerecedero": false,
+      "unidades": 25,
+      "fechaFabricacion": null,
+      "dimensiones": null,
+      "colores": null,
+      "titulo": "El lobo estepario",
+      "autor": "Hermann Hesse",
+      "editorial": "Alianza",
+      "tapa": "Blanda",
+      "numeroPaginas": 321,
+      "segundaMano": true
+    }
+  ]
+}
+
