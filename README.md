@@ -1,4 +1,4 @@
-
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/pcuellarfer/practica_integradora)
 
 
 # 🚀 Práctica Integradora - Sistema de Gestión Empresarial
